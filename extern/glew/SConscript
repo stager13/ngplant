@@ -1,0 +1,13 @@
+GLEW_SRC = [ "src/glew.c"]
+
+Import('*')
+
+GLEWEnv = BaseEnv.Copy()
+
+GLEWEnv.Append(CPPPATH=['#/extern/glew/include'])
+
+if CC_OPT_FLAGS != '':
+   GLEWEnv.Append(CCFLAGS=CC_OPT_FLAGS)
+
+GLEWEnv.StaticLibrary(target='#/extern/libs/GLEW',source=GLEW_SRC)
+

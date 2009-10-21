@@ -1,0 +1,119 @@
+NGPWXCTRLS_SRC = Split("""
+p3dwx.cpp p3dwxcurvectrl.cpp p3dwxlistdlg.cpp
+""")
+
+NGPLANT_SRC = Split("""
+main.cpp p3dcanvas3d.cpp p3dcamera.cpp p3dmedit.cpp p3duimodelstemtube.cpp
+p3duibalgstd.cpp p3dmaterialstd.cpp p3duimaterialstd.cpp
+p3duioptgeneral.cpp p3dtexture.cpp p3didevfs.cpp p3dexpobj.cpp
+p3duimodelstemquad.cpp p3duimodelstemwings.cpp p3duibalgwings.cpp
+p3duiappopt.cpp p3duibalgbase.cpp p3duivisrangepanel.cpp
+p3dpobject.cpp p3dhliext.cpp p3dshaders.cpp p3dlog.cpp
+p3dpluginfo.cpp p3duimodelstemempty.cpp p3dappprefs.cpp
+""")
+
+NGPLANT_INCLUDES=Split("""
+.
+#
+""")
+
+WIN32_BASELIBS=Split("""
+kernel32 user32 gdi32 comdlg32 winspool winmm shell32 comctl32 ole32
+oleaut32 uuid rpcrt4 advapi32 wsock32 odbc32
+opengl32 glu32
+""")
+
+WIN32_CROSS_BASELIBS=Split("""
+kernel32 user32 gdi32 comdlg32 winspool winmm shell32 comctl32 ole32
+oleaut32 uuid rpcrt4 advapi32
+opengl32 glu32
+""")
+
+Import('BaseEnv','CrossCompileMode','CC_OPT_FLAGS','LuaEnabled','TimingsEnabled','ProfilingEnabled')
+
+NGPlantEnv = BaseEnv.Copy()
+
+if LuaEnabled:
+    NGPLANT_SRC.append("p3dplugluactl.cpp")
+    NGPLANT_SRC.append("p3dplugluahli.cpp")
+    NGPLANT_SRC.append("p3dplugluaui.cpp")
+    NGPLANT_SRC.append("p3dplugluaprefs.cpp")
+    NGPLANT_SRC.append("p3dpluglua.cpp")
+
+# GLEW libraries have to be added before opengl32? for Windows build
+# if GLEW libraries go after opengl32 it causes _wglGetProcAddress and
+# _glGetString functions to become unresolved
+NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEXT_INC'])
+NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEXT_LIBPATH'])
+NGPlantEnv.Append(LIBS=NGPlantEnv['GLEXT_LIBS'])
+
+if TimingsEnabled:
+    NGPlantEnv.Append(CPPDEFINES=[('P3D_TIMINGS_ENABLED','1')])
+
+if CrossCompileMode:
+    for inc in Split(NGPlantEnv['WX_INC']):
+        NGPLANT_INCLUDES.append(inc)
+    for lib in Split(NGPlantEnv['WX_LIB']):
+        NGPlantEnv.Append(LIBS=[lib])
+    for libpath in Split(NGPlantEnv['WX_LIBPATH']):
+        NGPlantEnv.Append(LIBPATH=libpath)
+
+    NGPlantEnv.Append(LIBS=WIN32_CROSS_BASELIBS)
+    NGPlantEnv.Append(LINKFLAGS='-s')
+    NGPlantEnv.Append(LINKFLAGS='-mwindows')
+elif (NGPlantEnv['PLATFORM'] == 'win32') or\
+   (NGPlantEnv['PLATFORM'] == 'cygwin'):
+
+    for inc in Split(NGPlantEnv['WX_INC']):
+        NGPLANT_INCLUDES.append(inc)
+    for lib in Split(NGPlantEnv['WX_LIB']):
+        NGPlantEnv.Append(LIBS=[lib])
+    for libpath in Split(NGPlantEnv['WX_LIBPATH']):
+        NGPlantEnv.Append(LIBPATH=libpath)
+
+    if 'msvc' in NGPlantEnv['TOOLS']:
+        NGPlantEnv.Append(LINKFLAGS='/SUBSYSTEM:WINDOWS')
+        NGPlantEnv.Append(LIBS=WIN32_BASELIBS)
+    else:
+        NGPlantEnv.Append(LIBS=WIN32_CROSS_BASELIBS)
+else:
+    if not ProfilingEnabled:
+        NGPlantEnv.Append(LINKFLAGS='-s')
+    NGPlantEnv.ParseConfig(NGPlantEnv['WX_CONFIG'] + ' --cxxflags --libs --gl-libs')
+    static_libs = Split(NGPlantEnv['WX_LIB_STATIC'])
+    if len(static_libs) > 0:
+        # Thanks Blender SConstruct file for this trick
+        NGPlantEnv.Replace(LINKCOM="$LINK -o $TARGET $SOURCES $_LIBDIRFLAGS $_LIBFLAGS $LINKFLAGS")
+        for static_lib in static_libs:
+            NGPlantEnv.Append(LINKFLAGS=[static_lib])
+
+NGPlantEnv.Append(CPPPATH=NGPLANT_INCLUDES)
+NGPlantEnv.Append(LIBS=['ngpcore'])
+NGPlantEnv.Append(LIBPATH=['#/ngpcore'])
+NGPlantEnv.Append(LIBS=['ngput'])
+NGPlantEnv.Append(LIBPATH=['#/ngput'])
+
+if LuaEnabled:
+    NGPlantEnv.Append(CPPPATH=NGPlantEnv['LUA_INC'])
+    NGPlantEnv.Append(LIBPATH=NGPlantEnv['LUA_LIBPATH'])
+    NGPlantEnv.Append(LIBS=NGPlantEnv['LUA_LIBS'])
+    NGPlantEnv.Append(CPPDEFINES=[('NGP_LUA_VER',NGPlantEnv['LUA_VERSION'])])
+
+
+if CC_OPT_FLAGS != '':
+   NGPlantEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
+
+ngplant = NGPlantEnv.Program(target='ngplant',
+                             source=NGPWXCTRLS_SRC + NGPLANT_SRC)
+
+NGPlantEnv.Command('shaders/default_vs.h',
+                   '#/shaders/ngplant_default_vs.glsl',
+                   'python devtools/text2cdata.py P3DDefaultVertexShaderSrc < $SOURCES > $TARGET')
+
+NGPlantEnv.Command('shaders/default_fs.h',
+                   '#/shaders/ngplant_default_fs.glsl',
+                   'python devtools/text2cdata.py P3DDefaultFragmentShaderSrc < $SOURCES > $TARGET')
+
+Default(ngplant)
+Clean(ngplant,['.sconsign','images/.sconsign'])
+

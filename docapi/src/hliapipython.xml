@@ -1,0 +1,592 @@
+<?xml version="1.0"?>
+
+<document>
+ <title>ngPlant HLI documentation (Python)</title>
+
+ <section>
+  <name>Overview</name>
+
+  <para>
+ngPlant high-level interface (implemented in _ngp module) allows to use designed
+plant models in different kinds of applications. It allows to create plant
+import/export plugins using Python programming language. It is even possible to
+create simple plant model viewers using pygame and pyopengl libraries.
+  </para>
+
+  <para>
+This document describes version 0.9.5, 0.9.6 and 0.9.7 of _ngp module.
+ </para>
+ </section>
+
+ <section>
+  <name>Building</name>
+
+  <para>
+  On UNIX-like systems _ngp module is built together with other ngPlant
+libraries and applications. Python development package is required for
+_ngp module compilation and linkage.
+  </para>
+
+  <para>
+  _ngp module can be built on Windows systems too. To build it under Windows
+you must use the same compiler which was used to compile your Python interpreter.
+  </para>
+
+  <para>
+  Then compilation process will be done, you will have _ngp.so or _ngp.dll
+library in pywrapper directory.
+  </para>
+ </section>
+
+ <section>
+  <name>Changes made in 0.9.5</name>
+  <para>
+   <ul>
+    <li>
+     Now it is possible to get tangent and bi-normal vertex attributes
+     in addition to position, normal and texture coordinates using new
+     <constant>ATTR_TANGENT</constant> and
+     <constant>ATTR_BINORMAL</constant> constants.
+     </li>
+    <li>
+     <methodref classname="BranchGroup" name="GetName"/> method
+     added to <classref classname="BranchGroup"/> class.
+    </li>
+   </ul>
+  </para>
+ </section>
+
+ <section>
+  <name>Changes made in 0.9.4</name>
+  <para>
+   <ul>
+    <li>Attribute TexName of <classref classname="MaterialDef"/> is removed. To
+    get texture names new attribute TexNames must be used.
+    </li>
+
+    <li>
+    Four constants which describe texture layer added -
+    <constant>TEX_DIFFUSE</constant>, <constant>TEX_NORMAL_MAP</constant>,
+    <constant>TEX_AUX0</constant> and <constant>TEX_AUX1</constant>.
+    </li>
+   </ul>
+  </para>
+ </section>
+
+ <section>
+  <name>Changes made in 0.9.3</name>
+  <para>
+   <ul>
+    <li><methodref classname="BranchGroup" name="GetBillboardSize"/>
+    method added to <classref classname="BranchGroup"/></li>
+
+    <li>Starting from version 0.9.3 ngPlant supports two types of billboards -
+    spherical (supported in previous versions) and cylindrical (new).
+    To get type of billboards new attribute BillboardMode of
+    <classref classname="MaterialDef"/> class can be used. Three constants
+    describing billboard types added - <constant>BILLBOARD_MODE_NONE</constant>,
+    <constant>BILLBOARD_MODE_SPHERICAL</constant> and
+    <constant>BILLBOARD_MODE_CYLINDRICAL</constant>.</li>
+
+    <li>New vertex attribute - <constant>ATTR_BILLBOARD_POS</constant> can
+    be used in <methodref classname="BranchGroup" name="GetVAttrBufferI"/> method
+    of <classref classname="BranchGroup"/> to extract billboards
+    locations in model coordinate space.</li>
+
+    <li>
+     <methodref classname="BranchGroup" name="IsLODVisRangeEnabled"/> and
+     <methodref classname="BranchGroup" name="GetLODVisRange"/> methods added
+     to <classref classname="BranchGroup"/> class. These methods give access
+     to branch group visibility range information.
+    </li>
+
+    <li>
+     IsAlphaCtrlEnabled and AlphaFadeRange attributes added to
+     <classref classname="MaterialDef"/> class.
+      These attributes give access to dynamic alpha-transparency control.
+    </li>
+   </ul>
+  </para>
+ </section>
+
+ <section>
+  <name>Usage</name>
+  <para>
+  To use _ngp module you need to import it first:
+<prototype>
+ import _ngp
+</prototype>
+, or
+<prototype>
+ from _ngp import *
+</prototype>
+  </para>
+
+  <para>
+  To understand some basic concepts behind ngPlant high-level interface you
+should read Definitions section of C++ HLI documentation.
+  </para>
+
+  <para>
+  scripts directory in source tarball contains script ngp2obj.py, which can be
+used as an example of _ngp module usage.
+  </para>
+ </section>
+
+ <classes>
+
+  <classinfo>
+   <name>PlantInstance</name>
+   <shortdesc>Plant instance class</shortdesc>
+   <desc>
+<para>
+Objects of this class represent single instances of plant model.
+</para>
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>__init__</name>
+     <shortdesc>Constructor</shortdesc>
+<prototype>
+  __init__(filename,seed = 0)
+</prototype>
+     <desc>
+<para>
+Create new plant instance. Plant model is loaded from file
+<argname>filename</argname> and instance of plant is created
+using <argname>seed</argname> as a seed for random number generator.
+Using different seeds you can get almost infinite number of
+similar but slightly different plant models.
+If argument <argname>seed</argname> is omitted, or equal to zero,
+default seed will be used.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetGroupCount</name>
+     <shortdesc>Return branch group count</shortdesc>
+<prototype>
+  GetGroupCount()
+</prototype>
+     <desc>
+<para>
+Return total count of branch groups in plant instance.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetGroup</name>
+     <shortdesc>Return branch group</shortdesc>
+<prototype>
+  GetGroup(index)
+</prototype>
+     <desc>
+<para>
+Return branch group object (<classref classname="BranchGroup"/>).
+<argname>index</argname> argument is an index of branch group and must be
+in range <inpre>0 .. instance.GetGroupCount()-1</inpre>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetBoundingBox</name>
+     <shortdesc>Return plant model bounding box</shortdesc>
+<prototype>
+  GetBoundingBox()
+</prototype>
+     <desc>
+<para>
+Return bounding box of plant model. Result has type <ctype>((float,float,float),(float,float,float))</ctype>,
+where first tuple contains min. X,Y and Z values and second tuple contains
+max. X,Y and Z values of bounding box.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+  </classinfo>
+
+  <classinfo>
+   <name>BranchGroup</name>
+   <shortdesc>Branch group class</shortdesc>
+   <desc>
+<para>
+This class represents branch group. It contains methods for getting
+information about branch group such as: material description, branch count,
+vertex attributes and model topology.
+</para>
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>__init__</name>
+     <shortdesc>Constructor</shortdesc>
+<prototype>
+  __init__(instance,group_index)
+</prototype>
+     <desc>
+<para>
+This method constructs branch group objects. You should not create objects of this
+class directly - GetGroup method of <classref classname="PlantInstance"/> must be used to
+get references to <classref classname="BranchGroup"/> objects.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetName</name>
+     <shortdesc>Return branch group name</shortdesc>
+<prototype>
+  GetName()
+</prototype>
+     <desc>
+<para>
+ Return branch group name.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetMaterial</name>
+     <shortdesc>Return description of branch group material</shortdesc>
+<prototype>
+  GetMaterial()
+</prototype>
+     <desc>
+<para>
+Return description of branch group material. This method returns object of
+<classref classname="MaterialDef"/> class.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetBillboardSize</name>
+     <shortdesc>Return size of branch group billboards</shortdesc>
+<prototype>
+  GetBillboardSize()
+</prototype>
+     <desc>
+<para>
+ Return tuple (width,height) containing width and height of branch group billboards.
+Use this method for billboard branch groups only.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>IsLODVisRangeEnabled</name>
+     <shortdesc>Return state of LOD visibility range</shortdesc>
+<prototype>
+  IsLODVisRangeEnabled()
+</prototype>
+     <desc>
+<para>
+ Return <constant>true</constant> if LOD visibility range must be taken into
+account while rendering branch group and <constant>false</constant> if branch
+group is visible at any LOD.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetLODVisRange</name>
+     <shortdesc>Return LOD visibility range</shortdesc>
+<prototype>
+  GetLODVisRange()
+</prototype>
+     <desc>
+<para>
+ Return tuple (MinLOD,MaxLOD) with minimal and maximum LOD values at which
+branch group is visible.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetBranchCount</name>
+     <shortdesc>Return count of branches in a branch group</shortdesc>
+<prototype>
+  GetBranchCount()
+</prototype>
+     <desc>
+<para>
+Return count of branches in a branch group.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrCount</name>
+     <shortdesc>Return count of different attribute values in a branch group (detailed mode)</shortdesc>
+<prototype>
+  GetVAttrCount(attr,total = 0)
+</prototype>
+     <desc>
+<para>
+Return count of different attribute values in a branch group.
+</para>
+<para>
+<argname>attr</argname> - type of attribute in question.
+<argname>attr</argname> must be one of: <constant>ATTR_VERTEX</constant>,
+<constant>ATTR_NORMAL</constant>, <constant>ATTR_TEXCOORD0</constant>.
+</para>
+<para>
+If <argname>total</argname> is equal to 0, count of attribute values of single
+branch will be returned. Count of different attribute values in all branches
+of branch group will be returned if <argname>total</argname> is non-zero.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrBuffer</name>
+     <shortdesc>Return array of vertex attributes (detailed mode)</shortdesc>
+<prototype>
+  GetVAttrBuffer(attr)
+</prototype>
+     <desc>
+<para>
+Return array of vertex attributes. <argname>attr</argname> must be one of:
+<constant>ATTR_VERTEX</constant>, <constant>ATTR_NORMAL</constant>,
+<constant>ATTR_TEXCOORD0</constant>.
+</para>
+<para>
+If <argname>attr</argname> is <constant>ATTR_VERTEX</constant> or
+<constant>ATTR_NORMAL</constant>, return value will be an array of
+3-float tuples. If <argname>attr</argname> is <constant>ATTR_TEXCOORD0</constant>,
+return value will be an array of 2-float tuples.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetPrimitiveCount</name>
+     <shortdesc>Return count of primitives (detailed mode)</shortdesc>
+<prototype>
+  GetPrimitiveCount(total = 1)
+</prototype>
+     <desc>
+<para>
+Return count of primitives in a single branch or in a branch group in a whole.
+If <argname>total</argname> is zero, count of primitives in a single branch will be
+returned. If <argname>total</argname> is not a zero, count of primitives in
+all branches of branch group will be returned.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetPrimitiveType</name>
+     <shortdesc>Return type of primitive (detailed mode)</shortdesc>
+<prototype>
+  GetPrimitiveType(index,total = 1)
+</prototype>
+     <desc>
+<para>
+Return type of <argname>index</argname>th primitive.
+If <argname>total</argname> is not a zero, primitive index will be treated as
+and index in array of primitives in branch group. If <argname>total</argname>
+is a zero, primitive index will be treated as and index in array of primitives
+in a single branch.
+</para>
+<para>
+Result value may be one of <constant>TRIANGLE</constant> or
+<constant>QUAD</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrIndexBuffer</name>
+     <shortdesc>Return array of tuples with attribute indices (detailed mode)</shortdesc>
+<prototype>
+  GetVAttrIndexBuffer(attr,total = 1,base = 0)
+</prototype>
+     <desc>
+<para>
+This method return array of tuples. Each tuple contains attribute indices for a single primitive.
+Attribute type is selected by <argname>attr</argname> and must be one of
+<constant>ATTR_VERTEX</constant>, <constant>ATTR_NORMAL</constant>,
+<constant>ATTR_TEXCOORD0</constant>. If <argname>total</argname>
+is zero, array will contain indices for one branch. If <argname>total</argname>
+is non-zero (default), array will contain indices for all branches of branch group.
+Optional <argname>base</argname> value may be added to all index values.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrCountI</name>
+     <shortdesc>Return count of attribute values (vertex count) in a branch group (indexed mode)</shortdesc>
+<prototype>
+  GetVAttrCountI(total = 0)
+</prototype>
+     <desc>
+<para>
+Return count of different attribute values in single branch or in all branches of
+branch group. In fact, it is a count of vertices in a single branch model or
+in all branches of branch group.
+</para>
+<para>
+If <argname>total</argname> is equal to 0 (default), count of vertices in single
+branch will be returned. Count of vertices in all branches
+of branch group will be returned if <argname>total</argname> is non-zero.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrBufferI</name>
+     <shortdesc>Return array of vertex attributes (indexed mode)</shortdesc>
+<prototype>
+  GetVAttrBufferI(attr)
+</prototype>
+     <desc>
+<para>
+Return array of vertex attributes. <argname>attr</argname> must be one of:
+<constant>ATTR_VERTEX</constant>, <constant>ATTR_NORMAL</constant>,
+<constant>ATTR_TEXCOORD0</constant>. If branch group is rendered in billboard
+mode, <constant>ATTR_BILLBOARD_POS</constant> may be passed in <argname>attr</argname>
+to get array of billboard positions in model space.
+</para>
+<para>
+If <argname>attr</argname> is <constant>ATTR_VERTEX</constant>,
+<constant>ATTR_NORMAL</constant> or <constant>ATTR_BILLBOARD_POS</constant>,
+return value will be an array of 3-float tuples. If <argname>attr</argname> is
+<constant>ATTR_TEXCOORD0</constant>, return value will be an array of 2-float
+tuples.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetIndexCount</name>
+     <shortdesc>Return count of indices, required to describe branch or branch group model, using given primitive type (indexed mode)</shortdesc>
+<prototype>
+  GetIndexCount(primitive_type,total = 1)
+</prototype>
+     <desc>
+<para>
+Return size of index buffer which is required to describe branch
+geometry using <argname>primitive_type</argname>.
+<argname>primitive_type</argname> must be <constant>TRIANGLE_LIST</constant>.
+</para>
+<para>
+If <argname>total</argname> is equal to 0, count of indices in a single branch
+model will be returned. Count of indices, required to describe geometry
+of all branches in branch group, will be returned if
+<argname>total</argname> is non-zero (default).
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetIndexBuffer</name>
+     <shortdesc>Return array of vertex indices (indexed mode)</shortdesc>
+<prototype>
+  GetIndexBuffer(primitive_type,total = 1,base = 0)
+</prototype>
+     <desc>
+<para>
+Return array of vertex indices required to create branch model
+using <argname>primitive_type</argname> primitives.
+<argname>primitive_type</argname> must be <constant>TRIANGLE_LIST</constant>.
+Optional <argname>base</argname> may be added to all index values.
+</para>
+<para>
+If <argname>total</argname> is equal to 0, array of indices for a single branch
+model will be returned. Array of indices, required to describe geometry
+of all branches in branch group, will be returned if
+<argname>total</argname> is non-zero (default).
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+  </classinfo>
+
+  <classinfo>
+   <name>MaterialDef</name>
+   <shortdesc>Material description class</shortdesc>
+   <desc>
+<para>
+This class describes material properties.
+</para>
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>__init__</name>
+     <shortdesc>Initialize new material object</shortdesc>
+<prototype>
+  __init__((r,g,b),tex_name,double_sided,transparent,billboard,alpha_ctrl_enabled,(alpha_fade_in,alpha_fade_out))
+</prototype>
+     <desc>
+<para>
+Initialize material description. You should not create objects of this class
+yourself - use GetMaterial() method of <classref classname="BranchGroup"/> to
+get objects of this class.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+
+   <attributes>
+
+    <attributeinfo>
+     <name>Color</name>
+     <shortdesc>Material color (R,G,B) tuple</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>TexNames</name>
+     <shortdesc>List of texture names</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>DoubleSided</name>
+     <shortdesc>Material double-sided property</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>Transparent</name>
+     <shortdesc>Material transparency property</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>Billboard</name>
+     <shortdesc>Material billboard property</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>BillboardMode</name>
+     <shortdesc>Billboard mode property</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>AlphaCtrlEnabled</name>
+     <shortdesc>Alpha control state</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>AlphaFadeRange</name>
+     <shortdesc>Tuple, containing AlphaFadeIn and AlphaFadeOut values</shortdesc>
+    </attributeinfo>
+
+   </attributes>
+
+  </classinfo>
+
+ </classes>
+
+</document>
+

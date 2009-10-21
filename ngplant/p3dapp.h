@@ -1,0 +1,220 @@
+/***************************************************************************
+
+ Copyright (C) 2006  Sergey Prokhorchuk
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+***************************************************************************/
+
+#ifndef __P3DAPP_H__
+#define __P3DAPP_H__
+
+#include <vector>
+
+#include <wx/wx.h>
+
+#include <ngpcore/p3dmodel.h>
+
+#include <p3dtexture.h>
+#include <p3dshaders.h>
+#include <p3dmaterialstd.h>
+#include <p3didevfs.h>
+#include <p3dmedit.h>
+#include <p3dpobject.h>
+#include <p3dcanvas3d.h>
+#include <p3dpluginfo.h>
+#include <p3dappprefs.h>
+
+class P3DMainFrame : public wxFrame
+ {
+  public           :
+
+                   P3DMainFrame       (const wxChar       *title);
+
+  void             OnNew              (wxCommandEvent     &event);
+  void             OnOpen             (wxCommandEvent     &event);
+  void             OnSave             (wxCommandEvent     &event);
+  void             OnSaveAs           (wxCommandEvent     &event);
+  void             OnExportObj        (wxCommandEvent     &event);
+  void             OnExportObjPlugin  (wxCommandEvent     &event);
+  void             OnRunScript        (wxCommandEvent     &event);
+  void             OnQuit             (wxCommandEvent     &event);
+  void             OnAbout            (wxCommandEvent     &event);
+  void             OnEditPreferences  (wxCommandEvent     &event);
+
+  void             InvalidatePlant    ();
+
+  bool             IsGLExtInited      () const
+   {
+    return(Canvas3D->IsGLExtInited());
+   }
+
+  P3DModelEditPanel                   *EditPanel;
+
+  private          :
+
+  void             Save               (const char         *FileName);
+
+  P3DCanvas3D                         *Canvas3D;
+
+  DECLARE_EVENT_TABLE()
+ };
+
+typedef struct
+ {
+  unsigned char    R;
+  unsigned char    G;
+  unsigned char    B;
+ } P3DAppColor3b;
+
+enum
+ {
+  P3D_BITMAP_NO_TEXTURE = 0,
+  P3D_BITMAP_REMOVE_TEXTURE,
+
+  P3D_TOTAL_BITMAPS
+ };
+
+class P3DApp : public wxApp
+ {
+  public           :
+
+  virtual         ~P3DApp             ();
+
+  virtual bool     OnInit             ();
+
+  P3DPlantModel   *GetModel           ();
+  void             SetModel           (P3DPlantModel      *Model);
+  const P3DPlantObject
+                  *GetPlantObject     () const;
+  P3DTexManagerGL *GetTexManager      ();
+  P3DShaderManager*GetShaderManager   ();
+
+  P3DStemModel    *CreateStemModelStd () const;
+  P3DBranchingAlg *CreateBranchingAlgStd
+                                      () const;
+
+  P3DStemModel    *CreateStemModelTube() const;
+  P3DStemModel    *CreateStemModelQuad() const;
+
+  P3DMaterialInstanceSimple
+                  *CreateMatInstanceStd
+                                      () const;
+
+  void             InvalidatePlant    ();
+  void             InvalidateCamera   ();
+  void             ForceUpdate        ();
+  bool             IsPlantObjectDirty () const;
+
+  wxString         GetFileName        () const;
+  void             SetFileName        (const char         *FileName);
+
+  P3DIDEVFS       *GetTexFS           ();
+
+  const wxBitmap  &GetBitmap          (unsigned int        Bitmap);
+
+  P3DPlantModel   *CreateNewPlantModel() const;
+
+  /* Some preferences stuff */
+
+  void             GetGroundColor     (unsigned char      *R,
+                                       unsigned char      *G,
+                                       unsigned char      *B) const;
+
+  void             SetGroundColor     (unsigned char       R,
+                                       unsigned char       G,
+                                       unsigned char       B);
+
+  bool             IsGroundVisible    () const;
+  void             SetGroundVisibility(bool                Visible);
+
+  void             GetBackgroundColor (unsigned char      *R,
+                                       unsigned char      *G,
+                                       unsigned char      *B) const;
+
+  void             SetBackgroundColor (unsigned char       R,
+                                       unsigned char       G,
+                                       unsigned char       B);
+
+  P3DExport3DPrefs*GetExport3DPrefs   ();
+
+  const P3DCameraControlPrefs
+                  *GetCameraControlPrefs
+                                      () const;
+  void             SetCameraControlPrefs
+                                      (const P3DCameraControlPrefs
+                                                          *Prefs);
+
+  void             SetPluginsPath     (const wxString     &PluginsPath);
+  const wxString  &GetPluginsPath     () const;
+  void             ScanPlugins        ();
+  const P3DPluginInfoVector
+                  &GetExportPlugins   () const;
+  const P3DPluginInfoVector
+                  &GetGMeshPlugins    () const;
+
+  float            GetLODLevel        () const;
+  void             SetLODLevel        (float               Level);
+
+  bool             IsAutoUpdateMode   () const;
+  void             SetAutoUpdateMode  (bool                Enable);
+
+  bool             IsShadersEnabled   () const;
+  void             DisableShaders     ();
+
+  private          :
+
+  void             InitTexFS          ();
+
+  virtual void     OnInitCmdLine      (wxCmdLineParser    &Parser);
+  virtual bool     OnCmdLineParsed    (wxCmdLineParser    &Parser);
+
+  P3DPlantModel   *PlantModel;
+  mutable
+  P3DPlantObject  *PlantObject;
+  mutable bool     PlantObjectDirty;
+  bool             PlantObjectAutoUpdate;
+
+  P3DTexManagerGL  TexManager;
+  P3DShaderManager ShaderManager;
+
+  wxBitmap         Bitmaps[P3D_TOTAL_BITMAPS];
+
+  P3DIDEVFS        TexFS;
+  P3DMainFrame    *MainFrame;
+  wxString         PlantFileName;
+
+  P3DAppColor3b    GroundColor;
+  bool             GroundVisible;
+
+  P3DAppColor3b    BackgroundColor;
+
+  P3DExport3DPrefs           Export3DPrefs;
+  P3DCameraControlPrefs      CameraControlPrefs;
+                  
+
+  wxString         PluginsPath;
+  P3DPluginInfoVector                  ExportPlugins;
+  P3DPluginInfoVector                  GMeshPlugins;
+
+  float            LODLevel;
+
+  bool             UseShaders;
+ };
+
+DECLARE_APP(P3DApp)
+
+#endif
+

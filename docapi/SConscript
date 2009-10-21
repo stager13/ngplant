@@ -1,0 +1,13 @@
+env = Environment()
+
+env.Command('hliapicpp.html',
+            [ 'src/hliapi.xsl', 'src/hliapicpp.xml' ],
+            'xsltproc $SOURCES > $TARGET')
+
+env.Command('hliapipython.html',
+            [ 'src/hliapi.xsl', 'src/hliapipython.xml' ],
+            'xsltproc $SOURCES > $TARGET')
+
+Default('hliapicpp.html','hliapipython.html')
+Clean('hliapicpp.html',['hliapipython.html','.sconsign','src/.sconsign'])
+

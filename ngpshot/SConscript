@@ -1,0 +1,53 @@
+NGPSHOT_SRC = Split("""
+ngpshot.cpp p3dshaders.cpp
+""")
+
+NGPSHOT_INCLUDES=Split("""
+.
+#
+""")
+
+Import('*')
+
+WIN32_BASELIBS=Split("""
+kernel32 user32 gdi32 comdlg32 winspool winmm shell32 comctl32 ole32
+oleaut32 uuid rpcrt4 advapi32 wsock32 odbc32
+opengl32 glu32
+""")
+
+NGPShotEnv = BaseEnv.Copy()
+
+NGPShotEnv.Append(CPPPATH=NGPSHOT_INCLUDES)
+NGPShotEnv.Append(LIBPATH=['#/ngpcore'])
+NGPShotEnv.Append(LIBPATH=['#/ngput'])
+NGPShotEnv.Append(LIBS=['ngpcore'])
+NGPShotEnv.Append(LIBS=['ngput'])
+
+NGPShotEnv.Append(CPPPATH=NGPShotEnv['GLEXT_INC'])
+NGPShotEnv.Append(LIBPATH=NGPShotEnv['GLEXT_LIBPATH'])
+NGPShotEnv.Append(LIBS=NGPShotEnv['GLEXT_LIBS'])
+
+if (NGPShotEnv['PLATFORM'] == 'win32') or\
+   (NGPShotEnv['PLATFORM'] == 'cygwin'):
+    if 'msvc' in NGPShotEnv['TOOLS']:
+        NGPShotEnv.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
+    NGPShotEnv.Append(LIBS=WIN32_BASELIBS)
+elif CrossCompileMode:
+    NGPShotEnv.Append(LIBS=WIN32_BASELIBS)
+    NGPShotEnv.Append(LINKFLAGS='-s')
+else:
+    NGPShotEnv.Append(LIBS=['GL'])
+    NGPShotEnv.Append(LIBS=['GLU'])
+    if not ProfilingEnabled:
+        NGPShotEnv.Append(LINKFLAGS='-s')
+
+if CC_WARN_FLAGS != '':
+   NGPShotEnv.Append(CXXFLAGS=CC_WARN_FLAGS)
+if CC_OPT_FLAGS != '':
+   NGPShotEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
+
+ngpshot = NGPShotEnv.Program(target='ngpshot',source=NGPSHOT_SRC)
+
+Default(ngpshot)
+Clean(ngpshot,['.sconsign'])
+

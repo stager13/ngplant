@@ -1,0 +1,37 @@
+                           Supported platforms
+
+1. GNU Linux (perhaps other UNIX-like systems too)
+2. Microsoft Windows (compiled using mingw cross-compiler)
+
+Prerequisities:
+wxWidgets (2.4.x, 2.6.x or 2.8.x): http://www.wxwidgets.org
+python : http://www.python.org (only if you want to build it yourself)
+scons:  http://www.scons.org   (only if you want to build it yourself)
+
+If you want to build _ngp module (Python bindings to ngpcore high-level
+interface) you will need python development files.
+
+If you want to compile ngpview application you will need glut library.
+
+To generate ngpcore API documentation xsltproc application
+(http://xmlsoft.org/XSLT/xsltproc2.html) is required. Note, that generated
+documentation in html format is included in source package.
+
+Building under GNU Linux (for Linux):
+1. Untar source archive (ngplant-X.X.X.tar.gz)
+2. $ cd ngplant-X.X.X
+3. $ scons
+
+Building under GNU Linux (for Windows):
+1. Untar source archive (ngplant-X.X.X.tar.gz)
+2. $ cd ngplant-X.X.X
+3. Edit file cross-sample.py located at config directory (or create new one)
+   and set variables which describe your system setup. Do not
+   forget to set variable "cross" to "yes".
+4. $ scons config=<name_of_config>
+   For example, if your configuration file is named "cross-sample.py", use
+   $ scons config=cross-sample
+
+Configuring texture path:
+1. Use "Preferences" dialog ("File->Preferences...") to setup texture locations.
+
