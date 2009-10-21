@@ -1,0 +1,96 @@
+def PyDistUtilSetupCreate(target,source,env):
+    DistUtilSetupFile = file(str(target[0]),'wt')
+    DistUtilSetupFile.write('from distutils.core import setup,Extension\n\n')
+
+    if env.get('PYEXT_NAME',None) is not None:
+        DistUtilSetupFile.write('ExtName = "%s"\n' % (env['PYEXT_NAME']))
+    else:
+        print 'warning: PYEXT_NAME is not set - using default (pyext)'
+        DistUtilSetupFile.write('ExtName = pyext\n')
+
+    if env.get('PYEXT_VERSION',None) is not None:
+        DistUtilSetupFile.write('ExtVersion = "%s"\n' % (env['PYEXT_VERSION']))
+    else:
+        print 'warning: PYEXT_VERSION is not set - using default ("1.0")'
+        DistUtilSetupFile.write('ExtVersion = "1.0"\n')
+
+    DistUtilSetupFile.write('ExtSrc = []\n')
+
+    for src in source:
+        DistUtilSetupFile.write('ExtSrc.append("%s")\n' % (src))
+
+    DistUtilSetupFile.write('ExtIncDir = []\n')
+    for inc in env.get('CPPPATH',[]):
+        DistUtilSetupFile.write('ExtIncDir.append("%s")\n' % (inc))
+
+    DistUtilSetupFile.write('ExtLibs = []\n')
+    for lib in env.get('LIBS',[]):
+        DistUtilSetupFile.write('ExtLibs.append("%s")\n' % (lib))
+
+    DistUtilSetupFile.write('ExtLibPath = []\n')
+    for lib in env.get('LIBPATH',[]):
+        DistUtilSetupFile.write('ExtLibPath.append("%s")\n' % (lib))
+
+    DistUtilSetupFile.write("""
+extmodule = Extension(ExtName,
+                      sources = ExtSrc,
+                      include_dirs = ExtIncDir,
+                      libraries = ExtLibs,
+                      library_dirs = ExtLibPath)
+""")
+
+    DistUtilSetupFile.write("""
+setup(name=ExtName,
+      version=ExtVersion,
+      ext_modules=[extmodule])
+""")
+
+    DistUtilSetupFile.close()
+    return None
+
+PyDistUtilSetupBuilder = Builder(action = PyDistUtilSetupCreate)
+
+env = Environment()
+env.Append(BUILDERS = { 'PyDistUtilSetup' : PyDistUtilSetupBuilder })
+env['PYEXT_NAME']    = None
+env['PYEXT_VERSION'] = None
+
+SRCS=Split("""
+ngpmodule.cpp
+ngppyplantinstance.cpp
+ngppybranchgroup.cpp
+ngppymaterialdef.cpp
+../ngpcore/p3dmath.cpp
+../ngpcore/p3dmathrng.cpp
+../ngpcore/p3dmathspline.cpp
+../ngpcore/p3dplant.cpp
+../ngpcore/p3dmodel.cpp
+../ngpcore/p3dmodelstemtube.cpp
+../ngpcore/p3dmodelstemquad.cpp
+../ngpcore/p3dmodelstemwings.cpp
+../ngpcore/p3dmodelstemgmesh.cpp
+../ngpcore/p3dgmeshdata.cpp
+../ngpcore/p3dbalgbase.cpp
+../ngpcore/p3dbalgstd.cpp
+../ngpcore/p3dbalgwings.cpp
+../ngpcore/p3diostream.cpp
+../ngpcore/p3dexcept.cpp
+../ngpcore/p3dhli.cpp
+""")
+
+env.PyDistUtilSetup(target = 'setup.py',
+                    source = SRCS,
+                    PYEXT_NAME='_ngp',
+                    PYEXT_VERSION='1.0',
+                    CPPPATH=['.','pywrapper'])
+
+env.Command('_ngp.so','setup.py',"python pywrapper/setup.py build --build-lib pywrapper --build-temp pywrapper/build")
+
+if env.GetOption('clean'):
+     FileList = ['#/pywrapper/build','.sconsign']
+else:
+     FileList = []
+
+Default('_ngp.so')
+Clean('_ngp.so',FileList)
+

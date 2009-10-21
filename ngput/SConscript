@@ -1,0 +1,29 @@
+NGPUT_SRC = Split("""
+p3dimage.cpp
+p3dimagetga.cpp
+p3dospath.cpp
+p3dglext.cpp
+p3dglmemcntx.cpp
+""")
+
+NGPUT_INCLUDES = Split("""
+#
+""")
+
+Import('*')
+
+NGPUtEnv = BaseEnv.Copy()
+NGPUtEnv.Append(CPPPATH=NGPUT_INCLUDES)
+
+if CC_WARN_FLAGS != '':
+    NGPUtEnv.Append(CXXFLAGS=CC_WARN_FLAGS)
+if CC_OPT_FLAGS != '':
+    NGPUtEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
+
+NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEXT_INC'])
+
+ngput = NGPUtEnv.StaticLibrary(target='ngput',source=NGPUT_SRC)
+
+Default(ngput)
+Clean(ngput,['.sconsign'])
+

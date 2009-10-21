@@ -1,0 +1,1395 @@
+<?xml version="1.0"?>
+
+<document>
+ <title>ngPlant HLI documentation (C++)</title>
+
+ <section>
+  <name>Overview</name>
+
+  <para>
+ngPlant high-level interface (implemented in ngpcore library) allows to use designed
+plant models in different kinds of applications. For example, it can be used
+to create plant models import/export tools, use plant models in real-time
+3D-engines and so on...
+  </para>
+
+  <para>
+This document describes versions 0.9.5, 0.9.6 and 0.9.7 of ngpcore library.
+ </para>
+ </section>
+
+ <section>
+  <name>Portability</name>
+  <para>
+ngpcore library is written in standard C++ (STL is not used) and designed
+to be portable across different systems.  It was tested on 32- and 64-bit
+(X86 and X86-64) Linux systems. Windows systems (32-bit) are supported too.
+It does not depend on any external library except standard C++ library.
+  </para>
+ </section>
+
+ <section>
+  <name>Header files and libraries</name>
+  <para>
+Declarations of main HLI classes are located in header file ngpcore/p3dhli.h.
+Several classes and constants are defined in ngpcore/p3model.h and
+ngpcore/p3dtypes.h. To make your application portable across different versions
+of ngpcore library, include in your source files ngpcore/p3dhli.h header only.
+  </para>
+
+  <para>
+libngpcore.a or ngpcore.lib (depending on platform) library must be added
+to your projects.
+  </para>
+ </section>
+
+ <section>
+  <name>Changes made in 0.9.5</name>
+  <para>
+   <ul>
+    <li>
+     Now it is possible to get tangent and bi-normal vertex attributes
+     in addition to position, normal and texture coordinates using new
+     <constant>P3D_ATTR_TANGENT</constant> and
+     <constant>P3D_ATTR_BINORMAL</constant> constants.
+    </li>
+    <li>
+     <methodref classname="P3DHLIPlantTemplate" name="GetGroupName"/> method
+     added to <classref classname="P3DHLIPlantTemplate"/> class.
+    </li>
+   </ul>
+  </para>
+ </section>
+
+ <section>
+  <name>Changes made in 0.9.4</name>
+  <para>
+   <ul>
+    <li>
+     Four constants describing texture layers added -
+     <constant>P3D_TEX_DIFFUSE</constant>, <constant>P3D_TEX_NORMAL_MAP</constant>,
+     <constant>P3D_TEX_AUX0</constant> and <constant>P3D_TEX_AUX1</constant>.
+    </li>
+
+    <li>
+     <argname>Layer</argname> argument added to
+     <methodref classname="P3DMaterialDef" name="GetTexName"/> method of
+     <classref classname="P3DMaterialDef"/> class.
+    </li>
+
+    <li>
+     New <classref classname="P3DHLIVAttrBuffers"/> class added. This class
+is similar to <classref classname="P3DHLIVAttrFormat"/> class but allows to
+describe attribute set where each attribute may be located in separate
+memory buffer. New method <methodref classname="P3DHLIPlantInstance" name="FillVAttrBuffersI"/>
+added. The only difference between it and old
+<methodref classname="P3DHLIPlantInstance" name="FillVAttrBufferI"/> method is
+that new method uses <classref classname="P3DHLIVAttrBuffers"/> as the buffers
+location/format description.
+    </li>
+
+    <li>
+     Class <classref classname="P3DHLIVAttrFormat"/> and method
+<methodref classname="P3DHLIPlantInstance" name="FillVAttrBufferI"/> are marked
+as obsolete and will be removed in one of the next versions. Class
+<classref classname="P3DHLIVAttrBuffers"/> and method
+<methodref classname="P3DHLIPlantInstance" name="FillVAttrBuffersI"/> should be
+used instead.
+    </li>
+
+    <li>
+     <constant>P3DHLI_VER_MAJOR</constant>, <constant>P3DHLI_VER_MINOR</constant>
+and <constant>P3DHLI_VER_RELEASE</constant> constants added. These constants
+allow to get HLI API version in compile time.
+    </li>
+
+   </ul>
+  </para>
+ </section>
+
+ <section>
+  <name>Changes made in 0.9.3</name>
+  <para>
+   <ul>
+    <li><methodref classname="P3DHLIPlantTemplate" name="GetBillboardSize"/>
+    method added to <classref classname="P3DHLIPlantTemplate"/></li>
+
+    <li>Starting from version 0.9.3 ngPlant supports two types of billboards -
+    spherical (supported in previous versions) and cylindrical (new).
+    To get type of billboards new <methodref classname="P3DMaterialDef" name="GetBillboardMode"/>
+    method of <classref classname="P3DMaterialDef"/> can be used. Three constants
+    describing billboard types added - <constant>P3D_BILLBOARD_MODE_NONE</constant>,
+    <constant>P3D_BILLBOARD_MODE_SPHERICAL</constant> and
+    <constant>P3D_BILLBOARD_MODE_CYLINDRICAL</constant>.</li>
+
+    <li>New vertex attribute - <constant>P3D_ATTR_BILLBOARD_POS</constant> can
+    be used in <classref classname="P3DHLIVAttrFormat"/> to extract billboards
+    locations in model coordinate space.</li>
+
+    <li>
+     <methodref classname="P3DHLIPlantTemplate" name="IsLODVisRangeEnabled"/> and
+     <methodref classname="P3DHLIPlantTemplate" name="GetLODVisRange"/> methods added
+     to <classref classname="P3DHLIPlantTemplate"/> class. These methods give access
+     to branch group visibility range information.
+    </li>
+
+    <li>
+     <methodref classname="P3DMaterialDef" name="IsAlphaCtrlEnabled"/>,
+     <methodref classname="P3DMaterialDef" name="GetAlphaFadeIn"/> and
+     <methodref classname="P3DMaterialDef" name="GetAlphaFadeOut"/> methods
+     added to <classref classname="P3DMaterialDef"/> class. These methods give
+     access to dynamic alpha-transparency control.
+    </li>
+
+   </ul>
+  </para>
+ </section>
+
+ <section>
+  <name>Examples</name>
+  <para>
+ngpview directory of source code distribution contains simple plant viewer
+application. It can be used as an example of using HLI in real-time application.
+  </para>
+
+ </section>
+
+ <section>
+  <name>Definitions</name>
+  <para>
+<figure name="bgroups">
+ <caption>Simple tree</caption>
+ <image ref="images/bgroups2.png"/>
+</figure>
+  </para>
+  <para>
+To understand interface description, several things must be described
+in more details.
+  </para>
+  <para>
+Look at figure on the right. People with enough imagination
+will say that they see a tree with a trunk (yellow), three branches (blue)
+and nine leaves (red). In ngpcore library all elements of the plant
+are <term>branch</term>es. So we will not make distinction between trunks, branches and leaves.
+Every element is a <term>branch</term>, irrespective of its shape, size, material or any other
+property.
+  </para>
+  <para>
+Another most frequently used term is a <term>branch group</term>. Each branch
+belongs to one and only one branch group. Branches which belong to the same
+branch group have the same material, vertex count and topology (edge and
+primitive set). This is very useful property, since it can help to minimize
+count of render calls required to render model and improve state change
+batching. It is easy find branch groups at the figure - each branch group has
+its own color. Although branch groups have some parent-child relationships, it
+is easier to work with plain array of branch groups, so branch groups are
+accessed by indices. For example, there are three branch groups on our sample
+tree and to get access to branch groups we will use indices 0, 1 and 2.
+</para>
+ </section>
+
+ <section>
+  <name>Detailed and indexed access</name>
+  <para>
+There many ways to store 3d-model description. Each of these ways has its
+pros and cons. Different applications choose one or another in-memory
+3d-model representation, different file formats and so on, depending on
+their requirements.
+  </para>
+  <para>
+For example, 3d-modeling applications can work with
+triangles, quads or even polygons with five or more vertices. Usually, these
+application store as much information about model as they can - what kind of
+primitives model consists of, which vertex attributes are shared between
+vertices and which are not, and so on...
+  </para>
+
+  <para>
+Another kind of applications - real-time 3d applications. Main requirement
+for this kind of application is high rendering speed. Usually such applications
+use only triangle primitives and their modifications (triangle lists, triangle
+strips and triangle fans). Different kinds of vertex arrays are used to
+store information about vertex attributes and index arrays are used to store
+primitives.
+  </para>
+
+  <para>
+To make ngpcore library usable in different kinds of applications, it supports
+two different sets of methods for extracting information about plant model. One
+method is called <term>detailed</term>. This method (or mode) is more suitable
+for creating import/export applications or plugins, since it allows to get
+detailed information about plant model. Another method (or mode) is called
+<term>indexed</term>. This method is suitable for real-time applications.
+  </para>
+
+  <para>
+<figure name="modes">
+ <caption>Simple tree</caption>
+ <image ref="images/modes.png"/>
+</figure>
+  </para>
+
+  <para>
+  To show differences between <term>detailed</term> and <term>indexed</term>
+modes let's imagine that our plant model consists of a single rectangle. Figure
+on the right shows several such rectangles. Top row of rectangles shows
+indices of different vertex attributes. Rectangle have four vertices.
+Each vertex has its own position and texture coordinate set. But all four
+vertices share their normal. Notice, that all vertices have their normal index
+set to zero. In <term>detailed</term> mode count of different vertex attributes may
+differ (in our example count of position and texture coordinate attributes
+is 4 and count of normal attributes is 1).
+  </para>
+
+  <para>
+  Bottom rectangle shows how the same rectangle looks in the <term>indexed</term>
+mode. First of all - there is no rectangle primitive, there are two triangles
+that together forms rectangle. <term>Indexed</term> mode does not support
+rectangles. The only type of primitive that is supported in current
+version is <term>triangle list</term>. Support for <term>triangle strips</term>
+will be added in one of the next versions of ngPlant.
+  </para>
+
+  <para>
+Another property that
+<term>indexed</term> mode have is that count of different vertex attributes
+is the same. In out example there are four position attributes, four
+texture coordinate attributes and four (unlike <term>detailed</term> mode)
+normal attributes. This property is required if application developer want
+to use different kinds of vertex arrays (for example - OpenGL vertex buffer objects)
+for model rendering.
+</para>
+
+ <para>
+Next table shows results of <term>detailed</term> method calls for our
+rectangle plant model:
+  <stable>
+   <str>
+    <sth>Call</sth><sth>Result</sth>
+   </str>
+   <str>
+    <std>Template.GetGroupCount()</std><std>1</std>
+   </str>
+   <str>
+    <std>Template.GetVAttrCount(0,P3D_ATTR_VERTEX)</std><std>4</std>
+   </str>
+   <str>
+    <std>Template.GetVAttrCount(0,P3D_ATTR_NORMAL)</std><std>1</std>
+   </str>
+   <str>
+    <std>Template.GetVAttrCount(0,P3D_ATTR_TEXCOORD0)</std><std>4</std>
+   </str>
+   <str>
+    <std>Template.GetPrimitiveCount(0)</std><std>1</std>
+   </str>
+   <str>
+    <std>Template.GetPrimitiveType(0,0)</std><std>P3D_QUAD</std>
+   </str>
+   <str>
+    <std>Template.FillVAttrIndexBuffer(IndexBuffer,0,P3D_ATTR_VERTEX,P3D_UNSIGNED_SHORT)</std><std>{ 0, 3, 2, 1 }</std>
+   </str>
+   <str>
+    <std>Template.FillVAttrIndexBuffer(IndexBuffer,0,P3D_ATTR_NORMAL,P3D_UNSIGNED_SHORT)</std><std>{ 0, 0, 0, 0 }</std>
+   </str>
+   <str>
+    <std>Template.FillVAttrIndexBuffer(IndexBuffer,0,P3D_ATTR_TEXCOORD0,P3D_UNSIGNED_SHORT)</std><std>{ 0, 3, 2, 1 }</std>
+   </str>
+   <str>
+    <std>Instance.GetBranchCount(0)</std><std>1</std>
+   </str>
+   <str>
+    <std>Instance.GetVAttrCount(0,P3D_ATTR_VERTEX)</std><std>4</std>
+   </str>
+   <str>
+    <std>Instance.GetVAttrCount(0,P3D_ATTR_NORMAL)</std><std>1</std>
+   </str>
+   <str>
+    <std>Instance.GetVAttrCount(0,P3D_ATTR_TEXCOORD0)</std><std>4</std>
+   </str>
+   <str>
+    <std>Instance.FillVAttrBuffer(VAttrBuffer,0,P3D_ATTR_VERTEX)</std><std>{ 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 2.0, 0.0, 1.0, 2.0, 0.0 }</std>
+   </str>
+   <str>
+    <std>Instance.FillVAttrBuffer(VAttrBuffer,0,P3D_ATTR_NORMAL)</std><std>{ 0.0, 0.0, 1.0 }</std>
+   </str>
+   <str>
+    <std>Instance.FillVAttrBuffer(VAttrBuffer,0,P3D_ATTR_TEXCOORD0)</std><std>{ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0 }</std>
+   </str>
+  </stable>
+ </para>
+
+ <para>
+  <term>Indexed</term> mode results are shown on table below:
+
+  <stable>
+   <str>
+    <sth>Call</sth><sth>Result</sth>
+   </str>
+   <str>
+    <std>Template.GetGroupCount()</std><std>1</std>
+   </str>
+   <str>
+    <std>Template.GetVAttrCountI(0)</std><std>4</std>
+   </str>
+   <str>
+    <std>Template.GetIndexCount(0,P3D_TRIANGLE_LIST)</std><std>6</std>
+   </str>
+   <str>
+    <std>Template.FillIndexBuffer(IndexBuffer,0,P3D_TRIANGLE_LIST,P3D_UNSIGNED_SHORT)</std><std>{ 0, 2, 1, 3, 1, 2 }</std>
+   </str>
+   <str>
+    <std>Instance.GetVAttrCountI(0)</std><std>4</std>
+   </str>
+   <str>
+    <std>Instance.FillVAttrBufferI(VAttrBuffer,0,&amp;Format) /* Only P3D_ATTR_VERTEX in Format */</std><std>{ 1.0, 0.0, 0.0, -1.0, 0.0, 0.0,  1.0, 2.0, 0.0, -1.0, 2.0, 0.0 }</std>
+   </str>
+   <str>
+    <std>Instance.FillVAttrBufferI(VAttrBuffer,0,&amp;Format) /* Only P3D_ATTR_NORMAL in Format */</std><std>{ 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  0.0, 0.0, 1.0, 0.0, 0.0, 1.0 }</std>
+   </str>
+   <str>
+    <std>Instance.FillVAttrBufferI(VAttrBuffer,0,&amp;Format) /* Only P3D_ATTR_TEXCOORD0 in Format */</std><std>{ 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0 }</std>
+   </str>
+  </stable>
+ </para>
+
+ </section>
+
+ <classes>
+
+  <classinfo>
+   <name>P3DHLIPlantTemplate</name>
+   <shortdesc>Plant template class</shortdesc>
+   <desc>
+<para>
+This class represents a plant template. It is used to load plant templates from
+external files, create plant instances and get information which is shared
+between all instances created from the same template.
+</para>
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>P3DHLIPlantTemplate</name>
+     <shortdesc>Constructor</shortdesc>
+<prototype>
+                   P3DHLIPlantTemplate(P3DInputStringStream
+                                                          *SourceStream);
+</prototype>
+     <desc>
+<para>
+Load plant template from <argname>SourceStream</argname>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetGroupCount</name>
+     <shortdesc>Return branch group count</shortdesc>
+<prototype>
+  unsigned int     GetGroupCount      () const;
+</prototype>
+     <desc>
+<para>
+Return total count of branch groups in plant template.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetGroupName</name>
+     <shortdesc>Return branch group name</shortdesc>
+<prototype>
+  const char      *GetGroupName       (unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+Return constant pointer to <argname>GroupIndex</argname> branch group name.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetMaterial</name>
+     <shortdesc>Return material description of branch group</shortdesc>
+<prototype>
+  const
+  P3DMaterialDef  *GetMaterial        (unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+Return constant pointer to material description of <argname>GroupIndex</argname>
+branch group.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetBillboardSize</name>
+     <shortdesc>Return size of branch group billboards</shortdesc>
+<prototype>
+  void             GetBillboardSize   (float              *Width,
+                                       float              *Height,
+                                       unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+ Fill <argname>*Width</argname> and <argname>*Height</argname> by
+width and height of <argname>GroupIndex</argname> branch group billboards. Use
+this method for billboard branch groups only.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>IsLODVisRangeEnabled</name>
+     <shortdesc>Return state of LOD visibility range</shortdesc>
+<prototype>
+  bool             IsLODVisRangeEnabled
+                                      (unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+ Return <constant>true</constant> if LOD visibility range must be taken into
+account while rendering <argname>GroupIndex</argname> branch group and
+<constant>false</constant> if branch group is visible at any LOD.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetLODVisRange</name>
+     <shortdesc>Return LOD visibility range</shortdesc>
+<prototype>
+  void             GetLODVisRange     (float              *MinLOD,
+                                       float              *MaxLOD,
+                                       unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+ Fill <argname>*MinLOD</argname> and <argname>*MaxLOD</argname> with minimal
+and maximum LOD values at which branch group <argname>GroupIndex</argname> is
+visible.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrCount</name>
+     <shortdesc>Return count of different attribute values in single branch (detailed mode)</shortdesc>
+<prototype>
+  unsigned int     GetVAttrCount      (unsigned int        GroupIndex,
+                                       unsigned int        Attr) const;
+</prototype>
+    <desc>
+<para>
+Return count of different attribute values in single branch. <argname>GroupIndex</argname>
+ - branch group index. <argname>Attr</argname> - attribute type.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetPrimitiveCount</name>
+     <shortdesc>Return count of primitives in single branch (detailed mode)</shortdesc>
+<prototype>
+  unsigned int     GetPrimitiveCount  (unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+Return count of primitives in single branch of <argname>GroupIndex</argname>
+branch group.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetPrimitiveType</name>
+     <shortdesc>Return primitive type for given primitive (detailed mode)</shortdesc>
+<prototype>
+  unsigned int     GetPrimitiveType   (unsigned int        GroupIndex,
+                                       unsigned int        PrimitiveIndex) const;
+</prototype>
+    <desc>
+<para>
+Return type of <argname>PrimitiveIndex</argname> primitive of
+<argname>GroupIndex</argname> branch group. Result value may be
+<constant>P3D_TRIANGLE</constant> or <constant>P3D_QUAD</constant>.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>FillVAttrIndexBuffer</name>
+     <shortdesc>Fill buffer with indices of attribute values (detailed mode)</shortdesc>
+<prototype>
+  void             FillVAttrIndexBuffer
+                                      (void               *IndexBuffer,
+                                       unsigned int        GroupIndex,
+                                       unsigned int        Attr,
+                                       unsigned int        ElementType,
+                                       unsigned int        IndexBase = 0) const;
+</prototype>
+    <desc>
+<para>
+This method fills buffer <argname>IndexBuffer</argname> by indices of attribute
+values. Branch group is identified by <argname>GroupIndex</argname>.
+Attribute type is selected by <argname>Attr</argname>. You can choose
+to use <ctype>unsigned short</ctype> for index values passing <constant>P3D_UNSIGNED_SHORT</constant>
+as <argname>ElementType</argname> or <ctype>unsigned int</ctype> passing
+<constant>P3D_UNSIGNED_INT</constant>. Optional <argname>IndexBase</argname> may
+be added to all index values - it is useful for generating indices for many
+branches.
+</para>
+<para>
+Required buffer size can be calculated as:
+<inpre>BranchVertexCount * sizeof(element_t)</inpre>.
+<inpre>BranchVertexCount</inpre> must be calculated as a sum of vertex count of each branch primitive.
+<ctype>element_t</ctype> will be <ctype>unsigned short</ctype> if
+<argname>ElementType</argname> is <constant>P3D_UNSIGNED_SHORT</constant> or
+<ctype>unsigned int</ctype> if <argname>ElementType</argname> is
+<constant>P3D_UNSIGNED_INT</constant>.
+</para>
+<para>
+Note, that in next version
+platform-independent types will be used instead of <ctype>unsigned short</ctype>
+and <ctype>unsigned int</ctype>.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrCountI</name>
+     <shortdesc>Return count of attribute values (vertex count) in single branch (indexed mode)</shortdesc>
+<prototype>
+  unsigned int     GetVAttrCountI     (unsigned int        GroupIndex) const;
+</prototype>
+    <desc>
+<para>
+Return count of different attribute values in single branch of
+<argname>GroupIndex</argname> branch group. In fact, this is a count of vertices
+in branch model.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetIndexCount</name>
+     <shortdesc>Return count of indices, required to describe single branch, using given primitive type (indexed mode)</shortdesc>
+<prototype>
+  unsigned int     GetIndexCount      (unsigned int        GroupIndex,
+                                       unsigned int        PrimitiveType) const;
+</prototype>
+    <desc>
+<para>
+Return count of elements in index buffer which is required to describe branch
+geometry using <argname>PrimitiveType</argname>.
+</para>
+<para>
+In current version <argname>PrimitiveType</argname> must be
+<constant>P3D_TRIANGLE_LIST</constant>.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>FillIndexBuffer</name>
+     <shortdesc>Fill buffer with indices which describe single branch (indexed mode)</shortdesc>
+<prototype>
+  void             FillIndexBuffer    (void               *IndexBuffer,
+                                       unsigned int        GroupIndex,
+                                       unsigned int        PrimitiveType,
+                                       unsigned int        ElementType,
+                                       unsigned int        IndexBase = 0) const;
+</prototype>
+     <desc>
+<para>
+Fill buffer <argname>IndexBuffer</argname> by vertex indices required to
+create branch model using <argname>PrimitiveType</argname> primitives.
+You can choose to use <ctype>unsigned short</ctype> for index values
+passing <constant>P3D_UNSIGNED_SHORT</constant> as
+<argname>ElementType</argname> or <ctype>unsigned int</ctype> passing
+<constant>P3D_UNSIGNED_INT</constant>. Optional <argname>IndexBase</argname>
+may be added to all index values - it is useful for generating indices for
+many branches.
+</para>
+<para>
+Required buffer size can be calculated as: <inpre>PlantTemplate.GetIndexCount(GroupIndex,PrimitiveType) * sizeof(element_t)</inpre>.
+<ctype>element_t</ctype> will be <ctype>unsigned short</ctype> if
+<argname>ElementType</argname> is <constant>P3D_UNSIGNED_SHORT</constant> or
+<ctype>unsigned int</ctype> if <argname>ElementType</argname> is
+<constant>P3D_UNSIGNED_INT</constant>.
+</para>
+<para>
+In current version <argname>PrimitiveType</argname> must be
+<constant>P3D_TRIANGLE_LIST</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>CreateInstance</name>
+     <shortdesc>Create new plant instance using given seed</shortdesc>
+<prototype>
+  P3DHLIPlantInstance
+                  *CreateInstance     (unsigned int        BaseSeed = 0) const;
+</prototype>
+<desc>
+<para>
+Create new plant instance using <argname>BaseSeed</argname> as a seed for random
+number generator. Using different seeds you can get almost infinite number of
+similar but slightly different plant models. If argument <argname>BaseSeed</argname>
+is omitted, or equal to zero, default seed will be used.
+</para>
+<para>
+ P3DHLIPlantInstance object is created using operator <inpre>new</inpre>, so
+after finishing to work with it, do not forget to <inpre>delete</inpre> it.
+</para>
+</desc>
+    </methodinfo>
+
+   </methods>
+
+  </classinfo>
+
+  <classinfo>
+   <name>P3DHLIPlantInstance</name>
+   <shortdesc>Plant instance class</shortdesc>
+   <desc>
+Objects of this class represent single instances of plant model. Methods of
+this class are used to get information about bounding box, branch count
+and vertex attributes of plant model.
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>P3DHLIPlantInstance</name>
+     <shortdesc>Constructor</shortdesc>
+<prototype>
+                   P3DHLIPlantInstance(const P3DPlantModel*Model,
+                                       unsigned int        BaseSeed);
+</prototype>
+     <desc>
+<para>
+Create plant instance based on <argname>Model</argname> using
+<argname>BaseSeed</argname> as a seed for random number generator.
+</para>
+<para>
+In most cases you will not create objects of this class directly - you should
+use CreateInstance method of <classref classname="P3DHLIPlantTemplate"/> class
+to create them.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetBranchCount</name>
+     <shortdesc>Return count of branches in branch group</shortdesc>
+<prototype>
+  unsigned int     GetBranchCount     (unsigned int        GroupIndex) const;
+</prototype>
+    <desc>
+<para>
+Return count of branches in <argname>GroupIndex</argname> branch group.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetBoundingBox</name>
+     <shortdesc>Return plant instance bounding box</shortdesc>
+<prototype>
+  void             GetBoundingBox     (float              *Min,
+                                       float              *Max) const;
+</prototype>
+    <desc>
+<para>
+Fill <argname>Min</argname> and <argname>Max</argname> by bounding box
+coordinates of plant model. <argname>Min</argname> and <argname>Max</argname>
+buffers size must be at least <inpre>3 * sizeof(float)</inpre>.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrCount</name>
+     <shortdesc>Return count of different attribute values in branch group (detailed mode)</shortdesc>
+<prototype>
+  unsigned int     GetVAttrCount      (unsigned int        GroupIndex,
+                                       unsigned int        Attr) const;
+</prototype>
+     <desc>
+<para>
+Return count of different attribute values in all branches of <argname>GroupIndex</argname>
+branch group. <argname>Attr</argname> - attribute type.
+</para>
+<para>
+Another way to calculate it is:
+<inpre>PlantTemplate.GetVAttrCount(GroupIndex,Attr) * PlantInstance.GetBranchCount(GroupIndex)</inpre>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>FillVAttrBuffer</name>
+     <shortdesc>Fill buffer with attribute values (detailed mode)</shortdesc>
+<prototype>
+  void             FillVAttrBuffer    (void               *VAttrBuffer,
+                                       unsigned int        GroupIndex,
+                                       unsigned int        Attr) const;
+</prototype>
+    <desc>
+<para>
+Fill buffer <argname>VAttrBuffer</argname> by vertex <argname>Attr</argname>
+attribute values.
+</para>
+<para>
+Required buffer size may be calculated as:
+<inpre>PlantInstance.GetVAttrCount(GroupIndex,Attr) * ValCount * sizeof(float)</inpre>,
+there <inpre>ValCount</inpre> must be 2 for <constant>P3D_ATTR_TEXCOORD0</constant> and
+3 for <constant>P3D_ATTR_VERTEX</constant> or <constant>P3D_ATTR_NORMAL</constant>.
+</para>
+    </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetVAttrCountI</name>
+     <shortdesc>Return total vertex count of branch group (indexed mode)</shortdesc>
+<prototype>
+  unsigned int     GetVAttrCountI     (unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+Return count of different attribute values in all branches of
+<argname>GroupIndex</argname> branch group. In fact, this is a count of vertices
+in branch group.
+</para>
+<para>
+Another way to calculate it is:
+<inpre>PlantTemplate.GetVAttrCountI(GroupIndex) * PlantInstance.GetBranchCount(GroupIndex)</inpre>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>FillVAttrBufferI</name>
+     <shortdesc>Fill buffer with attribute values (indexed mode)</shortdesc>
+<prototype>
+  void             FillVAttrBufferI   (void               *VAttrBuffer,
+                                       unsigned int        GroupIndex,
+                                       const P3DHLIVAttrFormat
+                                                          *VAttrFormat) const;
+</prototype>
+     <desc>
+<para>
+Fill buffer <argname>VAttrBuffer</argname> by vertex attribute values. Required
+attribute set and their locations are defined by <argname>VAttrFormat</argname>.
+<argname>VAttrFormat</argname> should not contain <constant>P3D_ATTR_BILLBOARD_POS</constant>
+attribute for non-billboard branch group.
+</para>
+<para>
+Required buffer size can be calculated as:
+<inpre>PlantInstance.GetVAttrCountI(GroupIndex) * VAttrFormat->GetStride()</inpre>
+</para>
+<para>
+Note, that this method allows to fill several attributes at once. Generating
+several attributes in a single call is always faster than generating each
+attribute in separate call.
+</para>
+<para>
+This method is obsolete and will be removed in one of the next versions. Use
+<methodref classname="P3DHLIPlantInstance" name="FillVAttrBuffersI"/> method
+instead.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>FillVAttrBuffersI</name>
+     <shortdesc>Fill buffers with attribute values (indexed mode)</shortdesc>
+<prototype>
+  void             FillVAttrBuffersI  (const P3DHLIVAttrBuffers
+                                                          *VAttrBuffers,
+                                       unsigned int        GroupIndex) const;
+</prototype>
+     <desc>
+<para>
+Fill buffers <argname>VAttrBuffers</argname> by vertex attribute values. Required
+attribute set and their locations are defined by <argname>VAttrBuffers</argname>.
+<argname>VAttrBuffers</argname> should not contain <constant>P3D_ATTR_BILLBOARD_POS</constant>
+attribute for non-billboard branch group.
+</para>
+<para>
+Required buffer size can be calculated as:
+<inpre>PlantInstance.GetVAttrCountI(GroupIndex) * VAttrBuffers->GetAttrStride(Attr)</inpre>
+</para>
+<para>
+Note, that this method allows to fill several attributes at once. Generating
+several attributes in a single call is always faster than generating each
+attribute in separate call.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+
+  </classinfo>
+
+  <classinfo>
+   <name>P3DHLIVAttrFormat</name>
+   <shortdesc>Vertex buffer format description class</shortdesc>
+   <desc>
+<para>
+Objects of this class are used to describe a set of attributes which are stored
+in vertex buffer, their offsets and amount of space needed to store single
+vertex.
+</para>
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>P3DHLIVAttrFormat</name>
+     <shortdesc>Constructor</shortdesc>
+<prototype>
+                   P3DHLIVAttrFormat  (unsigned int        Stride);
+</prototype>
+     <desc>
+<para>
+Initialize buffer format description. Created description has an empty attribute
+set.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>HasAttr</name>
+     <shortdesc>Check attribute presence</shortdesc>
+<prototype>
+  bool             HasAttr            (unsigned int        Attr) const;
+</prototype>
+     <desc>
+<para>
+Return <constant>true</constant> if <argname>Attr</argname> attribute is
+present in buffer and <constant>false</constant> otherwise.
+</para>
+<para>
+<argname>Attr</argname> must be one of: <constant>P3D_ATTR_VERTEX</constant>,
+<constant>P3D_ATTR_NORMAL</constant>, <constant>P3D_ATTR_TEXCOORD0</constant>
+or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetAttrOffset</name>
+     <shortdesc>Get offset of attribute</shortdesc>
+<prototype>
+  unsigned int     GetAttrOffset      (unsigned int        Attr) const;
+</prototype>
+     <desc>
+<para>
+Return offset (in bytes) of attribute <argname>Attr</argname>. If format does not
+have this attribute, zero will be returned.
+</para>
+<para>
+<argname>Attr</argname> must be one of: <constant>P3D_ATTR_VERTEX</constant>,
+<constant>P3D_ATTR_NORMAL</constant>, <constant>P3D_ATTR_TEXCOORD0</constant>
+or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetStride</name>
+     <shortdesc>Get offset between sequential vertices</shortdesc>
+<prototype>
+  unsigned int     GetStride          () const;
+</prototype>
+     <desc>
+<para>
+Return offset between two vertices in buffer.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>AddAttr</name>
+     <shortdesc>Add attribute information</shortdesc>
+<prototype>
+  void             AddAttr            (unsigned int        Attr,
+                                       unsigned int        Offset);
+</prototype>
+     <desc>
+<para>
+Append attribute <argname>Attr</argname> with offset <argname>Offset</argname>
+to buffer format description. If attribute already exists, its offset will be
+updated.
+</para>
+<para>
+<argname>Attr</argname> must be one of: <constant>P3D_ATTR_VERTEX</constant>,
+<constant>P3D_ATTR_NORMAL</constant>, <constant>P3D_ATTR_TEXCOORD0</constant>
+or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+
+  </classinfo>
+
+  <classinfo>
+   <name>P3DHLIVAttrBuffers</name>
+   <shortdesc>Vertex buffers location and format description class</shortdesc>
+   <desc>
+<para>
+Objects of this class are used to describe location and format of memory
+buffers which are used to store vertex attributes.
+</para>
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>P3DHLIVAttrBuffers</name>
+     <shortdesc>Constructor</shortdesc>
+<prototype>
+                   P3DHLIVAttrBuffers ();
+</prototype>
+     <desc>
+<para>
+Initialize vertex attribute buffers description. Created description has
+an empty attribute set.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>HasAttr</name>
+     <shortdesc>Check attribute presence</shortdesc>
+<prototype>
+  bool             HasAttr            (unsigned int        Attr) const;
+</prototype>
+     <desc>
+<para>
+Return <constant>true</constant> if <argname>Attr</argname> attribute buffer
+present in description and <constant>false</constant> otherwise.
+</para>
+<para>
+<argname>Attr</argname> must be one of: <constant>P3D_ATTR_VERTEX</constant>,
+<constant>P3D_ATTR_NORMAL</constant>, <constant>P3D_ATTR_TEXCOORD0</constant>
+or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetAttrBuffer</name>
+     <shortdesc>Get pointer to attribute data</shortdesc>
+<prototype>
+  void            *GetAttrBuffer      (unsigned int        Attr) const;
+</prototype>
+     <desc>
+<para>
+Return pointer to memory buffer allocated to store vertex attribute data.
+If attribute was not added to description, zero will be returned.
+</para>
+<para>
+<argname>Attr</argname> must be one of: <constant>P3D_ATTR_VERTEX</constant>,
+<constant>P3D_ATTR_NORMAL</constant>, <constant>P3D_ATTR_TEXCOORD0</constant>
+or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetAttrOffset</name>
+     <shortdesc>Get offset of attribute</shortdesc>
+<prototype>
+  unsigned int     GetAttrOffset      (unsigned int        Attr) const;
+</prototype>
+     <desc>
+<para>
+Return offset (in bytes) of attribute <argname>Attr</argname>.
+If attribute was not added to description, zero will be returned.
+</para>
+<para>
+<argname>Attr</argname> must be one of: <constant>P3D_ATTR_VERTEX</constant>,
+<constant>P3D_ATTR_NORMAL</constant>, <constant>P3D_ATTR_TEXCOORD0</constant>
+or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetAttrStride</name>
+     <shortdesc>Get offset between sequential attribute data</shortdesc>
+<prototype>
+  unsigned int     GetAttrStride      (unsigned int        Attr) const;
+</prototype>
+     <desc>
+<para>
+Return offset between two vertex attributes in buffer.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>AddAttr</name>
+     <shortdesc>Add attribute buffer information</shortdesc>
+<prototype>
+  void             AddAttr            (unsigned int        Attr,
+                                       void               *Data,
+                                       unsigned int        Offset,
+                                       unsigned int        Stride);
+</prototype>
+     <desc>
+<para>
+Append attribute <argname>Attr</argname> to buffer format description.
+<argname>Data</argname> is a pointer to memory buffer for attribute data.
+Offset of attribute in vertex attribute set is described by
+<argname>Offset</argname> argument, while <argname>Stride</argname>
+argument shows offset between sequential vertices in memory buffer.
+If attribute already exists, its buffer, offset and stridewill be
+updated.
+</para>
+<para>
+<argname>Attr</argname> must be one of: <constant>P3D_ATTR_VERTEX</constant>,
+<constant>P3D_ATTR_NORMAL</constant>, <constant>P3D_ATTR_TEXCOORD0</constant>
+or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+  </classinfo>
+
+  <classinfo>
+   <name>P3DMaterialDef</name>
+   <shortdesc>Material description class</shortdesc>
+   <desc>
+This class describes material properties. Note: only constant methods
+are described below.
+   </desc>
+
+   <methods>
+    <methodinfo>
+     <name>GetColor</name>
+     <shortdesc>Return material color</shortdesc>
+<prototype>
+  void             GetColor           (float              *R,
+                                       float              *G,
+                                       float              *B) const;
+</prototype>
+     <desc>
+<para>
+Fill <argname>R</argname>, <argname>G</argname> and <argname>B</argname> by
+red, green and blue components of material color. Current implementation does not allow to use different
+values for ambient, diffuse and specular components, so this value may be used as
+a diffuse or ambient and diffuse components.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetTexName</name>
+     <shortdesc>Return material texture name</shortdesc>
+<prototype>
+  const char      *GetTexName         (unsigned int        Layer) const;
+</prototype>
+     <desc>
+<para>
+Return texture name binded to texture layer <argname>Layer</argname>.
+If selected texture layer does not have texture, <constant>NULL</constant>
+will be returned. <argname>Layer</argname> must be one of:
+<constant>P3D_TEX_DIFFUSE</constant>, <constant>P3D_TEX_NORMAL_MAP</constant>,
+<constant>P3D_TEX_AUX0</constant> or <constant>P3D_TEX_AUX1</constant>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>IsDoubleSided</name>
+     <shortdesc>Return material double-sided property</shortdesc>
+<prototype>
+  bool             IsDoubleSided      () const;
+</prototype>
+     <desc>
+<para>
+Return <constant>true</constant> if material is double-sided and
+<constant>false</constant> otherwise.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>IsTransparent</name>
+     <shortdesc>Return material transparency property</shortdesc>
+<prototype>
+  bool             IsTransparent      () const;
+</prototype>
+     <desc>
+<para>
+Return <constant>true</constant> if material have texture with transparency and
+<constant>false</constant> otherwise.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>IsBillboard</name>
+     <shortdesc>Return material billboard property</shortdesc>
+<prototype>
+  bool             IsBillboard        () const;
+</prototype>
+     <desc>
+<para>
+Return <constant>true</constant> if branches this material is attached to must
+be rendered as billboards and <constant>false</constant> - if not.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetBillboardMode</name>
+     <shortdesc>Return billboards mode </shortdesc>
+<prototype>
+  unsigned int     GetBillboardMode   () const;
+</prototype>
+     <desc>
+<para>
+Return <constant>P3D_BILLBOARD_MODE_NONE</constant> if branches must not be
+rendered as billboards, <constant>P3D_BILLBOARD_MODE_SPHERICAL</constant>
+if branches must be rendered as spherical billboards and
+<constant>P3D_BILLBOARD_MODE_CYLINDRICAL</constant> - if branches must be
+rendered as cylindrical billboards.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>IsAlphaCtrlEnabled</name>
+     <shortdesc>Return state of dynamic alpha-transparency control</shortdesc>
+<prototype>
+  bool             IsAlphaCtrlEnabled () const;
+</prototype>
+     <desc>
+<para>
+ Return <constant>true</constant> if alpha-test value may be used to smoothly
+fade-in/fade-out branches depending on branch group LOD visibility range and
+current LOD. Return <constant>false</constant> if smooth fade-in/fade-out is
+not applicable to branches of branch group.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetAlphaFadeIn</name>
+     <shortdesc>Return alpha fade-in value</shortdesc>
+<prototype>
+  float            GetAlphaFadeIn     () const;
+</prototype>
+     <desc>
+<para>
+ Return float value in range 0.0-1.0. If fade-in value is less than fade-out
+value, then alpha-test value must be interpolated from 1.0 to zero while LOD
+is changing from minimal visibility range value to
+<inpre>MinVisRange + (MaxVisRange - MinVisRange) * AlphaFadeIn</inpre>.
+If fade-in value is equal or greater than fade-out value, then alpha-test
+value must be interpolated from 1.0 to zero while LOD is changing from
+<inpre>MinVisRange + (MaxVisRange - MinVisRange) * AlphaFadeIn</inpre> to
+maximum visibility range value.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetAlphaFadeOut</name>
+     <shortdesc>Return alpha fade-out value</shortdesc>
+<prototype>
+  float            GetAlphaFadeOut    () const;
+</prototype>
+     <desc>
+<para>
+ Return float value in range 0.0-1.0. If fade-out value is greater than fade-in
+value, then alpha-test value must be interpolated from zero to 1.0 while LOD
+is changing from
+<inpre>MinVisRange + (MaxVisRange - MinVisRange) * AlphaFadeOut</inpre> to
+maximum visibility range value.
+If fade-out value is equal or less than fade-in value, then alpha-test
+value must be interpolated from zero to 1.0 while LOD is changing from
+minimal visibility range value to
+<inpre>MinVisRange + (MaxVisRange - MinVisRange) * AlphaFadeOut</inpre>.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+
+  </classinfo>
+
+  <classinfo>
+   <name>P3DInputStringStream</name>
+   <shortdesc>Input string stream abstract base class</shortdesc>
+   <desc>
+This class serves as a base for creating concrete input streams of strings.
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>~P3DInputStringStream</name>
+     <shortdesc>Destructor</shortdesc>
+<prototype>
+  virtual         ~P3DInputStringStream
+                                      ();
+</prototype>
+     <desc>
+<para>
+Virtual destructor - the only non-abstract method in this class.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>ReadString</name>
+     <shortdesc>Read string from stream</shortdesc>
+<prototype>
+  virtual
+  void             ReadString         (char               *Buffer,
+                                       unsigned int        BufferSize) = 0;
+</prototype>
+     <desc>
+<para>
+Read string from stream and store it in <argname>Buffer</argname>. Stored string
+is always zero-terminated. Method will never store more than
+<argname>BufferSize</argname> bytes - string will be splited if its length
+exceeds <inpre>BufferSize-1</inpre>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>Eof</name>
+     <shortdesc>Return true if end of stream have been reached</shortdesc>
+<prototype>
+  virtual bool     Eof                () const = 0;
+</prototype>
+     <desc>
+<para>
+Return <constant>true</constant> if end of stream have been reached and
+<constant>false</constant> otherwise.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+  </classinfo>
+
+  <classinfo>
+   <name>P3DInputStringStreamFile</name>
+   <shortdesc>Input string stream class which works with files</shortdesc>
+   <desc>
+This class implements <classref classname="P3DInputStringStream"/> interfaces,
+using files as a string sources.
+   </desc>
+
+   <methods>
+
+    <methodinfo>
+     <name>P3DInputStringStreamFile</name>
+     <shortdesc>Constructor</shortdesc>
+<prototype>
+                   P3DInputStringStreamFile
+                                      ();
+</prototype>
+     <desc>
+<para>
+Initialize object. After constructing object Open() method must be called
+to open file.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>~P3DInputStringStreamFile</name>
+     <shortdesc>Destructor</shortdesc>
+<prototype>
+  virtual         ~P3DInputStringStreamFile
+                                      ();
+</prototype>
+     <desc>
+<para>
+Free all allocated resources, close file if it was not closed previously.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>Open</name>
+     <shortdesc>Open file</shortdesc>
+<prototype>
+  void             Open               (const char         *FileName);
+</prototype>
+     <desc>
+<para>
+Open file with <argname>FileName</argname> name. In case of error
+P3DExceptionIO exception will be thrown.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>Close</name>
+     <shortdesc>Close file</shortdesc>
+<prototype>
+  void             Close              ();
+</prototype>
+     <desc>
+<para>
+Close file. After calling Close() you should not call ReadString() and Eof()
+methods, unless you call Open() to reopen file.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>ReadString</name>
+     <shortdesc>Read string from stream</shortdesc>
+<prototype>
+  virtual
+  void             ReadString         (char               *Buffer,
+                                       unsigned int        BufferSize);
+</prototype>
+     <desc>
+<para>
+Read string from stream and store it in <argname>Buffer</argname>. Stored string
+is always zero-terminated. Method will never store more than
+<argname>BufferSize</argname> bytes - string will be splited if its length
+exceeds <inpre>BufferSize-1</inpre>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>Eof</name>
+     <shortdesc>Return true if end of stream have been reached</shortdesc>
+<prototype>
+  virtual bool     Eof                () const;
+</prototype>
+     <desc>
+<para>
+Return <constant>true</constant> if end of stream have been reached and
+<constant>false</constant> otherwise.
+</para>
+     </desc>
+    </methodinfo>
+
+   </methods>
+  </classinfo>
+
+ </classes>
+
+</document>
+

@@ -1,0 +1,22 @@
+EXTLUACORE_SRC = Split("""
+lapi.c lcode.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c lmem.c
+lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c ltm.c
+lundump.c lvm.c lzio.c
+""")
+
+EXTLUALIB_SRC = Split("""
+lauxlib.c lbaselib.c ldblib.c liolib.c lmathlib.c loslib.c ltablib.c
+lstrlib.c loadlib.c linit.c
+""")
+
+EXTLUACORE_SRC = map(lambda a : 'lua/src/' + a,EXTLUACORE_SRC)
+EXTLUALIB_SRC = map(lambda a : 'lua/src/' + a,EXTLUALIB_SRC)
+
+Import('*')
+
+ExtLUAEnv = BaseEnv.Copy()
+if CC_OPT_FLAGS != '':
+   ExtLUAEnv.Append(CCFLAGS=CC_OPT_FLAGS)
+ExtLUAEnv.StaticLibrary(target='libs/ext_lua',source=EXTLUACORE_SRC)
+ExtLUAEnv.StaticLibrary(target='libs/ext_lualib',source=EXTLUALIB_SRC)
+
