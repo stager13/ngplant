@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 
 #include <ngput/p3dglext.h>
 
