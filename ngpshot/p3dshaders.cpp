@@ -19,6 +19,8 @@
 ***************************************************************************/
 
 #include <vector>
+#include <cstdio>
+#include <cstdlib>
 
 #include <ngput/p3dglext.h>
 

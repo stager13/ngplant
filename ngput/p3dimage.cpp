@@ -30,6 +30,7 @@
 ***************************************************************************/
 
 #include <stdlib.h>
+#include <cstring>
 
 #include <ngpcore/p3ddefs.h>
 #include <ngpcore/p3dtypes.h>

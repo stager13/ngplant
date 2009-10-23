@@ -4,6 +4,9 @@
 many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
+Changes since 0.9.7:
+- fixed compilation using gcc 4.3. Thanks to Serge Gielkens for the patch.
+
 Changes since 0.9.6:
 - fixed a bug in fragment shaders code. Absence of "uniform" qualifier in
   sampler declarations caused shaders compilation errors in some
