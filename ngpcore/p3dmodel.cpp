@@ -567,7 +567,8 @@ void               P3DStemModelInstance::GetBoundBox
   delete StemModel;
   delete BranchingAlg;
   delete MaterialInstance;
-  delete Name;
+
+  free(Name);
 
   for (unsigned int Index = 0; Index < SubBranchCount; Index++)
    {

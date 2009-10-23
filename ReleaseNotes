@@ -6,6 +6,8 @@ to model storage format and internal API changes.
 
 Changes since 0.9.7:
 - fixed compilation using gcc 4.3. Thanks to Serge Gielkens for the patch.
+- fixed a bug with mismatched free() / delete in p3dmodel.cpp. Thanks to
+  person who posted bug report and the patch to project tracker.
 
 Changes since 0.9.6:
 - fixed a bug in fragment shaders code. Absence of "uniform" qualifier in
