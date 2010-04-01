@@ -24,8 +24,9 @@
 #include <wx/wx.h>
 
 #include <p3dwx.h>
+#include <p3duiparampanel.h>
 
-class P3DOptGeneralPanel : public wxPanel
+class P3DOptGeneralPanel : public P3DUIParamPanel
  {
   public           :
 
@@ -33,6 +34,8 @@ class P3DOptGeneralPanel : public wxPanel
 
   void             OnSeedChanged      (wxSpinSliderEvent  &event);
   void             OnLODChanged       (wxSpinSliderEvent  &event);
+
+  virtual void     UpdateControls     ();
 
   private          :
 

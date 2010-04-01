@@ -21,6 +21,7 @@
 #include <wx/wx.h>
 
 #include <p3dapp.h>
+#include <p3dcmdqueue.h>
 #include <p3duioptgeneral.h>
 
 enum
@@ -36,7 +37,7 @@ END_EVENT_TABLE()
 
                    P3DOptGeneralPanel::P3DOptGeneralPanel
                                       (wxWindow           *parent)
-                   : wxPanel(parent)
+                   : P3DUIParamPanel(parent)
  {
   wxBoxSizer *TopSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -86,12 +87,39 @@ END_EVENT_TABLE()
   TopSizer->SetSizeHints(this);
  }
 
+class P3DEditCmdChangeModelSeed : public P3DEditCommand
+ {
+  public           :
+
+                   P3DEditCmdChangeModelSeed
+                                      (unsigned int        NewSeed)
+   {
+    OldSeed       = wxGetApp().GetModel()->GetBaseSeed();
+    this->NewSeed = NewSeed;
+   }
+
+  virtual void     Exec               ()
+   {
+    wxGetApp().GetModel()->SetBaseSeed(NewSeed);
+    wxGetApp().InvalidatePlant();
+   }
+
+  virtual void     Undo               ()
+   {
+    wxGetApp().GetModel()->SetBaseSeed(OldSeed);
+    wxGetApp().InvalidatePlant();
+   }
+
+  private          :
+
+  unsigned int     NewSeed;
+  unsigned int     OldSeed;
+ };
+
 void               P3DOptGeneralPanel::OnSeedChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().GetModel()->SetBaseSeed(event.GetIntValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd(new P3DEditCmdChangeModelSeed(event.GetIntValue()));
  }
 
 void               P3DOptGeneralPanel::OnLODChanged
@@ -100,5 +128,18 @@ void               P3DOptGeneralPanel::OnLODChanged
   wxGetApp().SetLODLevel(event.GetFloatValue());
 
   wxGetApp().InvalidatePlant();
+ }
+
+void               P3DOptGeneralPanel::UpdateControls
+                                      ()
+ {
+  wxSpinSliderCtrl *SpinSlider;
+
+  SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_SEED_CTRL);
+
+  if (SpinSlider != NULL)
+   {
+    SpinSlider->SetValue(wxGetApp().GetModel()->GetBaseSeed());
+   }
  }
 

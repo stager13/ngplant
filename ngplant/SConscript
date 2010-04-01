@@ -1,3 +1,6 @@
+from sctool.SConcheck import *
+from sctool.SConcompat import *
+
 NGPWXCTRLS_SRC = Split("""
 p3dwx.cpp p3dwxcurvectrl.cpp p3dwxlistdlg.cpp
 """)
@@ -10,6 +13,7 @@ p3duimodelstemquad.cpp p3duimodelstemwings.cpp p3duibalgwings.cpp
 p3duiappopt.cpp p3duibalgbase.cpp p3duivisrangepanel.cpp
 p3dpobject.cpp p3dhliext.cpp p3dshaders.cpp p3dlog.cpp
 p3dpluginfo.cpp p3duimodelstemempty.cpp p3dappprefs.cpp
+p3dcmdqueue.cpp
 """)
 
 NGPLANT_INCLUDES=Split("""
@@ -31,7 +35,7 @@ opengl32 glu32
 
 Import('BaseEnv','CrossCompileMode','CC_OPT_FLAGS','LuaEnabled','TimingsEnabled','ProfilingEnabled')
 
-NGPlantEnv = BaseEnv.Copy()
+NGPlantEnv = EnvClone(BaseEnv)
 
 if LuaEnabled:
     NGPLANT_SRC.append("p3dplugluactl.cpp")
@@ -49,6 +53,9 @@ NGPlantEnv.Append(LIBS=NGPlantEnv['GLEXT_LIBS'])
 
 if TimingsEnabled:
     NGPlantEnv.Append(CPPDEFINES=[('P3D_TIMINGS_ENABLED','1')])
+
+if NGPlantEnv.has_key('PLUGINS_DIR'):
+    NGPlantEnv.Append(CPPDEFINES=[('PLUGINS_DIR','\\"' + NGPlantEnv['PLUGINS_DIR'] + '\\"')])
 
 if CrossCompileMode:
     for inc in Split(NGPlantEnv['WX_INC']):
@@ -99,9 +106,14 @@ if LuaEnabled:
     NGPlantEnv.Append(LIBS=NGPlantEnv['LUA_LIBS'])
     NGPlantEnv.Append(CPPDEFINES=[('NGP_LUA_VER',NGPlantEnv['LUA_VERSION'])])
 
+AppendLibPngConf(NGPlantEnv)
+AppendLibJpegConf(NGPlantEnv)
 
 if CC_OPT_FLAGS != '':
    NGPlantEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
+
+if CrossCompileMode or NGPlantEnv['PLATFORM'] == 'win32' or NGPlantEnv['PLATFORM'] == 'cygwin':
+    NGPLANT_SRC.append('ngplant_res.o')
 
 ngplant = NGPlantEnv.Program(target='ngplant',
                              source=NGPWXCTRLS_SRC + NGPLANT_SRC)
@@ -113,6 +125,9 @@ NGPlantEnv.Command('shaders/default_vs.h',
 NGPlantEnv.Command('shaders/default_fs.h',
                    '#/shaders/ngplant_default_fs.glsl',
                    'python devtools/text2cdata.py P3DDefaultFragmentShaderSrc < $SOURCES > $TARGET')
+
+if CrossCompileMode or NGPlantEnv['PLATFORM'] == 'win32' or NGPlantEnv['PLATFORM'] == 'cygwin':
+    NGPlantEnv.Command('ngplant_res.o','ngplant.rc',NGPlantEnv['WINDRES'] + ' -I ngplant/images' + ' $SOURCES $TARGET')
 
 Default(ngplant)
 Clean(ngplant,['.sconsign','images/.sconsign'])

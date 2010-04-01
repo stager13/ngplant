@@ -25,10 +25,12 @@
 
 #include <p3dwx.h>
 #include <p3dwxcurvectrl.h>
+#include <p3duiparampanel.h>
+#include <p3duivisrangepanel.h>
 
 #include <ngpcore/p3dmodelstemtube.h>
 
-class P3DStemTubePanel : public wxPanel
+class P3DStemTubePanel : public P3DUIParamPanel
  {
   public           :
 
@@ -62,9 +64,13 @@ class P3DStemTubePanel : public wxPanel
   void             OnPhototropismCurveChanged
                                       (P3DCurveCtrlEvent  &event);
 
+  virtual void     UpdateControls     ();
+
   private          :
 
   P3DStemModelTube                     *model;
+
+  P3DVisRangePanel                     *VisRangePanel;
 
   DECLARE_EVENT_TABLE();
  };

@@ -54,6 +54,7 @@ class P3DTexManagerGL
   P3DTexHandle     GetHandleByGenericName
                                       (const char         *GenericName);
 
+  void             IncRefCount        (P3DTexHandle        TexHandle);
   void             FreeTexture        (P3DTexHandle        TexHandle);
 
   GLuint           GetGLHandle        (P3DTexHandle        TexHandle) const;
@@ -61,6 +62,9 @@ class P3DTexManagerGL
   const char      *GetGenericName     (P3DTexHandle        TexHandle) const;
   const char      *GetTexFileName     (P3DTexHandle        TexHandle) const;
 
+  const P3DImageFmtHandler
+                  *GetFmtHandler      () const;
+  
   private          :
 
   P3DTexHandle     GetUnusedSlot      ();

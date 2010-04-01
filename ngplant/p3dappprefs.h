@@ -31,11 +31,38 @@ enum
   P3D_ASK
  };
 
-typedef struct
+struct P3DAppColor3b
  {
+                   P3DAppColor3b      () {};
+
+                   P3DAppColor3b      (unsigned char       aR,
+                                       unsigned char       aG,
+                                       unsigned char       aB)
+                   : R(aR),G(aG),B(aB)
+   {
+   }
+
+  unsigned char    R;
+  unsigned char    G;
+  unsigned char    B;
+ };
+
+struct P3DExport3DPrefs
+ {
+                   P3DExport3DPrefs   ();
+
+  void             Read               (const wxConfigBase *Config);
+  void             Save               (wxConfigBase       *Config) const;
+
   unsigned int     HiddenGroupsExportMode; /* P3D_ALWAYS,P3D_NEVER or P3D_ASK */
   unsigned int     OutVisRangeExportMode; /* P3D_ALWAYS,P3D_NEVER or P3D_ASK */
- } P3DExport3DPrefs;
+
+  private          :
+
+  static
+  unsigned int     LongToMode         (long                Value);
+  void             SetDefaults        ();
+ };
 
 struct P3DCameraControlPrefs
  {
@@ -55,10 +82,44 @@ struct P3DCameraControlPrefs
   float            MouseRotXSens;
  };
 
+struct P3D3DViewPrefs
+ {
+                   P3D3DViewPrefs     ();
+
+  void             Read               (const wxConfigBase *Config);
+  void             Save               (wxConfigBase       *Config) const;
+
+  bool             GroundVisible;
+  P3DAppColor3b    GroundColor;
+  P3DAppColor3b    BackgroundColor;
+
+  private          :
+
+  void             SetDefaults        ();
+  static bool      ColorFromStr       (P3DAppColor3b      *Color,
+                                       const wxString     &Str);
+  static wxString  ColorToStr         (const P3DAppColor3b*Color);
+ };
+
 struct P3DUIControlsPrefs
  {
   static void      Read               (const wxConfigBase *Config);
   static void      Save               (wxConfigBase       *Config);
+ };
+
+struct P3DRenderQuirksPrefs
+ {
+                   P3DRenderQuirksPrefs
+                                      ();
+
+  void             Read               (const wxConfigBase *Config);
+  void             Save               (wxConfigBase       *Config) const;
+
+  bool                                 UseColorArray;
+
+  private          :
+
+  void             SetDefaults        ();
  };
 
 #endif

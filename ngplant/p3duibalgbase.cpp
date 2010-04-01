@@ -23,6 +23,7 @@
 #include <p3dwx.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 #include <p3duibalgbase.h>
 
 enum
@@ -37,7 +38,7 @@ END_EVENT_TABLE()
                    P3DBranchingAlgBasePanel::P3DBranchingAlgBasePanel
                                       (wxWindow           *Parent,
                                        P3DBranchingAlgBase*Alg)
-                   : wxPanel(Parent)
+                   : P3DUIParamPanel(Parent)
  {
   this->Alg = Alg;
 
@@ -70,11 +71,26 @@ END_EVENT_TABLE()
   TopSizer->SetSizeHints(this);
  }
 
+typedef P3DParamEditCmdTemplate<P3DBranchingAlgBase,float> P3DBAlgBaseFloatParamEditCmd;
+
 void               P3DBranchingAlgBasePanel::OnRotAngleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetRotationAngle(P3DMATH_DEG2RAD((float)(event.GetIntValue())));
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgBaseFloatParamEditCmd
+         (Alg,
+          P3DMATH_DEG2RAD((float)(event.GetIntValue())),
+          Alg->GetRotationAngle(),
+          &P3DBranchingAlgBase::SetRotationAngle));
  }
+
+#define model Alg
+
+void               P3DBranchingAlgBasePanel::UpdateControls
+                                      ()
+ {
+  P3DUpdateParamSpinSliderDegrees(wxID_ROTANGLE_CTRL,GetRotationAngle);
+ }
+
+#undef model
 

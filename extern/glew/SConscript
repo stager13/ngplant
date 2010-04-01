@@ -1,8 +1,10 @@
+from sctool.SConcompat import *
+
 GLEW_SRC = [ "src/glew.c"]
 
 Import('*')
 
-GLEWEnv = BaseEnv.Copy()
+GLEWEnv = EnvClone(BaseEnv)
 
 GLEWEnv.Append(CPPPATH=['#/extern/glew/include'])
 

@@ -51,7 +51,8 @@ enum
   ID_CAMERA_ROT_Y_SENS,
 
   ID_CURVE_CTRL_WIDTH,
-  ID_CURVE_CTRL_HEIGHT
+  ID_CURVE_CTRL_HEIGHT,
+  ID_USE_COLOR_ARRAY
  };
 
 IMPLEMENT_CLASS(P3DAppOptDialog,wxDialog)
@@ -303,7 +304,7 @@ void               P3DAppOptDialog::CreateMiscPage
                                       (wxNotebook         *Notebook)
  {
   wxBoxSizer      *TopSizer  = new wxBoxSizer(wxVERTICAL);
-  wxFlexGridSizer *GridSizer = new wxFlexGridSizer(6,2,2,2);
+  wxFlexGridSizer *GridSizer = new wxFlexGridSizer(7,2,2,2);
   wxPanel         *MiscPanel = new wxPanel(Notebook,wxID_ANY);
 
   GridSizer->AddGrowableCol(1);
@@ -345,6 +346,13 @@ void               P3DAppOptDialog::CreateMiscPage
   GridSizer->Add(new wxStaticText(MiscPanel,wxID_ANY,wxT("Curve control height")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
   TextCtrl = new wxTextCtrl(MiscPanel,ID_CURVE_CTRL_HEIGHT);
   GridSizer->Add(TextCtrl,0,wxALL | wxALIGN_LEFT,1);
+
+  GridSizer->Add(new wxStaticText(MiscPanel,wxID_ANY,wxT("Use color array")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  wxCheckBox *UseColorArrayCheckBox = new wxCheckBox(MiscPanel,ID_USE_COLOR_ARRAY,wxT(""));
+  UseColorArrayCheckBox->SetValue(RenderQuirksPrefs.UseColorArray);
+
+  GridSizer->Add(UseColorArrayCheckBox,0,wxALL | wxALIGN_LEFT,1);
 
   TopSizer->Add(GridSizer,1,wxGROW | wxALL,5);
 
@@ -497,6 +505,13 @@ bool               P3DAppOptDialog::TransferDataToWindow
    {
     Str.Printf(wxT("%u"),CurveCtrlBestHeight);
     TextCtrl->SetValue(Str);
+   }
+
+  wxCheckBox *UseColorArrayCheckBox = (wxCheckBox*)FindWindow(ID_USE_COLOR_ARRAY);
+
+  if (UseColorArrayCheckBox != 0)
+   {
+    UseColorArrayCheckBox->SetValue(RenderQuirksPrefs.UseColorArray);
    }
 
   return(true);
@@ -688,6 +703,13 @@ bool               P3DAppOptDialog::TransferDataFromWindow
 
       return false;
      }
+   }
+
+  wxCheckBox *UseColorArrayCheckBox = (wxCheckBox*)FindWindow(ID_USE_COLOR_ARRAY);
+
+  if (UseColorArrayCheckBox != 0)
+   {
+    RenderQuirksPrefs.UseColorArray = UseColorArrayCheckBox->GetValue();
    }
 
   return(true);
@@ -1112,6 +1134,20 @@ void               P3DAppOptDialog::SetCameraControlPrefs
                                                           &Prefs)
  {
   CameraControlPrefs = Prefs;
+ }
+
+const P3DRenderQuirksPrefs
+                  &P3DAppOptDialog::GetRenderQuirksPrefs
+                                      () const
+ {
+  return(RenderQuirksPrefs);
+ }
+
+void               P3DAppOptDialog::SetRenderQuirksPrefs
+                                      (const P3DRenderQuirksPrefs
+                                                          &Prefs)
+ {
+  RenderQuirksPrefs = Prefs;
  }
 
 void               P3DAppOptDialog::SetPluginsPath

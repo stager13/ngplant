@@ -36,6 +36,7 @@
 #include <p3dcanvas3d.h>
 #include <p3dpluginfo.h>
 #include <p3dappprefs.h>
+#include <p3dcmdqueue.h>
 
 class P3DMainFrame : public wxFrame
  {
@@ -54,6 +55,10 @@ class P3DMainFrame : public wxFrame
   void             OnAbout            (wxCommandEvent     &event);
   void             OnEditPreferences  (wxCommandEvent     &event);
 
+  void             OnUndo             (wxCommandEvent     &event);
+  void             OnRedo             (wxCommandEvent     &event);
+  void             UpdateControls     ();
+
   void             InvalidatePlant    ();
 
   bool             IsGLExtInited      () const
@@ -71,13 +76,6 @@ class P3DMainFrame : public wxFrame
 
   DECLARE_EVENT_TABLE()
  };
-
-typedef struct
- {
-  unsigned char    R;
-  unsigned char    G;
-  unsigned char    B;
- } P3DAppColor3b;
 
 enum
  {
@@ -127,6 +125,11 @@ class P3DApp : public wxApp
 
   P3DPlantModel   *CreateNewPlantModel() const;
 
+  void             ExecEditCmd        (P3DEditCommand     *Cmd);
+  void             Undo               ();
+  void             Redo               ();
+  void             UpdateControls     ();
+
   /* Some preferences stuff */
 
   void             GetGroundColor     (unsigned char      *R,
@@ -156,6 +159,12 @@ class P3DApp : public wxApp
   void             SetCameraControlPrefs
                                       (const P3DCameraControlPrefs
                                                           *Prefs);
+  const P3DRenderQuirksPrefs
+                  &GetRenderQuirksPrefs
+                                      () const;
+  void             SetRenderQuirksPrefs
+                                      (const P3DRenderQuirksPrefs
+                                                          &Prefs);
 
   void             SetPluginsPath     (const wxString     &PluginsPath);
   const wxString  &GetPluginsPath     () const;
@@ -196,14 +205,11 @@ class P3DApp : public wxApp
   P3DMainFrame    *MainFrame;
   wxString         PlantFileName;
 
-  P3DAppColor3b    GroundColor;
-  bool             GroundVisible;
-
-  P3DAppColor3b    BackgroundColor;
+  P3D3DViewPrefs   View3DPrefs;
 
   P3DExport3DPrefs           Export3DPrefs;
   P3DCameraControlPrefs      CameraControlPrefs;
-                  
+  P3DRenderQuirksPrefs       RenderQuirks;
 
   wxString         PluginsPath;
   P3DPluginInfoVector                  ExportPlugins;
@@ -212,6 +218,8 @@ class P3DApp : public wxApp
   float            LODLevel;
 
   bool             UseShaders;
+
+  P3DEditCommandQueue                  CommandQueue;
  };
 
 DECLARE_APP(P3DApp)

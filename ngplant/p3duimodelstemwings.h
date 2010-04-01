@@ -25,10 +25,11 @@
 
 #include <p3dwx.h>
 #include <p3dwxcurvectrl.h>
+#include <p3duiparampanel.h>
 
 #include <ngpcore/p3dmodelstemwings.h>
 
-class P3DStemWingsPanel : public wxPanel
+class P3DStemWingsPanel : public P3DUIParamPanel
  {
   public           :
 
@@ -44,9 +45,13 @@ class P3DStemWingsPanel : public wxPanel
   void             OnCurvatureChanged (P3DCurveCtrlEvent  &event);
   void             OnThicknessChanged (wxSpinSliderEvent  &event);
 
+  virtual void     UpdateControls     ();
+
   private          :
 
   P3DStemModelWings                   *model;
+
+  P3DVisRangePanel                     *VisRangePanel;
 
   DECLARE_EVENT_TABLE();
  };

@@ -1,3 +1,5 @@
+from sctool.SConcompat import *
+
 NGPCORE_SRC = Split("""
 p3dmath.cpp
 p3dmathrng.cpp
@@ -24,7 +26,7 @@ NGPCORE_INCLUDES = Split("""
 
 Import('*')
 
-NGPCoreEnv = BaseEnv.Copy()
+NGPCoreEnv = EnvClone(BaseEnv)
 NGPCoreEnv.Append(CPPPATH=NGPCORE_INCLUDES)
 
 if CC_WARN_FLAGS != '':

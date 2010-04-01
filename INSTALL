@@ -32,6 +32,9 @@ Building under GNU Linux (for Windows):
    For example, if your configuration file is named "cross-sample.py", use
    $ scons config=cross-sample
 
-Configuring texture path:
-1. Use "Preferences" dialog ("File->Preferences...") to setup texture locations.
+Texture path(s) setup:
+- Use "Preferences" dialog ("File->Preferences...") to setup texture locations.
+
+Plugins path setup:
+- Use "Preferences" dialog ("File->Preferences...") to setup plugins path.
 

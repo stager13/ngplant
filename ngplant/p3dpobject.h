@@ -54,7 +54,8 @@ class P3DBranchGroupObject
                                                           *Instance,
                                        unsigned int        GroupIndex,
                                        unsigned int        BranchCount,
-                                       bool                Hidden);
+                                       bool                Hidden,
+                                       bool                UseColorArray);
 
                   ~P3DBranchGroupObject
                                       ();
@@ -76,6 +77,7 @@ class P3DBranchGroupObject
   float           *BiNormalBuffer;
   float           *TexCoordBuffer;
   float           *CenterPosBuffer;
+  float           *ColorBuffer;
 
   unsigned int    *IndexBuffer;
 
@@ -100,7 +102,8 @@ class P3DPlantObject
  {
   public           :
 
-                   P3DPlantObject     (const P3DPlantModel*PlantModel);
+                   P3DPlantObject     (const P3DPlantModel*PlantModel,
+                                       bool                UseColorArray);
                   ~P3DPlantObject     ();
 
   void             InvalidateCamera   ();

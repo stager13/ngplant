@@ -35,6 +35,7 @@ class P3DBranchPanel : public wxNotebook
                                        P3DBranchModel     *BranchModel = 0);
 
   void             SwitchToBranch     (P3DBranchModel     *BranchModel);
+  void             UpdateControls     ();
 
   private          :
 
@@ -77,7 +78,10 @@ class P3DPlantModelTreeCtrl : public wxTreeCtrl
 
   void             PlantInvalidated   ();
 
-  private          :
+  bool             FindItemByModel    (wxTreeItemId       *FoundItemId,
+                                       wxTreeItemId        RootId,
+                                       const P3DBranchModel
+                                                          *BranchModel) const;
 
   void             AppendChildrenRecursive
                                       (P3DBranchModel     *BranchModel,
@@ -87,6 +91,11 @@ class P3DPlantModelTreeCtrl : public wxTreeCtrl
                                        P3DBranchModel     *BranchModel);
 
   void             UpdateLabel        (wxTreeItemId        ItemId);
+
+  P3DBranchModel  *GetBranchModelByItemId
+                                      (wxTreeItemId        ItemId);
+
+  private          :
 
   P3DBranchPanel  *BranchPanel;
 
@@ -105,6 +114,7 @@ class P3DModelEditPanel : public wxPanel
   void             UpdatePanelMinSize ();
 
   void             PlantInvalidated   ();
+  void             UpdateControls     ();
 
   void             OnAutoUpdateChanged(wxCommandEvent     &Event);
   void             OnUpdateClicked    (wxCommandEvent     &Event);

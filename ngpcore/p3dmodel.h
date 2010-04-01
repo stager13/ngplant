@@ -373,7 +373,10 @@ class P3DBranchModel
   P3DBranchModel  *GetSubBranchModel  (unsigned int        SubBranchIndex);
 
   void             AppendSubBranch    (P3DBranchModel     *SubBranchModel);
+  void             InsertSubBranch    (P3DBranchModel     *SubBranchModel,
+                                       unsigned int        SubBranchIndex);
   void             RemoveSubBranch    (unsigned int        SubBranchIndex);
+  P3DBranchModel  *DetachSubBranch    (unsigned int        SubBranchIndex);
 
   void             Save               (P3DOutputStringStream
                                                           *TargetStream,

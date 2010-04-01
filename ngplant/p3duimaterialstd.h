@@ -24,13 +24,14 @@
 #include <wx/wx.h>
 
 #include <p3dwx.h>
+#include <p3duiparampanel.h>
 
 #include <ngpcore/p3dmodelstemtube.h>
 #include <ngpcore/p3dmodelstemquad.h>
 
 #include <p3dmaterialstd.h>
 
-class P3DMaterialStdPanel : public wxPanel
+class P3DMaterialStdPanel : public P3DUIParamPanel
  {
   public           :
 
@@ -63,6 +64,8 @@ class P3DMaterialStdPanel : public wxPanel
                                       (wxSpinSliderEvent  &event);
   void             OnAlphaFadeOutChanged
                                       (wxSpinSliderEvent  &event);
+
+  void             UpdateControls     ();
 
   private          :
 

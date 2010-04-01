@@ -218,7 +218,7 @@ void               P3DMaterialDef::CopyFrom
    }
  }
 
-static char       *TexLayersNames[] =
+static const char *TexLayersNames[] =
  {
   "DiffuseTexture",
   "NormalMap",
@@ -742,6 +742,34 @@ void               P3DBranchModel::AppendSubBranch
    }
  }
 
+void               P3DBranchModel::InsertSubBranch
+                                      (P3DBranchModel     *SubBranchModel,
+                                       unsigned int        SubBranchIndex)
+ {
+  if (SubBranchIndex >= SubBranchCount)
+   {
+    AppendSubBranch(SubBranchModel);
+   }
+  else
+   {
+    if (SubBranchCount < P3DBranchModelSubBranchMaxCount)
+     {
+      for (unsigned int Index = SubBranchCount; Index > SubBranchIndex; Index--)
+       {
+        SubBranches[Index] = SubBranches[Index - 1];
+       }
+
+      SubBranches[SubBranchIndex] = SubBranchModel;
+
+      SubBranchCount++;
+     }
+    else
+     {
+      /*FIXME: throw something here */
+     }
+   }
+ }
+
 void               P3DBranchModel::RemoveSubBranch
                                       (unsigned int        SubBranchIndex)
  {
@@ -759,6 +787,30 @@ void               P3DBranchModel::RemoveSubBranch
   else
    {
     /*FIXME: throw something here */
+   }
+ }
+
+P3DBranchModel    *P3DBranchModel::DetachSubBranch
+                                      (unsigned int        SubBranchIndex)
+ {
+  if (SubBranchIndex < SubBranchCount)
+   {
+    P3DBranchModel *Result;
+
+    Result = SubBranches[SubBranchIndex];
+
+    for (unsigned int Index = (SubBranchIndex + 1); Index < SubBranchCount; Index++)
+     {
+      SubBranches[Index - 1] = SubBranches[Index];
+     }
+
+    SubBranchCount--;
+
+    return(Result);
+   }
+  else
+   {
+    return(0);
    }
  }
 

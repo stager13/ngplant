@@ -23,6 +23,7 @@
 #include <ngpcore/p3dmodelstemwings.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 #include <p3duivisrangepanel.h>
 #include <p3duimodelstemwings.h>
 
@@ -47,7 +48,7 @@ END_EVENT_TABLE()
                                       (wxWindow           *parent,
                                        P3DStemModelWings  *model,
                                        P3DVisRangeState   *VisRangeState)
-                   : wxPanel(parent)
+                   : P3DUIParamPanel(parent)
  {
   P3DMathNaturalCubicSpline            DefaultCurve;
 
@@ -128,7 +129,9 @@ END_EVENT_TABLE()
 
   TopSizer->Add(WingsParamsTopSizer,0,wxEXPAND | wxALL,1);
 
-  TopSizer->Add(new P3DVisRangePanel(this,VisRangeState),0,wxEXPAND | wxALL,1);
+  VisRangePanel = new P3DVisRangePanel(this,VisRangeState);
+
+  TopSizer->Add(VisRangePanel,0,wxEXPAND | wxALL,1);
 
   SetSizer(TopSizer);
 
@@ -144,35 +147,63 @@ void               P3DStemWingsPanel::OnWingsAngleChanged
   wxGetApp().InvalidatePlant();
  }
 
+typedef P3DParamEditCmdTemplate<P3DStemModelWings,float> P3DStemWingsFloatParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DStemModelWings,unsigned int> P3DStemWingsUIntParamEditCmd;
+typedef P3DParamCurveEditCmdTemplate<P3DStemModelWings> P3DStemWingsCurveParamEditCmd;
+
 void               P3DStemWingsPanel::OnStemWidthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetWidth(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+  (new P3DStemWingsFloatParamEditCmd
+        (model,
+         event.GetFloatValue(),
+         model->GetWidth(),
+         &P3DStemModelWings::SetWidth));
  }
 
 void               P3DStemWingsPanel::OnSectionCountChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetSectionCount(event.GetIntValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+  (new P3DStemWingsUIntParamEditCmd
+        (model,
+         event.GetIntValue(),
+         model->GetSectionCount(),
+         &P3DStemModelWings::SetSectionCount));
  }
 
 void               P3DStemWingsPanel::OnCurvatureChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  model->SetCurvature(event.GetCurve());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemWingsCurveParamEditCmd
+         (model,
+          event.GetCurve(),
+          model->GetCurvature(),
+          &P3DStemModelWings::SetCurvature));
  }
 
 void               P3DStemWingsPanel::OnThicknessChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetThickness(event.GetFloatValue());
+  wxGetApp().ExecEditCmd
+  (new P3DStemWingsFloatParamEditCmd
+        (model,
+         event.GetFloatValue(),
+         model->GetThickness(),
+         &P3DStemModelWings::SetThickness));
+ }
 
-  wxGetApp().InvalidatePlant();
+void               P3DStemWingsPanel::UpdateControls
+                                      ()
+ {
+  P3DUpdateParamSpinSlider(wxID_STEM_WIDTH_CTRL,GetWidth);
+  P3DUpdateParamSpinSlider(wxID_SECTION_COUNT_CTRL,GetSectionCount);
+  P3DUpdateParamSpinSlider(wxID_THICKNESS_CTRL,GetThickness);
+
+  P3DUpdateParamCurveCtrl(wxID_CURVATURE_CTRL,GetCurvature);
+
+  VisRangePanel->UpdateControls();
  }
 

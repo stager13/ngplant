@@ -1,0 +1,5 @@
+aaaaaa  ICON "ngplant/images/ngplant.ico"
+ngplant ICON "ngplant/images/ngplant.ico"
+
+//#include "wx/msw/wx.rc"
+

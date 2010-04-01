@@ -1,3 +1,5 @@
+from sctool.SConcompat import *
+
 EXTLUACORE_SRC = Split("""
 lapi.c lcode.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c lmem.c
 lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c ltm.c
@@ -14,7 +16,7 @@ EXTLUALIB_SRC = map(lambda a : 'lua/src/' + a,EXTLUALIB_SRC)
 
 Import('*')
 
-ExtLUAEnv = BaseEnv.Copy()
+ExtLUAEnv = EnvClone(BaseEnv)
 if CC_OPT_FLAGS != '':
    ExtLUAEnv.Append(CCFLAGS=CC_OPT_FLAGS)
 ExtLUAEnv.StaticLibrary(target='libs/ext_lua',source=EXTLUACORE_SRC)

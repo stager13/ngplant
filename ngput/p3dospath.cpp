@@ -316,3 +316,24 @@ bool               P3DPathName::ToUNIX()
   return(true);
  }
 
+std::string        P3DPathName::GetExtension
+                                      () const
+ {
+  std::string::const_reverse_iterator  Index = Path.rbegin();
+
+  while ((Index != Path.rend()) &&
+         (*Index != '\\') && (*Index != '/') && (*Index != ':'))
+   {
+    if (*Index == '.')
+     {
+      return(std::string(Index.base(),Path.end()));
+     }
+    else
+     {
+      ++Index;
+     }
+   }
+
+  return(std::string(""));
+ }
+
