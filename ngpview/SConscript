@@ -1,3 +1,6 @@
+from sctool.SConcheck import *
+from sctool.SConcompat import *
+
 NGPVIEW_SRC = Split("""
 ngpview.cpp
 ngpviewtexman.cpp
@@ -17,7 +20,7 @@ oleaut32 uuid rpcrt4 advapi32 wsock32 odbc32
 opengl32 glu32
 """)
 
-NGPViewEnv = BaseEnv.Copy()
+NGPViewEnv = EnvClone(BaseEnv)
 
 NGPViewEnv.Append(CPPPATH=NGPVIEW_INCLUDES)
 NGPViewEnv.Append(LIBPATH=['#/ngpcore'])
@@ -42,6 +45,9 @@ else:
 NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEXT_INC'])
 NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEXT_LIBPATH'])
 NGPViewEnv.Append(LIBS=NGPViewEnv['GLEXT_LIBS'])
+
+AppendLibPngConf(NGPViewEnv)
+AppendLibJpegConf(NGPViewEnv)
 
 if CC_WARN_FLAGS != '':
    NGPViewEnv.Append(CXXFLAGS=CC_WARN_FLAGS)

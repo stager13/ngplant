@@ -1,5 +1,5 @@
 /* XPM */
-static char * P3DCloseXPM[] = {
+static const char * P3DCloseXPM[] = {
 "12 12 3 1",
 " 	c None",
 ".	c #000000",

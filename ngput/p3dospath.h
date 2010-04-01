@@ -59,6 +59,8 @@ class P3DPathName
 
   bool             ToUNIX             ();
 
+  std::string      GetExtension       () const;
+
   private          :
 
   std::string      Path;

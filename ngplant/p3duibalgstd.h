@@ -25,10 +25,11 @@
 
 #include <p3dwx.h>
 #include <p3dwxcurvectrl.h>
+#include <p3duiparampanel.h>
 
 #include <ngpcore/p3dbalgstd.h>
 
-class P3DBranchingAlgStdPanel : public wxPanel
+class P3DBranchingAlgStdPanel : public P3DUIParamPanel
  {
   public           :
 
@@ -49,6 +50,8 @@ class P3DBranchingAlgStdPanel : public wxPanel
                                       (P3DCurveCtrlEvent  &event);
   void             OnDeclinationVChanged
                                       (wxSpinSliderEvent  &event);
+
+  virtual void     UpdateControls     ();
 
   private          :
 

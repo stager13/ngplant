@@ -1,3 +1,6 @@
+from sctool.SConcheck import *
+from sctool.SConcompat import *
+
 NGPSHOT_SRC = Split("""
 ngpshot.cpp p3dshaders.cpp
 """)
@@ -15,7 +18,7 @@ oleaut32 uuid rpcrt4 advapi32 wsock32 odbc32
 opengl32 glu32
 """)
 
-NGPShotEnv = BaseEnv.Copy()
+NGPShotEnv = EnvClone(BaseEnv)
 
 NGPShotEnv.Append(CPPPATH=NGPSHOT_INCLUDES)
 NGPShotEnv.Append(LIBPATH=['#/ngpcore'])
@@ -26,6 +29,9 @@ NGPShotEnv.Append(LIBS=['ngput'])
 NGPShotEnv.Append(CPPPATH=NGPShotEnv['GLEXT_INC'])
 NGPShotEnv.Append(LIBPATH=NGPShotEnv['GLEXT_LIBPATH'])
 NGPShotEnv.Append(LIBS=NGPShotEnv['GLEXT_LIBS'])
+
+AppendLibPngConf(NGPShotEnv)
+AppendLibJpegConf(NGPShotEnv)
 
 if (NGPShotEnv['PLATFORM'] == 'win32') or\
    (NGPShotEnv['PLATFORM'] == 'cygwin'):

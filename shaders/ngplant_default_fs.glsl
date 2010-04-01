@@ -23,9 +23,6 @@ void     main     ()
   if (gl_FrontFacing)
    {
     DiffuseFactor = max(0.0,dot(normalize(LightDir),FragmentNormal));
-
-    gl_FragColor = gl_Color +
-                    DiffuseFactor * gl_FrontLightProduct[0].diffuse;
    }
   else
    {
@@ -34,16 +31,12 @@ void     main     ()
     RefLightDir = vec3(LightDir.x,LightDir.y,-LightDir.z);
 
     DiffuseFactor = max(0.0,dot(normalize(RefLightDir),FragmentNormal));
-
-    gl_FragColor = gl_Color +
-                    DiffuseFactor * gl_BackLightProduct[0].diffuse;
    }
   #else
   DiffuseFactor  = max(0.0,dot(normalize(LightDir),FragmentNormal));
-
-  gl_FragColor = gl_Color +
-                  DiffuseFactor * gl_FrontLightProduct[0].diffuse;
   #endif
+
+  gl_FragColor = gl_Color + DiffuseFactor * DiffuseProduct;
 
   #ifdef HAVE_DIFFUSE_TEX
   gl_FragColor *= texture2D(DiffuseTexSampler,gl_TexCoord[0].st);

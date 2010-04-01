@@ -24,10 +24,11 @@
 #include <wx/wx.h>
 
 #include <p3dwx.h>
+#include <p3duiparampanel.h>
 
 #include <ngpcore/p3dbalgwings.h>
 
-class P3DBranchingAlgWingsPanel : public wxPanel
+class P3DBranchingAlgWingsPanel : public P3DUIParamPanel
  {
   public           :
 
@@ -39,6 +40,8 @@ class P3DBranchingAlgWingsPanel : public wxPanel
   void             OnRotAngleChanged  (wxSpinSliderEvent  &event);
 
   private          :
+
+  virtual void     UpdateControls     ();
 
   P3DBranchingAlgWings                *Alg;
 

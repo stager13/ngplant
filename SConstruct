@@ -1,6 +1,7 @@
 import os
 import os.path
 from sctool.SConcheck import *
+from sctool.SConcompat import *
 
 def GetPythonIncPath():
     try:
@@ -21,6 +22,7 @@ opts.Add('CC','The C compiler')
 opts.Add('CXX','The C++ compiler')
 opts.Add('RANLIB','The archive indexer')
 opts.Add('AR','The static library archiver')
+opts.Add('WINDRES','The resource compiler')
 
 opts.Add('WX_INC','wxWidgets headers path(s)')
 opts.Add('WX_LIB','wxWidgets libraries')
@@ -38,6 +40,22 @@ opts.Add(BoolOption('GLEW_INTERNAL','Compile GLEW library from sources in extern
 opts.Add('GLEW_INC','GLEW headers path(s)','')
 opts.Add('GLEW_LIBS','GLEW libraries','')
 opts.Add('GLEW_LIBPATH','GLEW libraries path(s)','')
+
+opts.Add(BoolOption('WITH_LIBPNG','Enable PNG support','yes'))
+opts.Add('LIBPNG_INC','libpng headers path(s)','')
+opts.Add('LIBPNG_LIBS','libpng library','')
+opts.Add('LIBPNG_LIBPATH','libpng library path','')
+opts.Add('LIBPNG_DEFINES','libpng additional preprocessor definitions','')
+opts.Add('LIBPNG_CONFIG','libpng pkg-config custom command line','')
+
+opts.Add(BoolOption('WITH_LIBJPEG','Enable JPEG support','yes'))
+opts.Add('LIBJPEG_INC','libjpeg headers path(s)','')
+opts.Add('LIBJPEG_LIBS','libjpeg library','')
+opts.Add('LIBJPEG_LIBPATH','libjpeg library path','')
+opts.Add('LIBJPEG_DEFINES','libjpeg additional preprocessor definitions','')
+opts.Add('LIBJPEG_CONFIG','libjpeg pkg-config custom command line','')
+
+opts.Add('PLUGINS_DIR','The search path for ngplant plugins',None)
 
 opts.Add(BoolOption('enable_timings','Set to enable debug timings dump on ngplant','no'))
 opts.Add(BoolOption('enable_profiling','Set to pass profiling options to compiler and linker ','no'))
@@ -72,7 +90,9 @@ BaseConf = Configure(BaseEnv,
                 'CheckEndianess' : CheckEndianess,
                 'CheckCommand' : CheckCommand,
                 'CheckLuaFunc' : CheckLuaFunc,
-                'ConfigureGLEW' : ConfigureGLEW})
+                'ConfigureGLEW' : ConfigureGLEW,
+                'ConfigureLibPng' : ConfigureLibPng,
+                'ConfigureLibJpeg' : ConfigureLibJpeg})
 
 if BaseConf.CheckCXXPresence() is None:
     print 'error: c++ compiler not found.'
@@ -110,16 +130,10 @@ else:
     if not HavePythonDev:
         print 'Python.h not found... _ngp (Python bindings) will not be built'
 
-    UnsignedIntSizeOf    = BaseConf.CheckTypeSizeOf('unsigned int')
-    UnsignedIntPtrSizeOf = BaseConf.CheckTypeSizeOf('unsigned int*')
-
     Endianess = BaseConf.CheckEndianess()
 
     if Endianess == 'big':
         BaseEnv.Append(CPPDEFINES=[('P3D_BIG_ENDIAN',1)])
-
-BaseEnv.Append(CPPDEFINES=[('UINTSIZE',str(UnsignedIntSizeOf))])
-BaseEnv.Append(CPPDEFINES=[('UINTPTRSIZE',str(UnsignedIntPtrSizeOf))])
 
 # It looks like CheckFunc method have been changed in 0.96... version
 # To workaround this, I'm trying to detect functions presence using
@@ -193,7 +207,7 @@ if LuaEnabled:
             BaseEnv.Replace(LUA_LIBS=Split(BaseEnv['LUA_LIBS']))
         elif (not CrossCompileMode) and (BaseConf.CheckCommand('lua-config')):
             # Try to use lua-config (at least Debian Sarge has it)
-            LuaConfEnv = BaseEnv.Copy()
+            LuaConfEnv = EnvClone(BaseEnv)
             LuaConfEnv.ParseConfig('lua-config --include --libs')
             BaseEnv.Replace(LUA_INC=LuaConfEnv['CPPPATH'])
             BaseEnv.Replace(LUA_LIBPATH=LuaConfEnv['LIBPATH'])
@@ -216,6 +230,12 @@ if LuaEnabled:
         BaseEnv.Append(LUA_VERSION='51')
     else:
         BaseEnv.Append(LUA_VERSION='50')
+
+if BaseEnv['WITH_LIBPNG']:
+    BaseConf.ConfigureLibPng()
+
+if BaseEnv['WITH_LIBJPEG']:
+    BaseConf.ConfigureLibJpeg()
 
 BaseEnv = BaseConf.Finish()
 
@@ -278,6 +298,7 @@ else:
     Default('ngplant/ngplant')
     Clean('ngplant/ngplant',['config.log','.sconf_temp','sctool/__init__.pyc',
                              'sctool/SConcheck.pyc',
+                             'sctool/SConcompat.pyc',
                              'extern/libs/.sconsign',
                              'extern/lua/src/.sconsign'])
 

@@ -126,7 +126,8 @@ static void        UpdateBillboardsInfo
                                                           *Instance,
                                        unsigned int        GroupIndex,
                                        unsigned int        BranchCount,
-                                       bool                Hidden)
+                                       bool                Hidden,
+                                       bool                UseColorArray)
  {
   const P3DMaterialDef                *MaterialDef;
   unsigned int                         BranchVAttrCount;
@@ -139,6 +140,7 @@ static void        UpdateBillboardsInfo
   TexCoordBuffer  = 0;
   IndexBuffer     = 0;
   CenterPosBuffer = 0;
+  ColorBuffer     = 0;
 
   TotalIndexCount = 0;
 
@@ -241,6 +243,18 @@ static void        UpdateBillboardsInfo
       Template->GetBillboardSize(&BillboardWidth,&BillboardHeight,GroupIndex);
      }
 
+    if (UseColorArray)
+     {
+      ColorBuffer = (float*)P3DMallocEx(sizeof(float) * 3 * TotalVAttrCount);
+
+      for (unsigned int VAttrIndex = 0; VAttrIndex < TotalVAttrCount; VAttrIndex++)
+       {
+        ColorBuffer[VAttrIndex * 3]     = MaterialData.R;
+        ColorBuffer[VAttrIndex * 3 + 1] = MaterialData.G;
+        ColorBuffer[VAttrIndex * 3 + 2] = MaterialData.B;
+       }
+     }
+
     void            *Data      = IndexBuffer;
     unsigned int     IndexBase = 0;
 
@@ -256,6 +270,7 @@ static void        UpdateBillboardsInfo
    }
   catch (...)
    {
+    free(ColorBuffer);
     free(CenterPosBuffer);
     free(IndexBuffer);
     free(TexCoordBuffer);
@@ -286,6 +301,7 @@ static void        UpdateBillboardsInfo
     wxGetApp().GetTexManager()->FreeTexture(MaterialData.NormalMapHandle);
    }
 
+  free(ColorBuffer);
   free(CenterPosBuffer);
   free(IndexBuffer);
   free(TexCoordBuffer);
@@ -360,7 +376,10 @@ void               P3DBranchGroupObject::Render
 
   /* material setup */
 
-  glColor3f(MaterialData.R,MaterialData.G,MaterialData.B);
+  if (ColorBuffer == 0)
+   {
+    glColor3f(MaterialData.R,MaterialData.G,MaterialData.B);
+   }
 
   if (MaterialData.TwoSided)
    {
@@ -451,7 +470,18 @@ void               P3DBranchGroupObject::Render
     glVertexAttribPointerARB(MaterialData.BiNormalLocation,3,GL_FLOAT,0,GL_FALSE,BiNormalBuffer);
    }
 
+  if (ColorBuffer != 0)
+   {
+    glColorPointer(3,GL_FLOAT,0,ColorBuffer);
+    glEnableClientState(GL_COLOR_ARRAY);
+   }
+
   glDrawElements(GL_TRIANGLES,TotalIndexCount,GL_UNSIGNED_INT,IndexBuffer);
+
+  if (ColorBuffer != 0)
+   {
+    glDisableClientState(GL_COLOR_ARRAY);
+   }
 
   if (MaterialData.BiNormalLocation != -1)
    {
@@ -515,7 +545,8 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
  }
 
                    P3DPlantObject::P3DPlantObject
-                                      (const P3DPlantModel*PlantModel)
+                                      (const P3DPlantModel*PlantModel,
+                                       bool                UseColorArray)
  {
   P3DHLIPlantTemplate                  Template(PlantModel);
   P3DHLIPlantInstance                 *Instance;
@@ -588,7 +619,8 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
                                   Instance,
                                   GroupIndex,
                                   BranchCounts[GroupIndex],
-                                  Hidden);
+                                  Hidden,
+                                  UseColorArray);
 
       TotalVertexCount   += Groups[GroupIndex]->GetVertexCount();
       TotalTriangleCount += Groups[GroupIndex]->GetTriangleCount();

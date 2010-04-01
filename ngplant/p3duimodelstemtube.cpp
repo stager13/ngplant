@@ -23,6 +23,7 @@
 #include <ngpcore/p3dmodelstemtube.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 #include <p3duivisrangepanel.h>
 #include <p3duimodelstemtube.h>
 
@@ -55,7 +56,7 @@ END_EVENT_TABLE()
                                       (wxWindow           *parent,
                                        P3DStemModelTube   *model,
                                        P3DVisRangeState   *VisRangeState)
-                   : wxPanel(parent)
+                   : P3DUIParamPanel(parent)
  {
   P3DMathNaturalCubicSpline            DefaultCurve;
 
@@ -188,7 +189,9 @@ END_EVENT_TABLE()
 
   TopSizer->Add(PhototropismParamsTopSizer,0,wxEXPAND | wxALL,1);
 
-  TopSizer->Add(new P3DVisRangePanel(this,VisRangeState),0,wxEXPAND | wxALL,1);
+  VisRangePanel = new P3DVisRangePanel(this,VisRangeState);
+
+  TopSizer->Add(VisRangePanel,0,wxEXPAND | wxALL,1);
 
   SetSizer(TopSizer);
 
@@ -196,76 +199,122 @@ END_EVENT_TABLE()
   TopSizer->SetSizeHints(this);
  }
 
+typedef P3DParamEditCmdTemplate<P3DStemModelTube,float> P3DStemTubeFloatParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DStemModelTube,unsigned int> P3DStemTubeUIntParamEditCmd;
+typedef P3DParamCurveEditCmdTemplate<P3DStemModelTube> P3DStemTubeCurveParamEditCmd;
 
 void               P3DStemTubePanel::OnStemLengthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetLength(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetLength(),
+          &P3DStemModelTube::SetLength));
  }
 
 void               P3DStemTubePanel::OnStemLengthVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetLengthV(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetLengthV(),
+          &P3DStemModelTube::SetLengthV));
  }
 
 void               P3DStemTubePanel::OnStemAxisVariationChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetAxisVariation(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetAxisVariation(),
+          &P3DStemModelTube::SetAxisVariation));
  }
 
 void               P3DStemTubePanel::OnLengthOffsetInfluenceChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  model->SetLengthOffsetInfluenceCurve(event.GetCurve());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeCurveParamEditCmd
+         (model,
+          event.GetCurve(),
+          model->GetLengthOffsetInfuenceCurve(),
+          &P3DStemModelTube::SetLengthOffsetInfluenceCurve));
  }
 
 void               P3DStemTubePanel::OnAxisResolutionChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetAxisResolution(event.GetIntValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeUIntParamEditCmd
+         (model,
+          event.GetIntValue(),
+          model->GetAxisResolution(),
+          &P3DStemModelTube::SetAxisResolution));
  }
 
 void               P3DStemTubePanel::OnTrunkProfileScaleBaseChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetProfileScaleBase(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetProfileScaleBase(),
+          &P3DStemModelTube::SetProfileScaleBase));
  }
 
 void               P3DStemTubePanel::OnRadiusProfileScaleChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  model->SetProfileScaleCurve(event.GetCurve());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeCurveParamEditCmd
+         (model,
+          event.GetCurve(),
+          model->GetProfileScaleCurve(),
+          &P3DStemModelTube::SetProfileScaleCurve));
  }
 
 void               P3DStemTubePanel::OnProfileResolutionChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetProfileResolution(event.GetIntValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeUIntParamEditCmd
+         (model,
+          event.GetIntValue(),
+          model->GetProfileResolution(),
+          &P3DStemModelTube::SetProfileResolution));
  }
 
 void               P3DStemTubePanel::OnPhototropismCurveChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  model->SetPhototropismCurve(event.GetCurve());
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeCurveParamEditCmd
+         (model,
+          event.GetCurve(),
+          model->GetPhototropismCurve(),
+          &P3DStemModelTube::SetPhototropismCurve));
+ }
 
-  wxGetApp().InvalidatePlant();
+void               P3DStemTubePanel::UpdateControls
+                                      ()
+ {
+  P3DUpdateParamSpinSlider(wxID_STEM_LENGTH_CTRL,GetLength);
+  P3DUpdateParamSpinSlider(wxID_STEM_LENGTHV_CTRL,GetLengthV);
+  P3DUpdateParamSpinSlider(wxID_AXIS_VARIATION_CTRL,GetAxisVariation);
+  P3DUpdateParamCurveCtrl(wxID_LENGTH_OFFSET_INFLUENCE_CTRL,GetLengthOffsetInfuenceCurve);
+  P3DUpdateParamSpinSlider(wxID_AXIS_RESOLUTION_CTRL,GetAxisResolution);
+  P3DUpdateParamSpinSlider(wxID_TRUNK_RADIUS_CTRL,GetProfileScaleBase);
+  P3DUpdateParamCurveCtrl(wxID_TRUNK_PROFILE_SCALE_CTRL,GetProfileScaleCurve);
+  P3DUpdateParamSpinSlider(wxID_PROFILE_RESOLUTION_CTRL,GetProfileResolution);
+  P3DUpdateParamCurveCtrl(wxID_PHOTOTROPISM_INFLUENCE_CTRL,GetPhototropismCurve);
+
+  VisRangePanel->UpdateControls();
  }
 

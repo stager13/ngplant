@@ -38,6 +38,8 @@ class P3DVisRangePanel : public wxPanel
   void             OnMaxChanged       (wxSpinSliderEvent  &event);
   void             OnEnabledChanged   (wxCommandEvent     &event);
 
+  void             UpdateControls     ();
+
   private          :
 
   P3DVisRangeState                    *State;

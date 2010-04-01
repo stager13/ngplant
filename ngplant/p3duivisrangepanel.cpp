@@ -23,6 +23,7 @@
 #include <ngpcore/p3dmodel.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 #include <p3duivisrangepanel.h>
 
 enum
@@ -98,72 +99,144 @@ END_EVENT_TABLE()
   TopSizer->SetSizeHints(this);
  }
 
+namespace {
+
+class SetVisRangeCommand : public P3DEditCommand
+ {
+  public           :
+
+                   SetVisRangeCommand (P3DVisRangeState   *VisRangeState,
+                                       float               NewRangeMin,
+                                       float               NewRangeMax)
+   {
+    this->VisRangeState = VisRangeState;
+    this->NewRangeMin   = NewRangeMin;
+    this->NewRangeMax   = NewRangeMax;
+
+    VisRangeState->GetRange(&OldRangeMin,&OldRangeMax);
+   }
+
+  virtual void     Exec               ()
+   {
+    VisRangeState->SetRange(NewRangeMin,NewRangeMax);
+
+    wxGetApp().InvalidatePlant();
+   }
+
+  virtual void     Undo               ()
+   {
+    VisRangeState->SetRange(OldRangeMin,OldRangeMax);
+
+    wxGetApp().InvalidatePlant();
+   }
+
+  private          :
+
+  P3DVisRangeState                    *VisRangeState;
+  float                                NewRangeMin,NewRangeMax;
+  float                                OldRangeMin,OldRangeMax;
+ };
+}
+
 void               P3DVisRangePanel::OnMinChanged
                                       (wxSpinSliderEvent  &event)
  {
-  float                                MinValue;
   float                                OldMin;
   float                                OldMax;
+  float                                NewMin;
+  float                                NewMax;
 
   State->GetRange(&OldMin,&OldMax);
 
-  MinValue = event.GetFloatValue();
+  NewMin = event.GetFloatValue();
+  NewMax = NewMin > OldMax ? NewMin : OldMax;
 
-  if (MinValue > OldMax)
+  if (NewMin > OldMax)
    {
+    NewMax = NewMin;
+
     wxSpinSliderCtrl *MaxCtrl = (wxSpinSliderCtrl*)FindWindow(wxID_VISRANGE_MAX_CTRL);
 
-    MaxCtrl->SetValue(MinValue);
-
-    State->SetRange(MinValue,MinValue);
+    MaxCtrl->SetValue(NewMax);
    }
   else
    {
-    State->SetRange(MinValue,OldMax);
+    NewMax = OldMax;
    }
 
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new SetVisRangeCommand(State,NewMin,NewMax));
  }
 
 void               P3DVisRangePanel::OnMaxChanged
                                       (wxSpinSliderEvent  &event)
  {
-  float                                MaxValue;
   float                                OldMin;
   float                                OldMax;
+  float                                NewMin;
+  float                                NewMax;
 
   State->GetRange(&OldMin,&OldMax);
 
-  MaxValue = event.GetFloatValue();
+  NewMax = event.GetFloatValue();
 
-  if (MaxValue < OldMin)
+  if (NewMax < OldMin)
    {
+    NewMin = NewMax;
+
     wxSpinSliderCtrl *MinCtrl = (wxSpinSliderCtrl*)FindWindow(wxID_VISRANGE_MIN_CTRL);
 
-    MinCtrl->SetValue(MaxValue);
-
-    State->SetRange(MaxValue,MaxValue);
+    MinCtrl->SetValue(NewMin);
    }
   else
    {
-    State->SetRange(OldMin,MaxValue);
+    NewMin = OldMin;
    }
 
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new SetVisRangeCommand(State,NewMin,NewMax));
  }
+
+typedef P3DParamEditCmdTemplate<P3DVisRangeState,bool> P3DVisRangeBoolParamEditCmd;
 
 void               P3DVisRangePanel::OnEnabledChanged
                                       (wxCommandEvent     &event)
  {
-  if (event.IsChecked())
+  wxGetApp().ExecEditCmd
+   (new P3DVisRangeBoolParamEditCmd
+         (State,
+          event.IsChecked(),
+          State->IsEnabled(),
+          &P3DVisRangeState::SetState));
+ }
+
+#define model State
+
+void               P3DVisRangePanel::UpdateControls
+                                      ()
+ {
+  float                                MinValue;
+  float                                MaxValue;
+  wxSpinSliderCtrl                    *SpinSlider;
+
+  State->GetRange(&MinValue,&MaxValue);
+
+  SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_VISRANGE_MIN_CTRL);
+
+  if (SpinSlider != NULL)
    {
-    State->SetState(true);
-   }
-  else
-   {
-    State->SetState(false);
+    SpinSlider->SetValue(MinValue);
    }
 
-  wxGetApp().InvalidatePlant();
+  SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_VISRANGE_MAX_CTRL);
+
+  if (SpinSlider != NULL)
+   {
+    SpinSlider->SetValue(MaxValue);
+   }
+
+  P3DUpdateParamCheckBox(wxID_VISRANGE_ENABLED_CTRL,IsEnabled);
  }
+
+#undef model
 

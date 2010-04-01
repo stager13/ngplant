@@ -53,6 +53,9 @@ class P3DCurveCtrl : public wxControl
                                        const wxValidator  &validator = wxDefaultValidator,
                                        const wxString     &name= wxTextCtrlNameStr);
 
+  void             SetCurve           (const P3DMathNaturalCubicSpline
+                                                          &Curve);
+
   void             SetDefaultCurve    (const P3DMathNaturalCubicSpline
                                                           &Curve);
 

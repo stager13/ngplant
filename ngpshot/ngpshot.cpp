@@ -39,6 +39,13 @@
 #include <ngput/p3dimage.h>
 #include <ngput/p3dimagetga.h>
 
+#ifdef WITH_LIBPNG
+ #include <ngput/p3dimagepng.h>
+#endif
+#ifdef WITH_LIBJPEG
+ #include <ngput/p3dimagejpg.h>
+#endif
+
 #include <ngput/p3dospath.h>
 
 #include <ngput/p3dglmemcntx.h>
@@ -167,6 +174,12 @@ class NGPTexManager
   this->TexPath = TexPath;
 
   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerTGA());
+  #ifdef WITH_LIBPNG
+  ImageFmtHandler.AddHandler(new P3DImageFmtHandlerPNG());
+  #endif
+  #ifdef WITH_LIBJPEG
+  ImageFmtHandler.AddHandler(new P3DImageFmtHandlerJPG());
+  #endif
  }
 
                    NGPTexManager::~NGPTexManager
@@ -204,8 +217,13 @@ GLuint             NGPTexManager::GetTextureHandle
     FullPathStr = TexPath + std::string("/") + GenericName;
 
     P3DImageData                       ImageData;
+    P3DPathName                        FullPathName(FullPathStr.c_str());
+    std::string                        Ext;
 
-    if (!ImageFmtHandler.LoadImageData(&ImageData,FullPathStr.c_str(),"tga"))
+    Ext = FullPathName.GetExtension();
+
+    if (!ImageFmtHandler.LoadImageData
+          (&ImageData,FullPathName.c_str(),Ext.c_str()))
      {
       return(0);
      }

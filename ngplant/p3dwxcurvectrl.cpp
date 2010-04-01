@@ -240,6 +240,15 @@ bool               P3DCurveCtrl::Create
   return(true);
  }
 
+void               P3DCurveCtrl::SetCurve
+                                      (const P3DMathNaturalCubicSpline
+                                                          &Curve)
+ {
+  this->curve = Curve;
+
+  Refresh();
+ }
+
 void               P3DCurveCtrl::SetDefaultCurve
                                       (const P3DMathNaturalCubicSpline
                                                           &Curve)

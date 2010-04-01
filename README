@@ -19,7 +19,7 @@ devtools    - additional tools (currently only NSIS installer script)
 samples     - sample plant models and textures
 scripts     - sample Python scripts
 plugins     - ngplant plug-ins directory
-extern/lua  - Lua 5.1.2 source code. Please read README.extern file for
+extern/lua  - Lua 5.1.4 source code. Please read README.extern file for
               more detailed information.
 extern/glew - GLEW 1.4.0 source code. Please read README.extern file for
               more detailed information.

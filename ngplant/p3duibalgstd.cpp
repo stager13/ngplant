@@ -23,6 +23,7 @@
 #include <ngpcore/p3dmodelstemtube.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 #include <p3duibalgstd.h>
 
 enum
@@ -55,7 +56,7 @@ END_EVENT_TABLE()
                    P3DBranchingAlgStdPanel::P3DBranchingAlgStdPanel
                                       (wxWindow           *Parent,
                                        P3DBranchingAlgStd *Alg)
-                   : wxPanel(Parent)
+                   : P3DUIParamPanel(Parent)
  {
   P3DMathNaturalCubicSpline            DefaultCurve;
 
@@ -207,83 +208,136 @@ END_EVENT_TABLE()
   TopSizer->SetSizeHints(this);
  }
 
+typedef P3DParamEditCmdTemplate<P3DBranchingAlgStd,float> P3DBAlgStdFloatParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DBranchingAlgStd,unsigned int> P3DBAlgStdUIntParamEditCmd;
+typedef P3DParamCurveEditCmdTemplate<P3DBranchingAlgStd> P3DBAlgStdCurveParamEditCmd;
+
 void               P3DBranchingAlgStdPanel::OnDensityChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetDensity(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetDensity(),
+          &P3DBranchingAlgStd::SetDensity));
  }
 
 void               P3DBranchingAlgStdPanel::OnDensityVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetDensityV(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetDensityV(),
+          &P3DBranchingAlgStd::SetDensityV));
  }
 
 void               P3DBranchingAlgStdPanel::OnMultiplicityChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetMultiplicity(event.GetIntValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdUIntParamEditCmd
+         (Alg,
+          event.GetIntValue(),
+          Alg->GetMultiplicity(),
+          &P3DBranchingAlgStd::SetMultiplicity));
  }
 
 void               P3DBranchingAlgStdPanel::OnRevAngleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetRevAngle(P3DMATH_DEG2RAD((float)(event.GetIntValue())));
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          P3DMATH_DEG2RAD((float)(event.GetIntValue())),
+          Alg->GetRevAngle(),
+          &P3DBranchingAlgStd::SetRevAngle));
  }
 
 void               P3DBranchingAlgStdPanel::OnRevAngleVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetRevAngleV(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetRevAngleV(),
+          &P3DBranchingAlgStd::SetRevAngleV));
  }
 
 void               P3DBranchingAlgStdPanel::OnRotAngleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetRotationAngle(P3DMATH_DEG2RAD((float)(event.GetIntValue())));
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          P3DMATH_DEG2RAD((float)(event.GetIntValue())),
+          Alg->GetRotationAngle(),
+          &P3DBranchingAlgStd::SetRotationAngle));
  }
 
 void               P3DBranchingAlgStdPanel::OnMinOffsetChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetMinOffset(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetMinOffset(),
+          &P3DBranchingAlgStd::SetMinOffset));
  }
 
 void               P3DBranchingAlgStdPanel::OnMaxOffsetChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetMaxOffset(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetMaxOffset(),
+          &P3DBranchingAlgStd::SetMaxOffset));
  }
 
 void               P3DBranchingAlgStdPanel::OnDeclinationCurveChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  Alg->SetDeclinationCurve(event.GetCurve());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdCurveParamEditCmd
+         (Alg,
+          event.GetCurve(),
+          Alg->GetDeclinationCurve(),
+          &P3DBranchingAlgStd::SetDeclinationCurve));
  }
 
 void               P3DBranchingAlgStdPanel::OnDeclinationVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Alg->SetDeclinationV(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetDeclinationV(),
+          &P3DBranchingAlgStd::SetDeclinationV));
  }
+
+#define model Alg
+
+void               P3DBranchingAlgStdPanel::UpdateControls
+                                      ()
+ {
+  P3DUpdateParamSpinSlider(wxID_DENSITY_CTRL,GetDensity);
+  P3DUpdateParamSpinSlider(wxID_DENSITYV_CTRL,GetDensityV);
+  P3DUpdateParamSpinSlider(wxID_MULTIPLICITY_CTRL,GetMultiplicity);
+  P3DUpdateParamSpinSlider(wxID_MIN_OFFSET_CTRL,GetMinOffset);
+  P3DUpdateParamSpinSlider(wxID_MAX_OFFSET_CTRL,GetMaxOffset);
+  P3DUpdateParamSpinSliderDegrees(wxID_REVANGLE_CTRL,GetRevAngle);
+  P3DUpdateParamSpinSlider(wxID_REVANGLEV_CTRL,GetRevAngleV);
+  P3DUpdateParamSpinSliderDegrees(wxID_ROTANGLE_CTRL,GetRotationAngle);
+  P3DUpdateParamCurveCtrl(wxID_DECLINATION_CURVE_CTRL,GetDeclinationCurve);
+  P3DUpdateParamSpinSlider(wxID_DECLINATIONV_CTRL,GetDeclinationV);
+ }
+
+#undef model
 

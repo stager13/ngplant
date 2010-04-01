@@ -23,6 +23,7 @@
 #include <ngpcore/p3dmodelstemquad.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 #include <p3duivisrangepanel.h>
 #include <p3duimodelstemquad.h>
 
@@ -49,7 +50,7 @@ END_EVENT_TABLE()
                                       (wxWindow           *parent,
                                        P3DStemModelQuad   *model,
                                        P3DVisRangeState   *VisRangeState)
-                   : wxPanel(parent)
+                   : P3DUIParamPanel(parent)
  {
   P3DMathNaturalCubicSpline            DefaultCurve;
 
@@ -140,7 +141,9 @@ END_EVENT_TABLE()
 
   TopSizer->Add(QuadParamsTopSizer,0,wxEXPAND | wxALL,1);
 
-  TopSizer->Add(new P3DVisRangePanel(this,VisRangeState),0,wxEXPAND | wxALL,1);
+  VisRangePanel = new P3DVisRangePanel(this,VisRangeState);
+
+  TopSizer->Add(VisRangePanel,0,wxEXPAND | wxALL,1);
 
   SetSizer(TopSizer);
 
@@ -148,51 +151,87 @@ END_EVENT_TABLE()
   TopSizer->SetSizeHints(this);
  }
 
+typedef P3DParamEditCmdTemplate<P3DStemModelQuad,float> P3DStemQuadFloatParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DStemModelQuad,unsigned int> P3DStemQuadUIntParamEditCmd;
+typedef P3DParamCurveEditCmdTemplate<P3DStemModelQuad> P3DStemQuadCurveParamEditCmd;
+
 void               P3DStemQuadPanel::OnStemLengthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetLength(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+  (new P3DStemQuadFloatParamEditCmd
+        (model,
+         event.GetFloatValue(),
+         model->GetLength(),
+         &P3DStemModelQuad::SetLength));
  }
 
 void               P3DStemQuadPanel::OnStemWidthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetWidth(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemQuadFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetWidth(),
+          &P3DStemModelQuad::SetWidth));
  }
 
 void               P3DStemQuadPanel::OnScalingChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  model->SetScalingCurve(event.GetCurve());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemQuadCurveParamEditCmd
+         (model,
+          event.GetCurve(),
+          model->GetScalingCurve(),
+          &P3DStemModelQuad::SetScalingCurve));
  }
 
 void               P3DStemQuadPanel::OnSectionCountChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetSectionCount(event.GetIntValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemQuadUIntParamEditCmd
+         (model,
+          event.GetIntValue(),
+          model->GetSectionCount(),
+          &P3DStemModelQuad::SetSectionCount));
  }
 
 void               P3DStemQuadPanel::OnCurvatureChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  model->SetCurvature(event.GetCurve());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemQuadCurveParamEditCmd
+         (model,
+          event.GetCurve(),
+          model->GetCurvature(),
+          &P3DStemModelQuad::SetCurvature));
  }
 
 void               P3DStemQuadPanel::OnThicknessChanged
                                       (wxSpinSliderEvent  &event)
  {
-  model->SetThickness(event.GetFloatValue());
+  wxGetApp().ExecEditCmd
+   (new P3DStemQuadFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetThickness(),
+          &P3DStemModelQuad::SetThickness));
+ }
 
-  wxGetApp().InvalidatePlant();
+void               P3DStemQuadPanel::UpdateControls
+                                      ()
+ {
+  P3DUpdateParamSpinSlider(wxID_STEM_LENGTH_CTRL,GetLength);
+  P3DUpdateParamSpinSlider(wxID_STEM_WIDTH_CTRL,GetWidth);
+  P3DUpdateParamSpinSlider(wxID_SECTION_COUNT_CTRL,GetSectionCount);
+  P3DUpdateParamSpinSlider(wxID_THICKNESS_CTRL,GetThickness);
+
+  P3DUpdateParamCurveCtrl(wxID_STEM_SCALING_CTRL,GetScalingCurve);
+  P3DUpdateParamCurveCtrl(wxID_CURVATURE_CTRL,GetCurvature);
+
+  VisRangePanel->UpdateControls();
  }
 

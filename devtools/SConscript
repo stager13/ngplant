@@ -1,3 +1,5 @@
+from sctool.SConcompat import *
+
 NGPBENCH_SRC = Split("""
 ngpbench.cpp
 """)
@@ -14,7 +16,7 @@ oleaut32 uuid rpcrt4 advapi32 wsock32 odbc32
 opengl32 glu32
 """)
 
-NGPBenchEnv = BaseEnv.Copy()
+NGPBenchEnv = EnvClone(BaseEnv)
 
 NGPBenchEnv.Append(CPPPATH=NGPBENCH_INCLUDES)
 NGPBenchEnv.Append(LIBPATH=['#/ngpcore'])

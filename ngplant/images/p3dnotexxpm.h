@@ -1,5 +1,5 @@
 /* XPM */
-static char * P3DNoTextureXpm[] = {
+static const char * P3DNoTextureXpm[] = {
 "64 64 143 2",
 "  	c #CFCFCF",
 ". 	c #808080",

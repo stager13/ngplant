@@ -28,6 +28,10 @@
 #include <wx/cmdline.h>
 #include <wx/dir.h>
 
+#if !defined(__WXMSW__) && !defined(__WXPM__)
+ #include "images/ngplant.xpm"
+#endif
+
 #include <ngpcore/p3dmodel.h>
 #include <ngpcore/p3dmodelstemtube.h>
 #include <ngpcore/p3dmodelstemquad.h>
@@ -74,18 +78,72 @@ BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_EXIT,P3DMainFrame::OnQuit)
  EVT_MENU(wxID_ABOUT,P3DMainFrame::OnAbout)
  EVT_MENU(wxID_EDIT_PREFERENCES,P3DMainFrame::OnEditPreferences)
+ EVT_MENU(wxID_UNDO,P3DMainFrame::OnUndo)
+ EVT_MENU(wxID_REDO,P3DMainFrame::OnRedo)
 END_EVENT_TABLE()
 
+class P3DUndoRedoMenuStateUpdater
+ {
+  public           :
+
+                   P3DUndoRedoMenuStateUpdater
+                                      (wxMenuBar          *MenuBar,
+                                       const P3DEditCommandQueue
+                                                          &CommandQueue)
+                   : Queue(CommandQueue)
+   {
+    this->MenuBar = MenuBar;
+
+    UndoEmpty = Queue.UndoQueueEmpty();
+    RedoEmpty = Queue.RedoQueueEmpty();
+   }
+
+                  ~P3DUndoRedoMenuStateUpdater
+                                      ()
+   {
+    wxMenuItem                        *Item;
+
+    if (UndoEmpty != Queue.UndoQueueEmpty())
+     {
+      Item = MenuBar->FindItem(wxID_UNDO);
+
+      if (Item != NULL)
+       {
+        Item->Enable(UndoEmpty);
+       }
+     }
+
+    if (RedoEmpty != Queue.RedoQueueEmpty())
+     {
+      Item = MenuBar->FindItem(wxID_REDO);
+
+      if (Item != NULL)
+       {
+        Item->Enable(RedoEmpty);
+       }
+     }
+   }
+
+  private          :
+
+  const P3DEditCommandQueue           &Queue;
+  wxMenuBar                           *MenuBar;
+  bool                                 UndoEmpty;
+  bool                                 RedoEmpty;
+ };
 
                    P3DMainFrame::P3DMainFrame  (const wxChar   *title)
                     : wxFrame(NULL,wxID_ANY,title,wxDefaultPosition,wxSize(640,400))
  {
   wxMenu          *FileMenu = new wxMenu();
+  wxMenu          *EditMenu = new wxMenu();
   wxMenu          *HelpMenu = new wxMenu();
   wxMenu          *ExportMenu = new wxMenu();
   const P3DPluginInfoVector
                   &ExportPlugins = wxGetApp().GetExportPlugins();
   int              MenuItemId = wxID_EXPORT_PLUGIN_FIRST;
+
+  SetIcon(wxICON(ngplant));
 
   ExportMenu->Append(wxID_EXPORT_OBJ,wxT("Alias Wavefront .OBJ"));
 
@@ -104,10 +162,19 @@ END_EVENT_TABLE()
   FileMenu->Append(wxID_EDIT_PREFERENCES,wxT("Preferences..."));
   FileMenu->Append(wxID_EXIT,wxT("E&xit\tAlt-X"));
 
+  wxMenuItem *Item;
+
+  Item = EditMenu->Append(wxID_UNDO,wxT("Undo\tCtrl-Z"));
+  Item->Enable(false);
+
+  Item = EditMenu->Append(wxID_REDO,wxT("&Redo\tCtrl-R"));
+  Item->Enable(false);
+
   HelpMenu->Append(wxID_ABOUT,wxT("About..."));
 
   wxMenuBar       *MenuBar = new wxMenuBar();
   MenuBar->Append(FileMenu,wxT("&File"));
+  MenuBar->Append(EditMenu,wxT("&Edit"));
   MenuBar->Append(HelpMenu,wxT("&Help"));
 
   Canvas3D = new P3DCanvas3D(this);
@@ -164,46 +231,6 @@ void               P3DMainFrame::OnSaveAs (wxCommandEvent     &event)
    }
  }
 
-static bool        ColorFromStr           (P3DAppColor3b      *Color,
-                                           const wxString     &ColorStr)
- {
-  long R,G,B;
-
-  if (ColorStr.Length() != 6)
-   {
-    return(false);
-   }
-
-  if ((ColorStr.Mid(0,2).ToLong(&R,16)) &&
-      (ColorStr.Mid(2,2).ToLong(&G,16)) &&
-      (ColorStr.Mid(4,2).ToLong(&B,16)))
-   {
-    Color->R = (unsigned char)R;
-    Color->G = (unsigned char)G;
-    Color->B = (unsigned char)B;
-
-    return(true);
-   }
-  else
-   {
-    return(false);
-   }
- }
-
-static wxString    ColorToStr             (unsigned char   R,
-                                           unsigned char   G,
-                                           unsigned char   B)
- {
-  wxString         Result;
-
-  Result.Printf(wxT("%02X%02X%02X"),
-                (unsigned int)R,
-                (unsigned int)G,
-                (unsigned int)B);
-
-  return(Result);
- }
-
 void               P3DMainFrame::OnEditPreferences
                                           (wxCommandEvent     &event)
  {
@@ -249,6 +276,7 @@ void               P3DMainFrame::OnEditPreferences
 
   PreferencesDialog.SetExport3DPrefs(wxGetApp().GetExport3DPrefs());
   PreferencesDialog.SetCameraControlPrefs(*wxGetApp().GetCameraControlPrefs());
+  PreferencesDialog.SetRenderQuirksPrefs(wxGetApp().GetRenderQuirksPrefs());
 
   PreferencesDialog.SetPluginsPath(wxGetApp().GetPluginsPath());
 
@@ -301,28 +329,34 @@ void               P3DMainFrame::OnEditPreferences
 
     Cfg->SetPath(wxT("/"));
 
-    PreferencesDialog.GetGroundColor(&R,&G,&B);
-    wxGetApp().SetGroundColor(R,G,B);
+    P3D3DViewPrefs View3DPrefs;
 
-    Cfg->Write(wxT("/3DView/GroundColor"),ColorToStr(R,G,B));
+    PreferencesDialog.GetGroundColor(&View3DPrefs.GroundColor.R,
+                                     &View3DPrefs.GroundColor.G,
+                                     &View3DPrefs.GroundColor.B);
+    wxGetApp().SetGroundColor(View3DPrefs.GroundColor.R,
+                              View3DPrefs.GroundColor.G,
+                              View3DPrefs.GroundColor.B);
 
-    wxGetApp().SetGroundVisibility(PreferencesDialog.GetGroundVisible());
+    View3DPrefs.GroundVisible = PreferencesDialog.GetGroundVisible();
 
-    Cfg->Write(wxT("/3DView/GroundVisible"),(long)PreferencesDialog.GetGroundVisible());
+    wxGetApp().SetGroundVisibility(View3DPrefs.GroundVisible);
 
-    PreferencesDialog.GetBackgroundColor(&R,&G,&B);
-    wxGetApp().SetBackgroundColor(R,G,B);
+    PreferencesDialog.GetBackgroundColor(&View3DPrefs.BackgroundColor.R,
+                                         &View3DPrefs.BackgroundColor.G,
+                                         &View3DPrefs.BackgroundColor.B);
+    wxGetApp().SetBackgroundColor(View3DPrefs.BackgroundColor.R,
+                                  View3DPrefs.BackgroundColor.G,
+                                  View3DPrefs.BackgroundColor.B);
 
-    Cfg->Write(wxT("/3DView/BackgroundColor"),ColorToStr(R,G,B));
+    View3DPrefs.Save(Cfg);
 
     wxGetApp().SetCameraControlPrefs(&PreferencesDialog.GetCameraControlPrefs());
 
     wxGetApp().GetCameraControlPrefs()->Save(Cfg);
 
     PreferencesDialog.GetExport3DPrefs(wxGetApp().GetExport3DPrefs());
-
-    Cfg->Write(wxT("Export/ExportHiddenGroups"),(long)wxGetApp().GetExport3DPrefs()->HiddenGroupsExportMode);
-    Cfg->Write(wxT("Export/ExportOutVisRangeGroups"),(long)wxGetApp().GetExport3DPrefs()->OutVisRangeExportMode);
+    wxGetApp().GetExport3DPrefs()->Save(Cfg);
 
     wxGetApp().SetPluginsPath(PreferencesDialog.GetPluginsPath());
 
@@ -343,6 +377,9 @@ void               P3DMainFrame::OnEditPreferences
      }
 
     P3DUIControlsPrefs::Save(Cfg);
+
+    wxGetApp().SetRenderQuirksPrefs(PreferencesDialog.GetRenderQuirksPrefs());
+    wxGetApp().GetRenderQuirksPrefs().Save(Cfg);
 
     InvalidatePlant();
    }
@@ -535,6 +572,24 @@ void               P3DMainFrame::OnOpen
    }
  }
 
+void               P3DMainFrame::OnUndo
+                                      (wxCommandEvent     &event)
+ {
+  wxGetApp().Undo();
+ }
+
+void               P3DMainFrame::OnRedo
+                                      (wxCommandEvent     &event)
+ {
+  wxGetApp().Redo();
+ }
+
+void               P3DMainFrame::UpdateControls
+                                      ()
+ {
+  EditPanel->UpdateControls();
+ }
+
 void               P3DMainFrame::InvalidatePlant
                                       ()
  {
@@ -576,7 +631,7 @@ const P3DPlantObject
 
     try
      {
-      PlantObject      = new P3DPlantObject(PlantModel);
+      PlantObject      = new P3DPlantObject(PlantModel,RenderQuirks.UseColorArray);
       PlantObjectDirty = false;
      }
     catch (...)
@@ -595,6 +650,10 @@ const P3DPlantObject
 
 void               P3DApp::SetModel   (P3DPlantModel      *Model)
  {
+  P3DUndoRedoMenuStateUpdater           Updater(MainFrame->GetMenuBar(),CommandQueue);
+
+  CommandQueue.Clear();
+
   if (PlantModel != Model)
    {
     delete PlantModel;
@@ -713,7 +772,7 @@ void               P3DApp::ForceUpdate()
 
     try
      {
-      PlantObject      = new P3DPlantObject(PlantModel);
+      PlantObject      = new P3DPlantObject(PlantModel,RenderQuirks.UseColorArray);
       PlantObjectDirty = false;
      }
     catch (...)
@@ -820,6 +879,37 @@ P3DPlantModel     *P3DApp::CreateNewPlantModel
   NewPlantModel->GetPlantBase()->AppendSubBranch(TrunkModel);
 
   return(NewPlantModel);
+ }
+
+void               P3DApp::ExecEditCmd(P3DEditCommand     *Cmd)
+ {
+  P3DUndoRedoMenuStateUpdater          Updater(MainFrame->GetMenuBar(),CommandQueue);
+
+  CommandQueue.PushAndExec(Cmd);
+ }
+
+void               P3DApp::Undo       ()
+ {
+  P3DUndoRedoMenuStateUpdater          Updater(MainFrame->GetMenuBar(),CommandQueue);
+
+  CommandQueue.Undo();
+
+  UpdateControls();
+ }
+
+void               P3DApp::Redo       ()
+ {
+  P3DUndoRedoMenuStateUpdater          Updater(MainFrame->GetMenuBar(),CommandQueue);
+
+  CommandQueue.Redo();
+
+  UpdateControls();
+ }
+
+void               P3DApp::UpdateControls
+                                      ()
+ {
+  MainFrame->UpdateControls();
  }
 
 void               P3DApp::OnInitCmdLine
@@ -944,84 +1034,19 @@ bool               P3DApp::OnInit     ()
 
   InitTexFS();
 
-  wxString ColorStr;
-
-  if (Cfg->Read(wxT("3DView/GroundColor"),&ColorStr) &&
-      (ColorFromStr(&GroundColor,ColorStr)))
-   {
-   }
-  else
-   {
-    GroundColor.R = 0x80;
-    GroundColor.G = 0x80;
-    GroundColor.B = 0x80;
-   }
-
-  long   CfgParamLong;
-  double CfgParamDouble;
-
-  if (Cfg->Read(wxT("3DView/GroundVisible"),&CfgParamLong))
-   {
-    GroundVisible = (bool)CfgParamLong;
-   }
-  else
-   {
-    GroundVisible = true;
-   }
-
-  if (Cfg->Read(wxT("3DView/BackgroundColor"),&ColorStr) &&
-      (ColorFromStr(&BackgroundColor,ColorStr)))
-   {
-   }
-  else
-   {
-    BackgroundColor.R = 0x00;
-    BackgroundColor.G = 0x00;
-    BackgroundColor.B = 0x00;
-   }
-
+  View3DPrefs.Read(Cfg);
   CameraControlPrefs.Read(Cfg);
   P3DUIControlsPrefs::Read(Cfg);
-
-  if (Cfg->Read(wxT("Export/ExportHiddenGroups"),&CfgParamLong))
-   {
-    if ((CfgParamLong == P3D_ALWAYS) ||
-        (CfgParamLong == P3D_NEVER)  ||
-        (CfgParamLong == P3D_ASK))
-     {
-      Export3DPrefs.HiddenGroupsExportMode = CfgParamLong;
-     }
-    else
-     {
-      Export3DPrefs.HiddenGroupsExportMode = P3D_ASK;
-     }
-   }
-  else
-   {
-    Export3DPrefs.HiddenGroupsExportMode = P3D_ASK;
-   }
-
-  if (Cfg->Read(wxT("Export/ExportOutVisRangeGroups"),&CfgParamLong))
-   {
-    if ((CfgParamLong == P3D_ALWAYS) ||
-        (CfgParamLong == P3D_NEVER)  ||
-        (CfgParamLong == P3D_ASK))
-     {
-      Export3DPrefs.OutVisRangeExportMode = CfgParamLong;
-     }
-    else
-     {
-      Export3DPrefs.OutVisRangeExportMode = P3D_ASK;
-     }
-   }
-  else
-   {
-    Export3DPrefs.OutVisRangeExportMode = P3D_ASK;
-   }
+  Export3DPrefs.Read(Cfg);
+  RenderQuirks.Read(Cfg);
 
   if (!Cfg->Read(wxT("Paths/Plugins"),&PluginsPath))
    {
+    #if defined(PLUGINS_DIR)
+    PluginsPath = wxT(PLUGINS_DIR);
+    #else
     PluginsPath = wxT("plugins");
+    #endif
    }
 
   ScanPlugins();
@@ -1050,9 +1075,9 @@ void               P3DApp::GetGroundColor
                                        unsigned char      *G,
                                        unsigned char      *B) const
  {
-  *R = GroundColor.R;
-  *G = GroundColor.G;
-  *B = GroundColor.B;
+  *R = View3DPrefs.GroundColor.R;
+  *G = View3DPrefs.GroundColor.G;
+  *B = View3DPrefs.GroundColor.B;
  }
 
 void               P3DApp::SetGroundColor
@@ -1060,9 +1085,9 @@ void               P3DApp::SetGroundColor
                                        unsigned char       G,
                                        unsigned char       B)
  {
-  GroundColor.R = R;
-  GroundColor.G = G;
-  GroundColor.B = B;
+  View3DPrefs.GroundColor.R = R;
+  View3DPrefs.GroundColor.G = G;
+  View3DPrefs.GroundColor.B = B;
 
   InvalidatePlant();
  }
@@ -1070,15 +1095,15 @@ void               P3DApp::SetGroundColor
 bool               P3DApp::IsGroundVisible
                                       () const
  {
-  return(GroundVisible);
+  return(View3DPrefs.GroundVisible);
  }
 
 void               P3DApp::SetGroundVisibility
                                       (bool                Visible)
  {
-  if (GroundVisible != Visible)
+  if (View3DPrefs.GroundVisible != Visible)
    {
-    GroundVisible = Visible;
+    View3DPrefs.GroundVisible = Visible;
 
     InvalidatePlant();
    }
@@ -1089,9 +1114,9 @@ void               P3DApp::GetBackgroundColor
                                        unsigned char      *G,
                                        unsigned char      *B) const
  {
-  *R = BackgroundColor.R;
-  *G = BackgroundColor.G;
-  *B = BackgroundColor.B;
+  *R = View3DPrefs.BackgroundColor.R;
+  *G = View3DPrefs.BackgroundColor.G;
+  *B = View3DPrefs.BackgroundColor.B;
  }
 
 void               P3DApp::SetBackgroundColor
@@ -1099,9 +1124,9 @@ void               P3DApp::SetBackgroundColor
                                        unsigned char       G,
                                        unsigned char       B)
  {
-  BackgroundColor.R = R;
-  BackgroundColor.G = G;
-  BackgroundColor.B = B;
+  View3DPrefs.BackgroundColor.R = R;
+  View3DPrefs.BackgroundColor.G = G;
+  View3DPrefs.BackgroundColor.B = B;
 
   InvalidatePlant();
  }
@@ -1186,5 +1211,19 @@ void               P3DApp::DisableShaders
   UseShaders = false;
 
   ShaderManager.DisableShaders();
+ }
+
+const P3DRenderQuirksPrefs
+                  &P3DApp::GetRenderQuirksPrefs
+                                      () const
+ {
+  return(RenderQuirks);
+ }
+
+void               P3DApp::SetRenderQuirksPrefs
+                                      (const P3DRenderQuirksPrefs
+                                                          &Prefs)
+ {
+  RenderQuirks = Prefs;
  }
 

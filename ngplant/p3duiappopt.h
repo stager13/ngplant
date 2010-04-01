@@ -119,6 +119,13 @@ class P3DAppOptDialog : public wxDialog
                                       (const P3DCameraControlPrefs
                                                           &Prefs);
 
+  const P3DRenderQuirksPrefs
+                  &GetRenderQuirksPrefs
+                                      () const;
+  void             SetRenderQuirksPrefs
+                                      (const P3DRenderQuirksPrefs
+                                                          &Prefs);
+
   void             SetPluginsPath     (const wxString     &PluginsPath);
   const wxString  &GetPluginsPath     () const;
 
@@ -141,6 +148,7 @@ class P3DAppOptDialog : public wxDialog
 
   P3DExport3DPrefs                     Export3DPrefs;
   P3DCameraControlPrefs                CameraControlPrefs;
+  P3DRenderQuirksPrefs                 RenderQuirksPrefs;
 
   wxString                             PluginsPath;
 

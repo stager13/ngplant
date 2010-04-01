@@ -24,7 +24,7 @@
 
                    P3DStemEmptyPanel::P3DStemEmptyPanel
                                       (wxWindow           *Parent)
-                   : wxPanel(Parent)
+                   : P3DUIParamPanel(Parent)
  {
  }
 

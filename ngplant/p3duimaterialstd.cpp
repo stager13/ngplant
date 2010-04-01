@@ -23,6 +23,7 @@
 #include <wx/colordlg.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 
 #include <p3dmaterialstd.h>
 #include <p3duimaterialstd.h>
@@ -65,7 +66,7 @@ BEGIN_EVENT_TABLE(P3DMaterialStdPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_ALPHA_FADEOUT_CTRL,P3DMaterialStdPanel::OnAlphaFadeOutChanged)
 END_EVENT_TABLE()
 
-static char       *TexLayerNames[] =
+static const char *TexLayerNames[] =
  {
   "Dif", "Nor", "Aux0", "Aux1"
  };
@@ -75,7 +76,7 @@ static char       *TexLayerNames[] =
                                        P3DMaterialInstanceSimple
                                                           *Material,
                                        P3DStemModel       *StemModel)
-                   : wxPanel(Parent)
+                   : P3DUIParamPanel(Parent)
  {
   float            R,G,B;
 
@@ -324,6 +325,50 @@ static char       *TexLayerNames[] =
   TopSizer->SetSizeHints(this);
  }
 
+namespace {
+
+class P3DColorParamEditCommand : public P3DEditCommand
+ {
+  public           :
+
+                   P3DColorParamEditCommand
+                                      (P3DMaterialInstanceSimple
+                                                          *Material,
+                                       float               R,
+                                       float               G,
+                                       float               B)
+   {
+    this->Material      = Material;
+    this->NewR          = R;
+    this->NewG          = G;
+    this->NewB          = B;
+
+    Material->GetColor(&OldR,&OldG,&OldB);
+   }
+
+  virtual void     Exec               ()
+   {
+    Material->SetColor(NewR,NewG,NewB);
+
+    wxGetApp().InvalidatePlant();
+   }
+
+  virtual void     Undo               ()
+   {
+    Material->SetColor(OldR,OldG,OldB);
+
+    wxGetApp().InvalidatePlant();
+   }
+
+  private          :
+
+  P3DMaterialInstanceSimple           *Material;
+  float                                NewR,NewG,NewB;
+  float                                OldR,OldG,OldB;
+ };
+}
+
+
 void               P3DMaterialStdPanel::OnBaseColorClicked
                                       (wxCommandEvent     &event)
  {
@@ -348,41 +393,52 @@ void               P3DMaterialStdPanel::OnBaseColorClicked
 
     wxColour Color = UserColorData.GetColour();
 
-    Material->SetColor(Color.Red() / 255.0f,Color.Green() / 255.0f,Color.Blue() / 255.0f);
-
-    wxGetApp().InvalidatePlant();
+    wxGetApp().ExecEditCmd
+     (new P3DColorParamEditCommand
+           (Material,
+            Color.Red()   / 255.0f,
+            Color.Green() / 255.0f,
+            Color.Blue()  / 255.0f));
    }
  }
+
+typedef P3DParamEditCmdTemplate<P3DStemModelTube,float> P3DStemTubeFloatParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DStemModelTube,unsigned int> P3DStemTubeUIntParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DMaterialInstanceSimple,bool> P3DMaterialBoolParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DMaterialInstanceSimple,float> P3DMaterialFloatParamEditCmd;
 
 void               P3DMaterialStdPanel::OnUScaleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  StemModelTube->SetTexCoordUScale(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeFloatParamEditCmd
+        (StemModelTube,
+         event.GetFloatValue(),
+         StemModelTube->GetTexCoordUScale(),
+         &P3DStemModelTube::SetTexCoordUScale));
  }
 
 void               P3DMaterialStdPanel::OnVModeChanged
                                       (wxCommandEvent     &event)
  {
-  if (event.GetSelection() == 0)
-   {
-    StemModelTube->SetTexCoordVMode(P3DTexCoordModeRelative);
-   }
-  else
-   {
-    StemModelTube->SetTexCoordVMode(P3DTexCoordModeAbsolute);
-   }
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeUIntParamEditCmd
+        (StemModelTube,
+         event.GetSelection() == 0 ? P3DTexCoordModeRelative :
+                                     P3DTexCoordModeAbsolute,
+         StemModelTube->GetTexCoordVMode(),
+         &P3DStemModelTube::SetTexCoordVMode));
  }
 
 void               P3DMaterialStdPanel::OnVScaleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  StemModelTube->SetTexCoordVScale(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DStemTubeFloatParamEditCmd
+        (StemModelTube,
+         event.GetFloatValue(),
+         StemModelTube->GetTexCoordVScale(),
+         &P3DStemModelTube::SetTexCoordVScale));
  }
 
 void               P3DMaterialStdPanel::OnTexLayerClicked
@@ -438,17 +494,110 @@ void               P3DMaterialStdPanel::OnTexLayerClicked
    }
  }
 
+namespace {
+
+class ChangeTextureCommand : public P3DEditCommand
+ {
+  public           :
+
+                   ChangeTextureCommand
+                                      (P3DMaterialInstanceSimple
+                                                          *Material,
+                                       unsigned int        Layer,
+                                       P3DTexHandle        TexHandle)
+   {
+    this->Material      = Material;
+    this->Layer         = Layer;
+    this->TexHandle     = TexHandle;
+   }
+
+  virtual         ~ChangeTextureCommand
+                                      ()
+   {
+    if (TexHandle != P3DTexHandleNULL)
+     {
+      wxGetApp().GetTexManager()->FreeTexture(TexHandle);
+     }
+   }
+
+  virtual void     Exec               ()
+   {
+    ChangeTexture();
+   }
+
+  virtual void     Undo               ()
+   {
+    ChangeTexture();
+   }
+
+  private          :
+
+  void             ChangeTexture      ()
+   {
+    P3DTexHandle   CurrTexHandle;
+
+    CurrTexHandle = Material->GetTexHandle(Layer);
+
+    if (CurrTexHandle != P3DTexHandleNULL)
+     {
+      wxGetApp().GetTexManager()->IncRefCount(CurrTexHandle);
+     }
+
+    Material->SetTexHandle(Layer,TexHandle);
+
+    TexHandle = CurrTexHandle;
+
+    wxGetApp().InvalidatePlant();
+   }
+
+  P3DMaterialInstanceSimple           *Material;
+  unsigned int                         Layer;
+  P3DTexHandle                         TexHandle;
+ };
+}
+
 void               P3DMaterialStdPanel::OnBaseTexClicked
                                       (wxCommandEvent     &event)
  {
   wxString                             FileName;
   P3DTexHandle                         TexHandle;
+  unsigned int                         ImgFormatCount;
+  unsigned int                         ImgFormatIndex;
+  wxString                             FileWildcard;
+
+  ImgFormatCount = wxGetApp().GetTexManager()->GetFmtHandler()->FormatCount();
+
+  wxString  FormatExt;
+  wxString  AllImgFormatExt;
+  wxString  WildPrefix(wxT("*."));
+
+  for (ImgFormatIndex = 0; ImgFormatIndex < ImgFormatCount; ImgFormatIndex++)
+   {
+    FormatExt = wxString(wxGetApp().GetTexManager()->GetFmtHandler()->FormatExt(ImgFormatIndex),wxConvUTF8);
+
+    FileWildcard += wxString::Format(wxT("%s files (*.%s)|*.%s|"),
+                                     FormatExt.Upper().c_str(),
+                                     FormatExt.c_str(),
+                                     FormatExt.c_str());
+
+    if (ImgFormatIndex > 0)
+     {
+      AllImgFormatExt += wxT(";");
+     }
+
+    AllImgFormatExt += WildPrefix + FormatExt;
+   }
+
+  FileWildcard  = wxString(wxT("All images (")) + AllImgFormatExt +
+                   wxT(")|") + AllImgFormatExt + wxT("|") + FileWildcard;
+
+  FileWildcard += wxT("All files(*.*)|*.*");
 
   FileName = ::wxFileSelector(wxT("Select texture file"),
                               wxEmptyString,
                               wxEmptyString,
                               wxEmptyString,
-                              wxT("TGA files (*.tga)|*.tga|All files(*.*)|*.*"),
+                              FileWildcard,
                               wxOPEN | wxFILE_MUST_EXIST);
 
   if (!FileName.empty())
@@ -473,11 +622,10 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
       Button->SetForegroundColour(*wxBLUE);
      }
 
-    Material->SetTexHandle(ActiveTexLayer,TexHandle);
-
     RemoveTexButton->Enable(TRUE);
 
-    wxGetApp().InvalidatePlant();
+    wxGetApp().ExecEditCmd
+     (new ChangeTextureCommand(Material,ActiveTexLayer,TexHandle));
    }
  }
 
@@ -495,40 +643,85 @@ void               P3DMaterialStdPanel::OnRemoveTexClicked
     Button->SetForegroundColour(*wxBLACK);
    }
 
-  Material->SetTexHandle(ActiveTexLayer,P3DTexHandleNULL);
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new ChangeTextureCommand(Material,ActiveTexLayer,P3DTexHandleNULL));
  }
 
 void               P3DMaterialStdPanel::OnDoubleSidedChanged
                                       (wxCommandEvent     &event)
  {
-  if (event.IsChecked())
-   {
-    Material->SetDoubleSided(true);
-   }
-  else
-   {
-    Material->SetDoubleSided(false);
-   }
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DMaterialBoolParamEditCmd
+         (Material,
+          event.IsChecked(),
+          Material->IsDoubleSided(),
+          &P3DMaterialInstanceSimple::SetDoubleSided));
  }
 
 void               P3DMaterialStdPanel::OnTransparentChanged
                                       (wxCommandEvent     &event)
  {
-  if (event.IsChecked())
+  wxGetApp().ExecEditCmd
+   (new P3DMaterialBoolParamEditCmd
+         (Material,
+          event.IsChecked(),
+          Material->IsTransparent(),
+          &P3DMaterialInstanceSimple::SetTransparent));
+ }
+
+namespace {
+
+class ChangeBillboardModeCommand : public P3DEditCommand
+ {
+  public           :
+
+                   ChangeBillboardModeCommand
+                                      (P3DMaterialInstanceSimple
+                                                          *Material,
+                                       P3DStemModelQuad   *StemModelQuad,
+                                       unsigned int        Mode)
    {
-    Material->SetTransparent(true);
-   }
-  else
-   {
-    Material->SetTransparent(false);
+    this->Material      = Material;
+    this->StemModelQuad = StemModelQuad;
+    this->Mode          = Mode;
    }
 
-  wxGetApp().InvalidatePlant();
- }
+  virtual void     Exec               ()
+   {
+    ChangeMode();
+   }
+
+  virtual void     Undo               ()
+   {
+    ChangeMode();
+   }
+
+  private          :
+
+  void             ChangeMode         ()
+   {
+    unsigned int   OldMode;
+
+    OldMode = Material->GetBillboardMode();
+
+    if (StemModelQuad != 0)
+     {
+      StemModelQuad->SetBillboardMode(Mode);
+     }
+
+    Material->SetBillboardMode(Mode);
+
+    Mode = OldMode;
+
+    wxGetApp().InvalidatePlant();
+   }
+
+  P3DMaterialInstanceSimple           *Material;
+  P3DStemModelQuad                    *StemModelQuad;
+  unsigned int                         Mode;
+ };
+}
+
 
 void               P3DMaterialStdPanel::OnBillboardModeChanged
                                       (wxCommandEvent     &event)
@@ -548,44 +741,144 @@ void               P3DMaterialStdPanel::OnBillboardModeChanged
     BillboardMode = P3D_BILLBOARD_MODE_NONE;
    }
 
-  if (StemModelQuad != 0)
-   {
-    StemModelQuad->SetBillboardMode(BillboardMode);
-   }
-
-  Material->SetBillboardMode(BillboardMode);
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new ChangeBillboardModeCommand
+         (Material,StemModelQuad,BillboardMode));
  }
 
 void               P3DMaterialStdPanel::OnAlphaCtrlEnabledChanged
                                       (wxCommandEvent     &event)
  {
-  if (event.IsChecked())
-   {
-    Material->SetAlphaCtrlState(true);
-   }
-  else
-   {
-    Material->SetAlphaCtrlState(false);
-   }
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DMaterialBoolParamEditCmd
+         (Material,
+          event.IsChecked(),
+          Material->IsAlphaCtrlEnabled(),
+          &P3DMaterialInstanceSimple::SetAlphaCtrlState));
  }
 
 void               P3DMaterialStdPanel::OnAlphaFadeInChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Material->SetAlphaFadeIn(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DMaterialFloatParamEditCmd
+         (Material,
+          event.GetFloatValue(),
+          Material->GetAlphaFadeIn(),
+          &P3DMaterialInstanceSimple::SetAlphaFadeIn));
  }
 
 void               P3DMaterialStdPanel::OnAlphaFadeOutChanged
                                       (wxSpinSliderEvent  &event)
  {
-  Material->SetAlphaFadeOut(event.GetFloatValue());
-
-  wxGetApp().InvalidatePlant();
+  wxGetApp().ExecEditCmd
+   (new P3DMaterialFloatParamEditCmd
+         (Material,
+          event.GetFloatValue(),
+          Material->GetAlphaFadeOut(),
+          &P3DMaterialInstanceSimple::SetAlphaFadeOut));
  }
+
+#define model Material
+
+void               P3DMaterialStdPanel::UpdateControls
+                                      ()
+ {
+  wxButton *Button;
+  wxChoice *Choice;
+
+  Button = (wxButton*)FindWindow(wxID_BASECOLOR_CTRL);
+
+  if (Button != NULL)
+   {
+    float     R,G,B;
+
+    Material->GetColor(&R,&G,&B);
+
+    Button->SetBackgroundColour(wxColour((int)(R * 255.0f),(int)(G * 255.0f),(int)(B * 255.0f)));
+   }
+
+  P3DUpdateParamSpinSliderExt(StemModelTube,wxID_USCALE_CTRL,GetTexCoordUScale);
+
+  Choice = (wxChoice*)FindWindow(wxID_VMODE_CTRL);
+
+  if (Choice != NULL)
+   {
+    Choice->SetSelection
+     (StemModelTube->GetTexCoordVMode() == P3DTexCoordModeRelative ? 0 : 1);
+   }
+
+  P3DUpdateParamSpinSliderExt(StemModelTube,wxID_VSCALE_CTRL,GetTexCoordVScale);
+
+  for (unsigned int TexLayer = 0; TexLayer < P3D_MAX_TEX_LAYERS; TexLayer++)
+   {
+    wxToggleButton *Button = (wxToggleButton*)FindWindow(wxID_TEXLAYER_BUTTON_MIN + TexLayer);
+
+    if (Button != 0)
+     {
+      P3DTexHandle TexHandle;
+
+      TexHandle = Material->GetTexHandle(TexLayer);
+
+      if (TexHandle != P3DTexHandleNULL)
+       {
+        Button->SetForegroundColour(*wxBLUE);
+
+        if (TexLayer == ActiveTexLayer)
+         {
+          const wxBitmap *TexBitmap;
+
+          TexBitmap = wxGetApp().GetTexManager()->GetBitmap(TexHandle);
+
+          BaseTexButton->SetBitmapLabel(*TexBitmap);
+
+          RemoveTexButton->Enable(TRUE);
+         }
+       }
+      else
+       {
+        Button->SetForegroundColour(*wxBLACK);
+
+        if (TexLayer == ActiveTexLayer)
+         {
+          BaseTexButton->SetBitmapLabel
+           (wxGetApp().GetBitmap(P3D_BITMAP_NO_TEXTURE));
+          RemoveTexButton->Enable(FALSE);
+         }
+       }
+     }
+   }
+
+  P3DUpdateParamCheckBox(wxID_DOUBLESIDED_CTRL,IsDoubleSided);
+  P3DUpdateParamCheckBox(wxID_TRANSPARENT_CTRL,IsTransparent);
+
+  Choice = (wxChoice*)FindWindow(wxID_BILLBOARD_MODE_CTRL);
+
+  if (Choice != NULL)
+   {
+    unsigned int BillboardMode;
+
+    BillboardMode = Material->GetBillboardMode();
+
+    if      (BillboardMode == P3D_BILLBOARD_MODE_SPHERICAL)
+     {
+      Choice->SetSelection(1);
+     }
+    else if (BillboardMode == P3D_BILLBOARD_MODE_CYLINDRICAL)
+     {
+      Choice->SetSelection(2);
+     }
+    else
+     {
+      Choice->SetSelection(0);
+     }
+   }
+
+  P3DUpdateParamCheckBox(wxID_ALPHA_CTRL_MODE_CTRL,IsAlphaCtrlEnabled);
+
+  P3DUpdateParamSpinSliderExt(Material,wxID_ALPHA_FADEIN_CTRL,GetAlphaFadeIn);
+  P3DUpdateParamSpinSliderExt(Material,wxID_ALPHA_FADEOUT_CTRL,GetAlphaFadeOut);
+ }
+
+#undef model
 

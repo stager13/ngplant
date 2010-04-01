@@ -27,6 +27,14 @@
 #include <ngput/p3dglext.h>
 #include <ngput/p3dimagetga.h>
 
+#ifdef WITH_LIBPNG
+ #include <ngput/p3dimagepng.h>
+#endif
+
+#ifdef WITH_LIBJPEG
+ #include <ngput/p3dimagejpg.h>
+#endif
+
 #include <p3dtexture.h>
 
 #include <p3dapp.h>
@@ -36,6 +44,12 @@
                                       ()
  {
   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerTGA());
+#ifdef WITH_LIBPNG
+   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerPNG());
+#endif
+#ifdef WITH_LIBJPEG
+   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerJPG());
+#endif
  }
 
                    P3DTexManagerGL::~P3DTexManagerGL
@@ -206,6 +220,24 @@ P3DTexHandle       P3DTexManagerGL::GetHandleByGenericName
   return(TexHandle);
  }
 
+void               P3DTexManagerGL::IncRefCount
+                                      (P3DTexHandle        TexHandle)
+ {
+  if ((TexHandle > TextureSet.size()) || (TexHandle < 1))
+   {
+    return; /* FIXME: throw something here */
+   }
+
+  P3DTexManagerGLEntry *Entry = &TextureSet[TexHandle - 1];
+
+  if (Entry->RefCount == 0)
+   {
+    return; /* FIXME: throw something here */
+   }
+
+  Entry->RefCount++;
+ }
+
 void               P3DTexManagerGL::FreeTexture
                                       (P3DTexHandle        TexHandle)
  {
@@ -309,6 +341,13 @@ const char        *P3DTexManagerGL::GetTexFileName
    {
     return(0);
    }
+ }
+
+const P3DImageFmtHandler
+                  *P3DTexManagerGL::GetFmtHandler
+                                      () const
+ {
+  return(&ImageFmtHandler);
  }
 
 P3DTexHandle       P3DTexManagerGL::GetUnusedSlot

@@ -23,7 +23,9 @@
 
 #include <wx/wx.h>
 
-class P3DStemEmptyPanel : public wxPanel
+#include <p3duiparampanel.h>
+
+class P3DStemEmptyPanel : public P3DUIParamPanel
  {
   public           :
 
