@@ -32,6 +32,14 @@ Building under GNU Linux (for Windows):
    For example, if your configuration file is named "cross-sample.py", use
    $ scons config=cross-sample
 
+Building under MacOS X (experimental):
+1. Untar source archive (ngplant-X.X.X.tar.gz)
+2. $ cd ngplant-X.X.X
+3. $ scons ngplant
+4. Create application bundle structure:
+   $ mkdir -p ngplant.app/Contents/MacOS/
+   $ cp ngplant/ngplant ngplant.app/Contents/MacOS
+
 Texture path(s) setup:
 - Use "Preferences" dialog ("File->Preferences...") to setup texture locations.
 

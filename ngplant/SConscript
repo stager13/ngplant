@@ -129,6 +129,9 @@ NGPlantEnv.Command('shaders/default_fs.h',
 if CrossCompileMode or NGPlantEnv['PLATFORM'] == 'win32' or NGPlantEnv['PLATFORM'] == 'cygwin':
     NGPlantEnv.Command('ngplant_res.o','ngplant.rc',NGPlantEnv['WINDRES'] + ' -I ngplant/images' + ' $SOURCES $TARGET')
 
+if NGPlantEnv['PLATFORM'] == 'darwin':
+    NGPlantEnv.Append(FRAMEWORKS=['OpenGL'])
+
 Default(ngplant)
 Clean(ngplant,['.sconsign','images/.sconsign'])
 

@@ -259,6 +259,9 @@ if ProfilingEnabled:
         BaseEnv.Append(CFLAGS=['-pg'])
         BaseEnv.Append(LINKFLAGS=['-pg'])
 
+if BaseEnv['PLATFORM'] == 'darwin':
+    BaseEnv.Append(CPPPATH=['/usr/X11/include'])
+
 Export('BaseEnv',
        'CC_WARN_FLAGS',
        'CC_OPT_FLAGS',
