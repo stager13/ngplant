@@ -1,0 +1,43 @@
+from sctool.SConcompat import *
+
+NGPUT_SRC = Split("""
+p3dimage.cpp
+p3dimagetga.cpp
+p3dospath.cpp
+p3dglext.cpp
+p3dglmemcntx.cpp
+""")
+
+NGPUT_INCLUDES = Split("""
+#
+""")
+
+Import('*')
+
+NGPUtEnv = EnvClone(BaseEnv)
+NGPUtEnv.Append(CPPPATH=NGPUT_INCLUDES)
+
+if CC_WARN_FLAGS != '':
+    NGPUtEnv.Append(CXXFLAGS=CC_WARN_FLAGS)
+if CC_OPT_FLAGS != '':
+    NGPUtEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
+
+NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEXT_INC'])
+
+if NGPUtEnv['WITH_LIBPNG']:
+    NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBPNG_CPPPATH'])
+    NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBPNG_CPPDEFINES'])
+
+    NGPUT_SRC.append('p3dimagepng.cpp')
+
+if NGPUtEnv['WITH_LIBJPEG']:
+    NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBJPEG_CPPPATH'])
+    NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBJPEG_CPPDEFINES'])
+
+    NGPUT_SRC.append('p3dimagejpg.cpp')
+
+ngput = NGPUtEnv.StaticLibrary(target='ngput',source=NGPUT_SRC)
+
+Default(ngput)
+Clean(ngput,['.sconsign'])
+

@@ -1,0 +1,61 @@
+from sctool.SConcheck import *
+from sctool.SConcompat import *
+
+NGPVIEW_SRC = Split("""
+ngpview.cpp
+ngpviewtexman.cpp
+ngpviewdata.cpp
+""")
+
+NGPVIEW_INCLUDES=Split("""
+.
+#
+""")
+
+Import('*')
+
+WIN32_BASELIBS=Split("""
+kernel32 user32 gdi32 comdlg32 winspool winmm shell32 comctl32 ole32
+oleaut32 uuid rpcrt4 advapi32 wsock32 odbc32
+opengl32 glu32
+""")
+
+NGPViewEnv = EnvClone(BaseEnv)
+
+NGPViewEnv.Append(CPPPATH=NGPVIEW_INCLUDES)
+NGPViewEnv.Append(LIBPATH=['#/ngpcore'])
+NGPViewEnv.Append(LIBPATH=['#/ngput'])
+NGPViewEnv.Append(LIBS=['ngpcore'])
+NGPViewEnv.Append(LIBS=['ngput'])
+
+if (NGPViewEnv['PLATFORM'] == 'win32') or\
+   (NGPViewEnv['PLATFORM'] == 'cygwin'):
+    NGPViewEnv.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
+    NGPViewEnv.Append(LIBS=WIN32_BASELIBS)
+elif CrossCompileMode:
+    NGPViewEnv.Append(LIBS=WIN32_BASELIBS)
+    NGPViewEnv.Append(LINKFLAGS='-s')
+else:
+    NGPViewEnv.Append(LIBS=['GL'])
+    NGPViewEnv.Append(LIBS=['GLU'])
+    NGPViewEnv.Append(LIBS=['glut'])
+    if not ProfilingEnabled:
+        NGPViewEnv.Append(LINKFLAGS='-s')
+
+NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEXT_INC'])
+NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEXT_LIBPATH'])
+NGPViewEnv.Append(LIBS=NGPViewEnv['GLEXT_LIBS'])
+
+AppendLibPngConf(NGPViewEnv)
+AppendLibJpegConf(NGPViewEnv)
+
+if CC_WARN_FLAGS != '':
+   NGPViewEnv.Append(CXXFLAGS=CC_WARN_FLAGS)
+if CC_OPT_FLAGS != '':
+   NGPViewEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
+
+ngpview = NGPViewEnv.Program(target='ngpview',source=NGPVIEW_SRC)
+
+Default(ngpview)
+Clean(ngpview,['.sconsign'])
+

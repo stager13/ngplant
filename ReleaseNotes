@@ -1,0 +1,288 @@
+                    ngPlant 0.9.7 Release Notes
+
+  This is tenth public release of ngPlant. It is a development release, so
+many things may be changed in subsequent versions, including but not limited
+to model storage format and internal API changes.
+
+Changes since 0.9.7:
+- Undo/Redo functionality implemented.
+- PNG images support added.
+- JPEG images support added.
+- ngplant icon created by Yorik van Havre added
+- Alternate base color rendering path implemented. If base color is rendered
+  incorrectly in your configuration, try to enable this mode in preferences
+  dialog ("File->Preferences->Misc->Use color array").
+- fixed compilation using gcc 4.3. Thanks to Serge Gielkens for the patch.
+- fixed a bug with mismatched free() / delete in p3dmodel.cpp. Thanks to
+  person who posted bug report and the patch to project tracker.
+- plugins search path can be set at build time using PLUGINS_DIR value
+  (see config/cross-sample.py for example).
+- lua updated to 5.1.4
+
+Changes since 0.9.6:
+- fixed a bug in fragment shaders code. Absence of "uniform" qualifier in
+  sampler declarations caused shaders compilation errors in some
+  configurations. Thanks to Milos Zajic for bug report.
+- "turntable" camera mode implemented. Mode can be set in "Preferences"
+  dialog ("Control" tab).
+- mouse sensitivity can be changed via "Preferences" dialog.
+- curve in curve editor now can be reset to default state. Click on
+  right mouse button on empty space inside curve editor and use
+  "Reset to default" menu item.
+- curve editor size is now customizable via "Preferences" dialog.
+- You can switch between perspective and orthographic mode in 3d-view using
+  'NUMPAD-5'.
+- sensitivity of several numeric controls changed to more appropriate values
+  ("Length" parameter of "Tube" stem model and "Density" parameter of
+  branching algorithm).
+- g-mesh import plugin improvement - now "g" lines in ".obj" files are silently
+  skiped. In previous version "g" lines presence caused .obj file import to
+  fail. Thanks to Edwin van het Bolscher for help with this problem.
+- now ".obj export" (built-in - not plug-in) produces more optimal files
+  in sense of size and material switch count.
+- fixed a bug which brokes pywrapper usage (introduced in 0.9.6)
+- ngpbench utility implemented. It is used for ngpcore profiling.
+- ngpcore speedup.
+
+Changes since 0.9.5:
+- new stem model - 'GMesh' added. This model allows to use arbitrary
+  mesh as a stem. A most generic way to import mesh is to use ".OBJ import"
+  plug-in available under "Stem model->G-Mesh->Import .OBJ" item of plant
+  structure popup menu. Two other possibilities are:
+  "Stem model->G-Mesh->Triangle" (triangle stems) and
+  "Stem model->G-Mesh->Rhomb" (rhomb stems). Set of available meshes can be
+  extended without C++ coding - new type of plug-ins written in Lua is used
+  to create stem geometry. "plugins/gmesh_rhomb.lua" and
+  "plugins/gmesh_triangle.lua" can be used as a base for creating other
+  gmesh plugins.
+- ngplant scan plug-ins directory (it can be set in preferences dialog) for
+  export plug-ins. Export plug-ins now are available directly under
+  "Export to..." menu.
+
+Changes since 0.9.4:
+- General changes:
+  - ngpcore, ngput and pywrapper libraries now distributed under the
+    terms of BSD License.
+  - Now it is possible to add up to 8 branch sub-groups per branch (in previous
+    versions up to 4 sub-groups could be added).
+  - GLEW library (http://glew.sourceforge.net) is now required to compile
+    ngplant, ngpshot and ngpview. GLEW-related configuration options
+    are described in config/cross-sample.py.
+- ngplant application changes:
+  - GLSL support added to ngplant. With GLSL support it is possible to see
+    per-pixel diffuse lighting applied to plant models in real-time
+    (normal-map support). Source code for shaders used by ngplant is located
+    in "shaders/ngplant_default_vs.glsl" and "shaders/ngplant_default_fs.glsl"
+    files.
+  - "-es" option added to ngplant. This option enables error reporting to
+    stderr.
+  - "-ns" option added to ngplant. This option disables shaders usage.
+  - 3d-view flicker which appeared in some configurations have been fixed.
+- ngpshot application changes:
+  - Now it is possible to use GLSL shaders for snapshot rendering. To use
+    shaders your video card must support GLSL. Look at ngpshot_nor_vs.glsl
+    and ngpshot_nor_fs.glsl files at shaders directory. These shaders allow
+    to render plant model normal-map instead of plant image. Using generated
+    color image and normal map it is possible to create normal-mapped
+    billboards with dynamic lighting support. To use shaders "-vs" and/or
+    "-fs" options must be used.
+  - "-vs" and "-fs" command line options added. "-vs" option is used to
+    select file from which vertex shader source should be loaded. "-fs"
+    option allows to select file from which fragment shader should be loaded.
+  - P-Buffer off-screen rendering mode support added to ngpshot. It allows
+    to use hardware acceleration for rendering.
+  - New "-o" command line option allows to choose between pixmaps/pbuffer
+    off-screen rendering mode.  By default ngpshot uses best supported mode.
+    Possible modes are: "auto" - default, "pixmap" - pixmap/bitmap mode and
+    "pbuffer" - p-buffer mode.
+- build/configuration system changes:
+  - C++ compiler presence check added to configuration step
+  - P3D_PLATFORM_WINDOWS macro is not used anymore
+  - P3D_DLL_ENTRY macros added to HLI classes which should be visible outside
+    ngpcore in case of DLL build. To make classes visible define P3D_DLL_BUILD
+    macros while building ngpcore DLL and define P3D_DLL_USE macros while
+    building your application. Thanks to Matthias Meyer for initial patch.
+  - It is not needed to define snprintf as _snprintf for MSVC compilers anymore
+- API (HLI) changes:
+  - C++ :
+    - Now it is possible to get tangent and bi-normal vertex attributes
+      in addition to position, normal and texture coordinates using new
+      P3D_ATTR_TANGENT and P3D_ATTR_BINORMAL constants.
+    - Branch group name now can be accessed using new
+      P3DHLIPlantTemplate::GetGroupName method.
+  - Python :
+    - Now it is possible to get tangent and bi-normal vertex attributes
+      in addition to position, normal and texture coordinates using new
+      ATTR_TANGENT and ATTR_BINORMAL constants.
+    - Branch group name now can be accessed using new BranchGroup.GetName
+      method.
+
+Changes since 0.9.3a:
+- ngplant application changes:
+  - In previous versions of ngplant any change in model parameters caused
+    immediate re-calcualation of 3d-model. If model was complex enough, that
+    may cause high performance hit. In this version it is possible to
+    disable auto-update of 3d-model using "Auto-update" check-box in
+    upper-right corner of ngplant window. To force 3d-model to be updated while
+    "auto-update" mode is disabled use "Update" button located near
+    "Auto-update" check-box.
+  - "Branch group copy" operation implemented. Use "Append branch->Copy branch..."
+    item from plant structure popup-menu to create a copy of existing branch.
+    This operation creates a new branch group with exact copies of stem model,
+    branching algorithm and material parameters from selected source branch. In
+    several cases it is impossible to create exact copy of branching algorithm -
+    branching algorithm for trunks differs from branching algorithm for
+    another branch group levels, in this case new branching algorithm will
+    have default parameters.
+  - Total count of vertices and triangles in plant model are now displayed near
+    "Plant" node in plant structure tree.
+  - File name of current plant model (if assigned) added to ngPlant window title.
+  - Background color of ngplant 3D-view frame is now customizable via
+    "Preferences" dialog ("File->Preferences...->Misc.->Background color").
+  - Texture layers support implemented. Now it is possible to append up to 4
+    different textures to material. Two texture layers have predefined meanings -
+    diffuse and normal map textures. Two other texture layers ("aux0" and "aux1")
+    have no predefined meanings and can be used for application-specific tasks.
+    Access to texture layers added to C++, Python and Lua HLI also. Please
+    note, that ngplant application does not use normal-map and auxiliary
+    layers for model rendering.
+  - Now it is possible to give meaningful names to branch groups. Use "Rename"
+    menu item in plant structure popup-menu.
+- Changes in other applications:
+  - LOD visibility range support added to ngpshot. Use -l option to set required
+    LOD level.
+- API (HLI) changes:
+  - C++ :
+    - New class (P3DHLIVAttrBuffers) added. This class is similar to
+      P3DHLIVAttrFormat class but allows to describe attributes located in
+      different buffers.
+    - Method FillVAttrBuffersI added to P3DHLIPlantInstance. It is similar to
+      FillVAttrBufferI but uses P3DHLIVAttrBuffers object to describe
+      vertex attribute locations and thus allows to fill attributes in different
+      buffers in one call.
+    - Class P3DHLIVAttrFormat and method P3DHLIPlantInstance::FillVAttrBufferI are
+      now obsolete and will be removed in one of the next version of ngpcore
+      library. Please use P3DHLIVAttrBuffers class and
+      P3DHLIPlantInstance::FillVAttrBufferI instead.
+    - P3DHLI_VER_MAJOR, P3DHLI_VER_MINOR and P3DHLI_VER_RELEASE constants
+      which describe HLI version number added.
+    - Four constants describing texture layers added -
+      P3D_TEX_DIFFUSE, P3D_TEX_NORMAL_MAP, P3D_TEX_AUX0 and P3D_TEX_AUX1.
+    - "Layer" argument added to "GetTexName" method of P3DMaterialDef class.
+  - Python :
+    - Attribute "TexName" of MaterialDef class have been  removed. To get
+      texture names new attribute "TexNames" must be used.
+    - Four constants which describe texture layer added -
+      TEX_DIFFUSE, TEX_NORMAL_MAP, TEX_AUX0 and TEX_AUX1.
+
+Changes since 0.9.3:
+- Bug which caused incorrect parameter panels appearence
+  (at least under Windows) fixed. Thanks to Abe Madey and "jpbouza" (member of
+  blenderartists.org forum) for bug report.
+
+Changes since 0.9.2a:
+- Modeling changes:
+  - "Phototropism mode" parameter removed from "Tube" stem model. Now it is
+    possible to apply both modes to the same branch group using "Phototropism
+    distribution" curve.
+  - "Cylindrical" billboards support added.
+  - LOD visibility range support implemented. It allows to control branch
+    visibility depending on selected LOD level.
+  - Transparency control implemented. It allows to make branches smoothly
+    fade-in and fade-out during LOD changes.
+- ngplant application changes:
+  - configuration file 'texdirs' is not used anymore, all ngplant settings
+    are stored in '.ngplant' configuration file.
+  - "Preferences" dialog ("File->Preferences...") can be used to set paths
+    to textures, export and 3d-view user preferences. Note that changes
+    to texture paths does not apply immediately, you should restart ngplant
+    to apply changes.
+  - Export functionality changes:
+    - selective export support added - it is possible to exclude from
+      export hidden branch groups and branch groups which are outside
+      LOD visibility range.
+    - Now it is possible to write export plug-ins for ngplant using Lua
+      (http://www.lua.org) programming language. To run export plug-in
+      use "File->Export to->Run export script..." and select script to
+      run from "plugins" directory.
+    - exp3dobj.lua plug-in implemented (it can be used as a reference for
+      implementing other export plug-ins).
+  - 3D-view improvements:
+     - ground plane can be hidden now
+       ("File->Preferences...->Misc->Ground visible")
+     - ground plane color can be changed using "Preferences" dialog
+     - 'NUMPAP-3','Shift-NUMPAD-3','NUMPAD-7','Shift-NUMPAD-7' and
+       'Shift-NUMPAD-1' keys can be used to set camera to right/left,
+       top/bottom and back view.
+     - 'NUMPAP-4','NUMPAD-6','NUMPAD-2','NUMPAD-8' keys can be used to
+       rotate camera by discrete steps.
+  - Parameter panels improvements:
+    - Now it is possible to enter numeric values directly from keyboard -
+      double-click on Numeric control and enter number in opened dialog
+      window.
+    - Now it is possibe to edit curves more precisely - double-click on empty
+      space in curve control and edit curve in resizable dialog.
+    - base texture can be removed from material (previously it was
+      possible only to change texture by another one)
+- Changes in other applications:
+  - ngpview application now supports billboard branches (previous version
+    rendered such branches as oriented rectangles)
+- API (HLI) changes:
+  - C++ :
+    - GetBillboardSize method added to P3DHLIPlantTemplate class
+    - new constructor added to P3DHLIPlantTemplate class to allow
+      create plant template using existing P3DPlantModel object.
+    - GetBillboardMode method added to P3DMaterialDef class
+    - IsLODVisRangeEnabled and GetLODVisRange methods added
+      to P3DHLIPlantTemplate class
+    - IsAlphaCtrlEnabled,GetAlphaFadeIn and GetAlphaFadeOut methods added
+      to P3DMaterialDef class
+  - Python :
+    - GetBillboardSize method added to BranchGroup class
+    - BillboardMode attribute added to MaterialDef class
+    - IsLODVisRangeEnabled and GetLODVisRange methods added to
+      BranchGroup class
+    - AlphaCtrlEnabled and AlphaFadeRange attributes added to
+      MaterialDef class
+
+Changes since 0.9.2:
+- Bug which caused incorrect material assignments in exported .obj files
+  has been fixed (Thanks to Ryan Ammoury for bug report).
+
+Changes since 0.9.1:
+- Modeling improvements:
+  - new stem model - 'Wings' added
+  - ability to bend leaf surface along its axis added to 'Quad' stems
+  - ability to scale 'Quad' stems depending on their location added
+  - 'Multiplicity' parameter added to branching algorithm
+  - 'simplefern' plant model example added
+- API improvements:
+  - high-level interface (HLI) added to ngpcore library (with documentation)
+  - ngpcore high-level interface (HLI) bindings for Python programming language
+    added (with documentation)
+  - ngp2obj.py script, which can be used as an example of using Python
+    for creating plant models export applications, added
+  - ngpview application, which can be used as an example of using ngpcore
+    library high-level interface for plant models rendering, added
+- Other changes:
+  - new version of .ngp file format (previous version is supported also)
+  - 'File->New' functionality added to ngplant application
+  - libngpcore and libngput directories had been renamed to ngpcore and ngput
+  - precision loss fixed in several parameter controls
+  - fixed a bug which caused incorrect lighting of 'Double-sided' materials
+
+Changes since 0.9.0:
+- Ability to create images of designed plants (using new ngpshot application)
+- Support for compilation with wxWidgets-2.8.0 in UNICODE mode
+  (Thanks to Kai Schroeder)
+- Support for loading RLE-comressed TGA-files
+- Two sample plant models added
+- Mouse wheel can be used to change values in numeric control
+- Numeric and curve controls look improvement
+- Vertex and triangle statistic is updated correctly
+- Incorrect texture coordinates exporting to .OBJ files fixed
+- SCons build script can load some system-dependent variables from config
+  file
+- Internal API fixes and improvements, code cleanup
+- Other small improvements and bugfixes
+
