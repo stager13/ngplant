@@ -54,7 +54,7 @@ NGPlantEnv.Append(LIBS=NGPlantEnv['GLEXT_LIBS'])
 if TimingsEnabled:
     NGPlantEnv.Append(CPPDEFINES=[('P3D_TIMINGS_ENABLED','1')])
 
-if NGPlantEnv.has_key('PLUGINS_DIR'):
+if NGPlantEnv.has_key('PLUGINS_DIR') and NGPlantEnv['PLUGINS_DIR'] is not None:
     NGPlantEnv.Append(CPPDEFINES=[('PLUGINS_DIR','\\"' + NGPlantEnv['PLUGINS_DIR'] + '\\"')])
 
 if CrossCompileMode:
