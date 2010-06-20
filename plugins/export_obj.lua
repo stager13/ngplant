@@ -56,17 +56,17 @@ function VisibleGroupsIter(Model)
 end
 
 function ExportOBJFile(OBJFileName,MTLFileName)
- OBJFile = io.open(OBJFileName,"w")
+ local OBJFile = io.open(OBJFileName,"w")
 
  OBJFile:write("o plant\n")
  OBJFile:write("mtllib " .. MTLFileName .. "\n")
 
- VertexIndexOffset   = 1
- NormalIndexOffset   = 1
- TexCoordIndexOffset = 1
+ local VertexIndexOffset   = 1
+ local NormalIndexOffset   = 1
+ local TexCoordIndexOffset = 1
 
  for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
-  Material = Group:GetMaterial()
+  local Material = Group:GetMaterial()
 
   OBJFile:write(string.format("usemtl pmat%s\n",GroupIndex))
 
@@ -76,9 +76,9 @@ function ExportOBJFile(OBJFileName,MTLFileName)
    OBJFile:write("usemap off\n")
   end
 
-  Buffer = Group:GetVAttrBuffer(NGP_ATTR_VERTEX)
+  local Buffer = Group:GetVAttrBuffer(NGP_ATTR_VERTEX)
 
-  VertexIndexStep = table.getn(Buffer)
+  local VertexIndexStep = table.getn(Buffer)
 
   for i,v in ipairs(Buffer) do
    OBJFile:write(string.format("v %f %f %f\n",v[1],v[2],v[3]))
@@ -86,7 +86,7 @@ function ExportOBJFile(OBJFileName,MTLFileName)
 
   Buffer = Group:GetVAttrBuffer(NGP_ATTR_NORMAL)
 
-  NormalIndexStep = table.getn(Buffer)
+  local NormalIndexStep = table.getn(Buffer)
 
   for i,v in ipairs(Buffer) do
    OBJFile:write(string.format("vn %f %f %f\n",v[1],v[2],v[3]))
@@ -94,7 +94,7 @@ function ExportOBJFile(OBJFileName,MTLFileName)
 
   Buffer = Group:GetVAttrBuffer(NGP_ATTR_TEXCOORD0)
 
-  TexCoordIndexStep = table.getn(Buffer)
+  local TexCoordIndexStep = table.getn(Buffer)
 
   for i,v in ipairs(Buffer) do
    OBJFile:write(string.format("vt %f %f\n",v[1],v[2]))
@@ -102,16 +102,16 @@ function ExportOBJFile(OBJFileName,MTLFileName)
 
   Buffer = nil
 
-  VertexIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_VERTEX,true,VertexIndexOffset)
-  NormalIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_NORMAL,true,NormalIndexOffset)
-  TexCoordIndexBuffer = Group:GetVAttrIndexBuffer(NGP_ATTR_TEXCOORD0,true,TexCoordIndexOffset)
+  local VertexIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_VERTEX,true,VertexIndexOffset)
+  local NormalIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_NORMAL,true,NormalIndexOffset)
+  local TexCoordIndexBuffer = Group:GetVAttrIndexBuffer(NGP_ATTR_TEXCOORD0,true,TexCoordIndexOffset)
 
-  PrimitiveCount = table.getn(VertexIndexBuffer)
+  local PrimitiveCount = table.getn(VertexIndexBuffer)
 
   for PrimitiveIndex = 1,PrimitiveCount do
-   vi = VertexIndexBuffer[PrimitiveIndex]
-   ni = NormalIndexBuffer[PrimitiveIndex]
-   ti = TexCoordIndexBuffer[PrimitiveIndex]
+   local vi = VertexIndexBuffer[PrimitiveIndex]
+   local ni = NormalIndexBuffer[PrimitiveIndex]
+   local ti = TexCoordIndexBuffer[PrimitiveIndex]
 
    if Group:GetPrimitiveType(PrimitiveIndex) == NGP_QUAD then
     OBJFile:write(string.format("f %u/%u/%u %u/%u/%u %u/%u/%u %u/%u/%u\n",
@@ -137,10 +137,10 @@ function ExportOBJFile(OBJFileName,MTLFileName)
 end
 
 function ExportMTLFile(MTLFileName)
- MTLFile = io.open(MTLFileName,"w")
+ local MTLFile = io.open(MTLFileName,"w")
 
  for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
-  Material = Group:GetMaterial()
+  local Material = Group:GetMaterial()
 
   MTLFile:write(string.format("newmtl pmat%u\n",GroupIndex))
   MTLFile:write(string.format("Kd %f %f %f\n",Material.Color.R,Material.Color.G,Material.Color.B))
