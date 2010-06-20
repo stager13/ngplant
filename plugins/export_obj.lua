@@ -25,7 +25,7 @@ menu-name : Alias-Wavefront (.OBJ) (plug-in)
                    ===== END GPL LICENSE BLOCK =====
 --]]
 
-function VisibleGroupsIter(Model)
+local function VisibleGroupsIter(Model)
  local IntGroupIndex = 0
  local VisGroupIndex = 0
  local GroupCount    = Model:GetGroupCount()
@@ -55,7 +55,48 @@ function VisibleGroupsIter(Model)
         end
 end
 
-function ExportOBJFile(OBJFileName,MTLFileName)
+local function IsSimilarColorComponent(C1,C2)
+ return math.abs(C1 - C2) < (1 / 256)
+end
+
+local function IsSimilarMaterials(Mat1,Mat2)
+ return IsSimilarColorComponent(Mat1.Color.R,Mat2.Color.R) and
+        IsSimilarColorComponent(Mat1.Color.G,Mat2.Color.G) and
+        IsSimilarColorComponent(Mat1.Color.B,Mat2.Color.B) and
+        Mat1.TexNames[NGP_TEX_DIFFUSE] == Mat2.TexNames[NGP_TEX_DIFFUSE]
+end
+
+local function GetSimilarMatIndex(Material)
+ for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
+  local CurrentMaterial = Group:GetMaterial()
+
+  if IsSimilarMaterials(Material,Group:GetMaterial()) then
+   return GroupIndex
+  end
+ end
+
+ error('assertion failed: material can not be found')
+end
+
+local function CreateMaterialsMapping(JoinMaterials)
+ local Mapping = {}
+
+ if not JoinMaterials then
+  for i = 1,PlantModel:GetGroupCount() do
+   Mapping[i] = i
+  end
+
+  return Mapping
+ end
+
+ for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
+  Mapping[GroupIndex] = GetSimilarMatIndex(Group:GetMaterial())
+ end
+
+ return Mapping
+end
+
+local function ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping)
  local OBJFile = io.open(OBJFileName,"w")
 
  OBJFile:write("o plant\n")
@@ -68,7 +109,7 @@ function ExportOBJFile(OBJFileName,MTLFileName)
  for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
   local Material = Group:GetMaterial()
 
-  OBJFile:write(string.format("usemtl pmat%s\n",GroupIndex))
+  OBJFile:write(string.format("usemtl pmat%s\n",MaterialsMapping[GroupIndex]))
 
   if Material.TexNames[NGP_TEX_DIFFUSE] then
    OBJFile:write(string.format("usemap %s\n",GetTextureFileName(Material.TexNames[NGP_TEX_DIFFUSE])))
@@ -136,17 +177,19 @@ function ExportOBJFile(OBJFileName,MTLFileName)
  OBJFile:close()
 end
 
-function ExportMTLFile(MTLFileName)
+local function ExportMTLFile(MTLFileName,MaterialsMapping)
  local MTLFile = io.open(MTLFileName,"w")
 
  for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
-  local Material = Group:GetMaterial()
+  if MaterialsMapping[GroupIndex] == GroupIndex then
+   local Material = Group:GetMaterial()
 
-  MTLFile:write(string.format("newmtl pmat%u\n",GroupIndex))
-  MTLFile:write(string.format("Kd %f %f %f\n",Material.Color.R,Material.Color.G,Material.Color.B))
+   MTLFile:write(string.format("newmtl pmat%u\n",GroupIndex))
+   MTLFile:write(string.format("Kd %f %f %f\n",Material.Color.R,Material.Color.G,Material.Color.B))
 
-  if Material.TexNames[NGP_TEX_DIFFUSE] then
-   MTLFile:write(string.format("map_Kd %s\n",GetTextureFileName(Material.TexNames[NGP_TEX_DIFFUSE])))
+   if Material.TexNames[NGP_TEX_DIFFUSE] then
+    MTLFile:write(string.format("map_Kd %s\n",GetTextureFileName(Material.TexNames[NGP_TEX_DIFFUSE])))
+   end
   end
  end
 
@@ -176,8 +219,12 @@ if OBJFileName then
    ExportOutVisRangeGroups = ShowYesNoMessageBox('Export branch groups which are outside LOD visibility range?','Export mode')
   end
 
-  ExportOBJFile(OBJFileName,MTLFileName)
-  ExportMTLFile(MTLFileName)
+  local JoinMaterials = ShowYesNoMessageBox('Join similar materials?','Materials mapping')
+
+  local MaterialsMapping = CreateMaterialsMapping(JoinMaterials)
+
+  ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping)
+  ExportMTLFile(MTLFileName,MaterialsMapping)
  end
 end
 
