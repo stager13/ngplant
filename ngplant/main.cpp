@@ -201,7 +201,7 @@ void               P3DMainFrame::OnQuit   (wxCommandEvent     &event)
 
 void               P3DMainFrame::OnAbout  (wxCommandEvent     &event)
  {
-  ::wxMessageBox(wxT("ngPlant 0.9.7\n\nCopyright (c) 2006-2008 Sergey Prokhorchuk\nProject page: ngplant.sourceforge.net\n\nReleased under the GNU General Public License"),
+  ::wxMessageBox(wxT("ngPlant 0.9.8\n\nCopyright (c) 2006-2010 Sergey Prokhorchuk\nProject page: ngplant.sourceforge.net\n\nReleased under the GNU General Public License"),
                  wxT("About - ngPlant"),
                  wxOK,
                  this);
