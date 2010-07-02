@@ -15,7 +15,7 @@ docapi      - ngpcore high-level programming interface documentation for C++
               and Python (xml sources and generated .html documentation)
 config      - local configuration files
 sctool      - helper modules for scons
-devtools    - additional tools (currently only NSIS installer script)
+devtools    - additional tools
 samples     - sample plant models and textures
 scripts     - sample Python scripts
 plugins     - ngplant plug-ins directory
