@@ -9,6 +9,7 @@ Changes since 0.9.7:
 - PNG images support added.
 - JPEG images support added.
 - ngplant icon created by Yorik van Havre added
+- ".obj" export plugin now can join similar materials during export
 - Alternate base color rendering path implemented. If base color is rendered
   incorrectly in your configuration, try to enable this mode in preferences
   dialog ("File->Preferences->Misc->Use color array").
