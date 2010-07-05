@@ -42,8 +42,7 @@ extern void        P3DLogError        (const wxChar       *Format,
 
   if (StdErrEnabled)
    {
-    fprintf(stderr,"error: ");
-    fprintf(stderr,MessageStr.mb_str());
+    fprintf(stderr,"error: %s",(const char*)MessageStr.mb_str());
    }
 
   ::wxLogError(MessageStr);
@@ -68,7 +67,7 @@ extern void        P3DLogInfo         (const wxChar       *Format,
 
   if (StdErrEnabled)
    {
-    fprintf(stderr,MessageStr.mb_str());
+    fprintf(stderr,"info: %s",(const char*)MessageStr.mb_str());
    }
  }
 
