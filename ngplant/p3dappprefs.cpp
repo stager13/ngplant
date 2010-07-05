@@ -25,6 +25,22 @@
 static const wxChar    *ExportHiddenGroupsPath      = wxT("Export/ExportHiddenGroups");
 static const wxChar    *ExportOutVisRangeGroupsPath = wxT("Export/ExportOutVisRangeGroups");
 
+static bool        wxConfigBaseWriteIntWrapper
+                                      (wxConfigBase       *Config,
+                                       const wxString     &Key,
+                                       int                 Value)
+ {
+  #ifdef __MINGW32__
+  wxString Buffer;
+
+  Buffer.Printf(wxT("%d"),(int)Value);
+
+  return Config->Write(Key,Buffer);
+  #else
+  return Config->Write(Key,Value);
+  #endif
+ }
+
                    P3DExport3DPrefs::P3DExport3DPrefs
                                       ()
  {
@@ -65,8 +81,8 @@ void               P3DExport3DPrefs::Read
 void               P3DExport3DPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(ExportHiddenGroupsPath,(int)HiddenGroupsExportMode);
-  Config->Write(ExportOutVisRangeGroupsPath,(int)OutVisRangeExportMode);
+  wxConfigBaseWriteIntWrapper(Config,ExportHiddenGroupsPath,HiddenGroupsExportMode);
+  wxConfigBaseWriteIntWrapper(Config,ExportOutVisRangeGroupsPath,OutVisRangeExportMode);
  }
 
 void               P3DExport3DPrefs::SetDefaults
@@ -129,7 +145,7 @@ void               P3DCameraControlPrefs::Read
 void               P3DCameraControlPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(RotationModePath,(int)(MouseRotYCS ? 1 : 0));
+  wxConfigBaseWriteIntWrapper(Config,RotationModePath,MouseRotYCS ? 1 : 0);
   Config->Write(MouseRotXSensPath,MouseRotXSens);
   Config->Write(MouseRotYSensPath,MouseRotYSens);
  }
@@ -171,7 +187,7 @@ void               P3D3DViewPrefs::Read
 void               P3D3DViewPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(GroundVisiblePath,(int)GroundVisible);
+  wxConfigBaseWriteIntWrapper(Config,GroundVisiblePath,GroundVisible);
   Config->Write(GroundColorPath,ColorToStr(&GroundColor));
   Config->Write(BackgroundColorPath,ColorToStr(&BackgroundColor));
  }
@@ -249,8 +265,8 @@ void               P3DUIControlsPrefs::Read
 void               P3DUIControlsPrefs::Save
                                       (wxConfigBase       *Config)
  {
-  Config->Write(UICurveCtrlWidthPath,(int)P3DCurveCtrl::BestWidth);
-  Config->Write(UICurveCtrlHeightPath,(int)P3DCurveCtrl::BestHeight);
+  wxConfigBaseWriteIntWrapper(Config,UICurveCtrlWidthPath,P3DCurveCtrl::BestWidth);
+  wxConfigBaseWriteIntWrapper(Config,UICurveCtrlHeightPath,P3DCurveCtrl::BestHeight);
  }
 
 static const wxChar    *RenderQuirksUseColorArrayPath  = wxT("/RenderQuirks/UseColorArray");
@@ -277,7 +293,7 @@ void               P3DRenderQuirksPrefs::Read
 void               P3DRenderQuirksPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(RenderQuirksUseColorArrayPath,(int)(UseColorArray ? 1 : 0));
+  wxConfigBaseWriteIntWrapper(Config,RenderQuirksUseColorArrayPath,UseColorArray ? 1 : 0);
  }
 
 void               P3DRenderQuirksPrefs::SetDefaults
