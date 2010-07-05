@@ -31,8 +31,8 @@ static const wxChar    *ExportOutVisRangeGroupsPath = wxT("Export/ExportOutVisRa
   SetDefaults();
  }
 
-unsigned int       P3DExport3DPrefs::LongToMode
-                                      (long                Value)
+unsigned int       P3DExport3DPrefs::IntToMode
+                                      (int                 Value)
  {
   if ((Value == P3D_ALWAYS) || (Value == P3D_NEVER)  || (Value == P3D_ASK))
    {
@@ -47,26 +47,26 @@ unsigned int       P3DExport3DPrefs::LongToMode
 void               P3DExport3DPrefs::Read
                                       (const wxConfigBase *Config)
  {
-  long             CfgParamLong;
+  int              CfgParamInt;
 
   SetDefaults();
 
-  if (Config->Read(ExportHiddenGroupsPath,&CfgParamLong))
+  if (Config->Read(ExportHiddenGroupsPath,&CfgParamInt))
    {
-    HiddenGroupsExportMode = LongToMode(CfgParamLong);
+    HiddenGroupsExportMode = IntToMode(CfgParamInt);
    }
 
-  if (Config->Read(ExportOutVisRangeGroupsPath,&CfgParamLong))
+  if (Config->Read(ExportOutVisRangeGroupsPath,&CfgParamInt))
    {
-    OutVisRangeExportMode = LongToMode(CfgParamLong);
+    OutVisRangeExportMode = IntToMode(CfgParamInt);
    }
  }
 
 void               P3DExport3DPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(ExportHiddenGroupsPath,(long)HiddenGroupsExportMode);
-  Config->Write(ExportOutVisRangeGroupsPath,(long)OutVisRangeExportMode);
+  Config->Write(ExportHiddenGroupsPath,(int)HiddenGroupsExportMode);
+  Config->Write(ExportOutVisRangeGroupsPath,(int)OutVisRangeExportMode);
  }
 
 void               P3DExport3DPrefs::SetDefaults
@@ -97,15 +97,15 @@ void               P3DCameraControlPrefs::Init
 void               P3DCameraControlPrefs::Read
                                       (const wxConfigBase *Config)
  {
-  long             ParamLong;
+  int              ParamInt;
   double           ParamDouble;
 
   Init();
 
-  if (Config->Read(RotationModePath,&ParamLong) &&
-      (ParamLong >= 0) && (ParamLong < 2))
+  if (Config->Read(RotationModePath,&ParamInt) &&
+      (ParamInt >= 0) && (ParamInt < 2))
    {
-    if (ParamLong == 0)
+    if (ParamInt == 0)
      {
       MouseRotYCS = false; /* turntable */
      }
@@ -129,7 +129,7 @@ void               P3DCameraControlPrefs::Read
 void               P3DCameraControlPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(RotationModePath,(long)(MouseRotYCS ? 1 : 0));
+  Config->Write(RotationModePath,(int)(MouseRotYCS ? 1 : 0));
   Config->Write(MouseRotXSensPath,MouseRotXSens);
   Config->Write(MouseRotYSensPath,MouseRotYSens);
  }
@@ -148,13 +148,13 @@ void               P3D3DViewPrefs::Read
                                       (const wxConfigBase *Config)
  {
   wxString         ColorStr;
-  long             CfgParamLong;
+  int              CfgParamInt;
 
   SetDefaults();
 
-  if (Config->Read(GroundVisiblePath,&CfgParamLong))
+  if (Config->Read(GroundVisiblePath,&CfgParamInt))
    {
-    GroundVisible = (bool)CfgParamLong;
+    GroundVisible = (bool)CfgParamInt;
    }
 
   if (Config->Read(GroundColorPath,&ColorStr))
@@ -171,7 +171,7 @@ void               P3D3DViewPrefs::Read
 void               P3D3DViewPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(GroundVisiblePath,(long)GroundVisible);
+  Config->Write(GroundVisiblePath,(int)GroundVisible);
   Config->Write(GroundColorPath,ColorToStr(&GroundColor));
   Config->Write(BackgroundColorPath,ColorToStr(&BackgroundColor));
  }
@@ -231,26 +231,26 @@ static const wxChar    *UICurveCtrlHeightPath = wxT("/UI/CurveCtrl/Height");
 void               P3DUIControlsPrefs::Read
                                       (const wxConfigBase *Config)
  {
-  long             ParamLong;
+  int              ParamInt;
 
-  if (Config->Read(UICurveCtrlWidthPath,&ParamLong) &&
-      (ParamLong >= P3DCurveCtrlMinWidth))
+  if (Config->Read(UICurveCtrlWidthPath,&ParamInt) &&
+      (ParamInt >= P3DCurveCtrlMinWidth))
    {
-    P3DCurveCtrl::BestWidth = (unsigned int)ParamLong;
+    P3DCurveCtrl::BestWidth = (unsigned int)ParamInt;
    }
 
-  if (Config->Read(UICurveCtrlHeightPath,&ParamLong) &&
-      (ParamLong >= P3DCurveCtrlMinHeight))
+  if (Config->Read(UICurveCtrlHeightPath,&ParamInt) &&
+      (ParamInt >= P3DCurveCtrlMinHeight))
    {
-    P3DCurveCtrl::BestHeight = (unsigned int)ParamLong;
+    P3DCurveCtrl::BestHeight = (unsigned int)ParamInt;
    }
  }
 
 void               P3DUIControlsPrefs::Save
                                       (wxConfigBase       *Config)
  {
-  Config->Write(UICurveCtrlWidthPath,(long)P3DCurveCtrl::BestWidth);
-  Config->Write(UICurveCtrlHeightPath,(long)P3DCurveCtrl::BestHeight);
+  Config->Write(UICurveCtrlWidthPath,(int)P3DCurveCtrl::BestWidth);
+  Config->Write(UICurveCtrlHeightPath,(int)P3DCurveCtrl::BestHeight);
  }
 
 static const wxChar    *RenderQuirksUseColorArrayPath  = wxT("/RenderQuirks/UseColorArray");
@@ -264,20 +264,20 @@ static const wxChar    *RenderQuirksUseColorArrayPath  = wxT("/RenderQuirks/UseC
 void               P3DRenderQuirksPrefs::Read
                                       (const wxConfigBase *Config)
  {
-  long             ParamLong;
+  int              ParamInt;
 
   SetDefaults();
 
-  if (Config->Read(RenderQuirksUseColorArrayPath,&ParamLong))
+  if (Config->Read(RenderQuirksUseColorArrayPath,&ParamInt))
    {
-    UseColorArray = ParamLong;
+    UseColorArray = ParamInt;
    }
  }
 
 void               P3DRenderQuirksPrefs::Save
                                       (wxConfigBase       *Config) const
  {
-  Config->Write(RenderQuirksUseColorArrayPath,(long)(UseColorArray ? 1 : 0));
+  Config->Write(RenderQuirksUseColorArrayPath,(int)(UseColorArray ? 1 : 0));
  }
 
 void               P3DRenderQuirksPrefs::SetDefaults
