@@ -24,6 +24,9 @@ extern/lua  - Lua 5.1.4 source code. Please read README.extern file for
 extern/glew - GLEW 1.4.0 source code. Please read README.extern file for
               more detailed information.
 
+ngplant/images/ngplant.svg is ngplant's icon image in svg format. It was
+created by Yorik van Havre.
+
 ********************************* LICENSE *********************************
 ngpcore, ngput and pywrapper libraries are distributed under the terms of
 the BSD License - see COPYING.BSD file.
