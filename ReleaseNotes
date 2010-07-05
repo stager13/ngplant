@@ -19,6 +19,11 @@ Changes since 0.9.7:
 - plugins search path can be set at build time using PLUGINS_DIR value
   (see config/cross-sample.py for example).
 - lua updated to 5.1.4
+- Windows binaries been built with the following libraries:
+  wxWidgets 2.8.11     (http://wxwidgets.org/)
+  zlib      1.2.5      (http://www.zlib.net/)
+  libpng    1.4.3      (http://www.libpng.org/pub/png/libpng.html)
+  libjpeg   8b         (http://www.ijg.org/)
 
 Changes since 0.9.6:
 - fixed a bug in fragment shaders code. Absence of "uniform" qualifier in
