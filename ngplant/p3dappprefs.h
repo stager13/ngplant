@@ -60,7 +60,7 @@ struct P3DExport3DPrefs
   private          :
 
   static
-  unsigned int     LongToMode         (long                Value);
+  unsigned int     IntToMode          (int                 Value);
   void             SetDefaults        ();
  };
 
