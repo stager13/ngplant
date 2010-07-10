@@ -13,7 +13,7 @@ p3duimodelstemquad.cpp p3duimodelstemwings.cpp p3duibalgwings.cpp
 p3duiappopt.cpp p3duibalgbase.cpp p3duivisrangepanel.cpp
 p3dpobject.cpp p3dhliext.cpp p3dshaders.cpp p3dlog.cpp
 p3dpluginfo.cpp p3duimodelstemempty.cpp p3dappprefs.cpp
-p3dcmdqueue.cpp
+p3dcmdqueue.cpp p3dimagewx.cpp
 """)
 
 NGPLANT_INCLUDES=Split("""
@@ -100,17 +100,11 @@ NGPlantEnv.Append(LIBPATH=['#/ngpcore'])
 NGPlantEnv.Append(LIBS=['ngput'])
 NGPlantEnv.Append(LIBPATH=['#/ngput'])
 
-if NGPlantEnv['WITH_LIBPNG'] or NGPlantEnv['WITH_LIBJPEG']:
-    NGPlantEnv.Append(LIBS=['ngputimg'])
-
 if LuaEnabled:
     NGPlantEnv.Append(CPPPATH=NGPlantEnv['LUA_INC'])
     NGPlantEnv.Append(LIBPATH=NGPlantEnv['LUA_LIBPATH'])
     NGPlantEnv.Append(LIBS=NGPlantEnv['LUA_LIBS'])
     NGPlantEnv.Append(CPPDEFINES=[('NGP_LUA_VER',NGPlantEnv['LUA_VERSION'])])
-
-AppendLibPngConf(NGPlantEnv)
-AppendLibJpegConf(NGPlantEnv)
 
 if CC_OPT_FLAGS != '':
    NGPlantEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
