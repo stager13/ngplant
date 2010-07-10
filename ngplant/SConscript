@@ -100,6 +100,9 @@ NGPlantEnv.Append(LIBPATH=['#/ngpcore'])
 NGPlantEnv.Append(LIBS=['ngput'])
 NGPlantEnv.Append(LIBPATH=['#/ngput'])
 
+if NGPlantEnv['WITH_LIBPNG'] or NGPlantEnv['WITH_LIBJPEG']:
+    NGPlantEnv.Append(LIBS=['ngputimg'])
+
 if LuaEnabled:
     NGPlantEnv.Append(CPPPATH=NGPlantEnv['LUA_INC'])
     NGPlantEnv.Append(LIBPATH=NGPlantEnv['LUA_LIBPATH'])

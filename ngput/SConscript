@@ -8,6 +8,8 @@ p3dglext.cpp
 p3dglmemcntx.cpp
 """)
 
+NGPUTIMG_SRC = []
+
 NGPUT_INCLUDES = Split("""
 #
 """)
@@ -28,15 +30,18 @@ if NGPUtEnv['WITH_LIBPNG']:
     NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBPNG_CPPPATH'])
     NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBPNG_CPPDEFINES'])
 
-    NGPUT_SRC.append('p3dimagepng.cpp')
+    NGPUTIMG_SRC.append('p3dimagepng.cpp')
 
 if NGPUtEnv['WITH_LIBJPEG']:
     NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBJPEG_CPPPATH'])
     NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBJPEG_CPPDEFINES'])
 
-    NGPUT_SRC.append('p3dimagejpg.cpp')
+    NGPUTIMG_SRC.append('p3dimagejpg.cpp')
 
 ngput = NGPUtEnv.StaticLibrary(target='ngput',source=NGPUT_SRC)
+
+if len(NGPUTIMG_SRC) > 0:
+    ngputimg = NGPUtEnv.StaticLibrary(target='ngputimg',source=NGPUTIMG_SRC)
 
 Default(ngput)
 Clean(ngput,['.sconsign'])
