@@ -28,6 +28,9 @@ NGPViewEnv.Append(LIBPATH=['#/ngput'])
 NGPViewEnv.Append(LIBS=['ngpcore'])
 NGPViewEnv.Append(LIBS=['ngput'])
 
+if NGPViewEnv['WITH_LIBPNG'] or NGPViewEnv['WITH_LIBJPEG']:
+    NGPViewEnv.Append(LIBS=['ngputimg'])
+
 if (NGPViewEnv['PLATFORM'] == 'win32') or\
    (NGPViewEnv['PLATFORM'] == 'cygwin'):
     NGPViewEnv.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')

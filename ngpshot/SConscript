@@ -26,6 +26,9 @@ NGPShotEnv.Append(LIBPATH=['#/ngput'])
 NGPShotEnv.Append(LIBS=['ngpcore'])
 NGPShotEnv.Append(LIBS=['ngput'])
 
+if NGPShotEnv['WITH_LIBPNG'] or NGPShotEnv['WITH_LIBJPEG']:
+    NGPShotEnv.Append(LIBS=['ngputimg'])
+
 NGPShotEnv.Append(CPPPATH=NGPShotEnv['GLEXT_INC'])
 NGPShotEnv.Append(LIBPATH=NGPShotEnv['GLEXT_LIBPATH'])
 NGPShotEnv.Append(LIBS=NGPShotEnv['GLEXT_LIBS'])
