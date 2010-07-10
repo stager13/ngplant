@@ -26,14 +26,7 @@
 
 #include <ngput/p3dglext.h>
 #include <ngput/p3dimagetga.h>
-
-#ifdef WITH_LIBPNG
- #include <ngput/p3dimagepng.h>
-#endif
-
-#ifdef WITH_LIBJPEG
- #include <ngput/p3dimagejpg.h>
-#endif
+#include <p3dimagewx.h>
 
 #include <p3dtexture.h>
 
@@ -44,12 +37,7 @@
                                       ()
  {
   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerTGA());
-#ifdef WITH_LIBPNG
-   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerPNG());
-#endif
-#ifdef WITH_LIBJPEG
-   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerJPG());
-#endif
+  ImageFmtHandler.AddHandler(new P3DImageFmtHandlerWx());
  }
 
                    P3DTexManagerGL::~P3DTexManagerGL
