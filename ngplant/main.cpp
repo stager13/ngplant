@@ -89,13 +89,13 @@ class P3DUndoRedoMenuStateUpdater
                    P3DUndoRedoMenuStateUpdater
                                       (wxMenuBar          *MenuBar,
                                        const P3DEditCommandQueue
-                                                          &CommandQueue)
-                   : Queue(CommandQueue)
+                                                          *CommandQueue)
    {
+    Queue         = CommandQueue;
     this->MenuBar = MenuBar;
 
-    UndoEmpty = Queue.UndoQueueEmpty();
-    RedoEmpty = Queue.RedoQueueEmpty();
+    UndoEmpty = Queue->UndoQueueEmpty();
+    RedoEmpty = Queue->RedoQueueEmpty();
    }
 
                   ~P3DUndoRedoMenuStateUpdater
@@ -103,7 +103,7 @@ class P3DUndoRedoMenuStateUpdater
    {
     wxMenuItem                        *Item;
 
-    if (UndoEmpty != Queue.UndoQueueEmpty())
+    if (UndoEmpty != Queue->UndoQueueEmpty())
      {
       Item = MenuBar->FindItem(wxID_UNDO);
 
@@ -113,7 +113,7 @@ class P3DUndoRedoMenuStateUpdater
        }
      }
 
-    if (RedoEmpty != Queue.RedoQueueEmpty())
+    if (RedoEmpty != Queue->RedoQueueEmpty())
      {
       Item = MenuBar->FindItem(wxID_REDO);
 
@@ -126,7 +126,7 @@ class P3DUndoRedoMenuStateUpdater
 
   private          :
 
-  const P3DEditCommandQueue           &Queue;
+  const P3DEditCommandQueue           *Queue;
   wxMenuBar                           *MenuBar;
   bool                                 UndoEmpty;
   bool                                 RedoEmpty;
@@ -601,6 +601,7 @@ IMPLEMENT_APP(P3DApp)
 
                    P3DApp::~P3DApp    ()
  {
+  delete CommandQueue;
   delete PlantModel;
  }
 
@@ -652,7 +653,7 @@ void               P3DApp::SetModel   (P3DPlantModel      *Model)
  {
   P3DUndoRedoMenuStateUpdater           Updater(MainFrame->GetMenuBar(),CommandQueue);
 
-  CommandQueue.Clear();
+  CommandQueue->Clear();
 
   if (PlantModel != Model)
    {
@@ -885,14 +886,14 @@ void               P3DApp::ExecEditCmd(P3DEditCommand     *Cmd)
  {
   P3DUndoRedoMenuStateUpdater          Updater(MainFrame->GetMenuBar(),CommandQueue);
 
-  CommandQueue.PushAndExec(Cmd);
+  CommandQueue->PushAndExec(Cmd);
  }
 
 void               P3DApp::Undo       ()
  {
   P3DUndoRedoMenuStateUpdater          Updater(MainFrame->GetMenuBar(),CommandQueue);
 
-  CommandQueue.Undo();
+  CommandQueue->Undo();
 
   UpdateControls();
  }
@@ -901,7 +902,7 @@ void               P3DApp::Redo       ()
  {
   P3DUndoRedoMenuStateUpdater          Updater(MainFrame->GetMenuBar(),CommandQueue);
 
-  CommandQueue.Redo();
+  CommandQueue->Redo();
 
   UpdateControls();
  }
@@ -1055,6 +1056,8 @@ bool               P3DApp::OnInit     ()
   Bitmaps[P3D_BITMAP_REMOVE_TEXTURE] = wxBitmap(P3DCloseXPM);
 
   LODLevel = 1.0f;
+
+  CommandQueue = new P3DEditCommandQueue();
 
   PlantModel  = CreateNewPlantModel();
   PlantObject = 0;
