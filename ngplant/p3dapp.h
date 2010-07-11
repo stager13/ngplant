@@ -219,7 +219,7 @@ class P3DApp : public wxApp
 
   bool             UseShaders;
 
-  P3DEditCommandQueue                  CommandQueue;
+  P3DEditCommandQueue                 *CommandQueue;
  };
 
 DECLARE_APP(P3DApp)
