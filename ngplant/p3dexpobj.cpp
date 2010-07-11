@@ -264,7 +264,7 @@ static bool        ExportObjData      (FILE               *TargetStream,
            }
           else
            {
-            TexFileName = wxGetApp().GetTexFS()->Generic2System(TexName);
+            TexFileName = P3DApp::GetApp()->GetTexFS()->Generic2System(TexName);
 
             if (!TexFileName.empty())
              {

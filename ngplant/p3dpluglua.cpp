@@ -64,7 +64,7 @@ static int         GetTextureFileName (lua_State          *State)
   Control.Commit();
 
    {
-    std::string    FileName = wxGetApp().GetTexFS()->Generic2System(TexName);
+    std::string    FileName = P3DApp::GetApp()->GetTexFS()->Generic2System(TexName);
 
     if (FileName.empty())
      {
@@ -85,7 +85,7 @@ static int         GetCurrentLOD      (lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
 
-  Control.PushFloat(wxGetApp().GetLODLevel());
+  Control.PushFloat(P3DApp::GetApp()->GetLODLevel());
 
   Control.Commit();
 
@@ -120,7 +120,7 @@ bool               P3DPlugLuaRunScript(const char         *FileName,
 
     P3DPlugLuaRegisterHLI(State);
     P3DPlugLuaRegisterUI(State);
-    P3DPlugLuaRegisterExportPrefs(State,wxGetApp().GetExport3DPrefs());
+    P3DPlugLuaRegisterExportPrefs(State,P3DApp::GetApp()->GetExport3DPrefs());
     P3DPlugLuaRegisterModel(State,"PlantModel",PlantModel);
 
     lua_register(State,"GetTextureFileName",GetTextureFileName);

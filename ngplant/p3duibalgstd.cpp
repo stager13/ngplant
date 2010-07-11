@@ -215,7 +215,7 @@ typedef P3DParamCurveEditCmdTemplate<P3DBranchingAlgStd> P3DBAlgStdCurveParamEdi
 void               P3DBranchingAlgStdPanel::OnDensityChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           event.GetFloatValue(),
@@ -226,7 +226,7 @@ void               P3DBranchingAlgStdPanel::OnDensityChanged
 void               P3DBranchingAlgStdPanel::OnDensityVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           event.GetFloatValue(),
@@ -237,7 +237,7 @@ void               P3DBranchingAlgStdPanel::OnDensityVChanged
 void               P3DBranchingAlgStdPanel::OnMultiplicityChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdUIntParamEditCmd
          (Alg,
           event.GetIntValue(),
@@ -248,7 +248,7 @@ void               P3DBranchingAlgStdPanel::OnMultiplicityChanged
 void               P3DBranchingAlgStdPanel::OnRevAngleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           P3DMATH_DEG2RAD((float)(event.GetIntValue())),
@@ -259,7 +259,7 @@ void               P3DBranchingAlgStdPanel::OnRevAngleChanged
 void               P3DBranchingAlgStdPanel::OnRevAngleVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           event.GetFloatValue(),
@@ -270,7 +270,7 @@ void               P3DBranchingAlgStdPanel::OnRevAngleVChanged
 void               P3DBranchingAlgStdPanel::OnRotAngleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           P3DMATH_DEG2RAD((float)(event.GetIntValue())),
@@ -281,7 +281,7 @@ void               P3DBranchingAlgStdPanel::OnRotAngleChanged
 void               P3DBranchingAlgStdPanel::OnMinOffsetChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           event.GetFloatValue(),
@@ -292,7 +292,7 @@ void               P3DBranchingAlgStdPanel::OnMinOffsetChanged
 void               P3DBranchingAlgStdPanel::OnMaxOffsetChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           event.GetFloatValue(),
@@ -303,7 +303,7 @@ void               P3DBranchingAlgStdPanel::OnMaxOffsetChanged
 void               P3DBranchingAlgStdPanel::OnDeclinationCurveChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdCurveParamEditCmd
          (Alg,
           event.GetCurve(),
@@ -314,7 +314,7 @@ void               P3DBranchingAlgStdPanel::OnDeclinationCurveChanged
 void               P3DBranchingAlgStdPanel::OnDeclinationVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgStdFloatParamEditCmd
          (Alg,
           event.GetFloatValue(),

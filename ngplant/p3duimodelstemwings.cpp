@@ -144,7 +144,7 @@ void               P3DStemWingsPanel::OnWingsAngleChanged
  {
   model->SetWingsAngle(event.GetFloatValue());
 
-  wxGetApp().InvalidatePlant();
+  P3DApp::GetApp()->InvalidatePlant();
  }
 
 typedef P3DParamEditCmdTemplate<P3DStemModelWings,float> P3DStemWingsFloatParamEditCmd;
@@ -154,7 +154,7 @@ typedef P3DParamCurveEditCmdTemplate<P3DStemModelWings> P3DStemWingsCurveParamEd
 void               P3DStemWingsPanel::OnStemWidthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
   (new P3DStemWingsFloatParamEditCmd
         (model,
          event.GetFloatValue(),
@@ -165,7 +165,7 @@ void               P3DStemWingsPanel::OnStemWidthChanged
 void               P3DStemWingsPanel::OnSectionCountChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
   (new P3DStemWingsUIntParamEditCmd
         (model,
          event.GetIntValue(),
@@ -176,7 +176,7 @@ void               P3DStemWingsPanel::OnSectionCountChanged
 void               P3DStemWingsPanel::OnCurvatureChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemWingsCurveParamEditCmd
          (model,
           event.GetCurve(),
@@ -187,7 +187,7 @@ void               P3DStemWingsPanel::OnCurvatureChanged
 void               P3DStemWingsPanel::OnThicknessChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
   (new P3DStemWingsFloatParamEditCmd
         (model,
          event.GetFloatValue(),

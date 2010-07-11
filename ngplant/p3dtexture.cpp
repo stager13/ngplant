@@ -68,7 +68,7 @@ P3DTexHandle       P3DTexManagerGL::LoadFromFile
       return(P3DTexHandleNULL);
      }
 
-    std::string GenericName = wxGetApp().GetTexFS()->System2Generic(FileName);
+    std::string GenericName = P3DApp::GetApp()->GetTexFS()->System2Generic(FileName);
 
     if (GenericName.length() == 0)
      {

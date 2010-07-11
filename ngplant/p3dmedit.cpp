@@ -449,7 +449,7 @@ class AppendBranchCommand : public P3DEditCommand
 
       ModelTreeCtrl->SelectItem(ChildId);
 
-      wxGetApp().InvalidatePlant();
+      P3DApp::GetApp()->InvalidatePlant();
      }
 
     ChildBranchModel = NULL;
@@ -475,7 +475,7 @@ class AppendBranchCommand : public P3DEditCommand
       ModelTreeCtrl->Delete(ItemId);
      }
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   P3DBranchModel                      *ParentBranchModel;
@@ -494,9 +494,9 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchNewClick
 
   ChildBranchModel = new P3DBranchModel();
 
-  P3DPlantModel::BranchModelSetUniqueName(wxGetApp().GetModel(),ChildBranchModel);
+  P3DPlantModel::BranchModelSetUniqueName(P3DApp::GetApp()->GetModel(),ChildBranchModel);
 
-  ChildBranchModel->SetStemModel(wxGetApp().CreateStemModelStd());
+  ChildBranchModel->SetStemModel(P3DApp::GetApp()->CreateStemModelStd());
 
   if (GetSelection() == GetRootItem())
    {
@@ -504,12 +504,12 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchNewClick
    }
   else
    {
-    ChildBranchModel->SetBranchingAlg(wxGetApp().CreateBranchingAlgStd());
+    ChildBranchModel->SetBranchingAlg(P3DApp::GetApp()->CreateBranchingAlgStd());
    }
 
-  ChildBranchModel->SetMaterialInstance(wxGetApp().CreateMatInstanceStd());
+  ChildBranchModel->SetMaterialInstance(P3DApp::GetApp()->CreateMatInstanceStd());
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new AppendBranchCommand(ParentBranchModel,ChildBranchModel,this));
  }
 
@@ -522,7 +522,7 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchCopyClick
   P3DBranchModel                      *BranchModel;
   unsigned int                         BranchIndex;
 
-  PlantModel = wxGetApp().GetModel();
+  PlantModel = P3DApp::GetApp()->GetModel();
 
   BranchIndex = 0;
   BranchModel = P3DPlantModel::GetBranchModelByIndex(PlantModel,BranchIndex);
@@ -592,7 +592,7 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchCopyClick
          }
         else
          {
-          NewBranchingAlg = wxGetApp().CreateBranchingAlgStd();
+          NewBranchingAlg = P3DApp::GetApp()->CreateBranchingAlgStd();
          }
        }
       else
@@ -619,7 +619,7 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchCopyClick
 
       NewVisRange->SetRange(MinRange,MaxRange);
 
-      wxGetApp().ExecEditCmd
+      P3DApp::GetApp()->ExecEditCmd
        (new AppendBranchCommand(ParentBranchModel,ChildBranchModel,this));
      }
    }
@@ -660,7 +660,7 @@ class P3DRemoveStemCommand : public P3DEditCommand
       ModelTreeCtrl->Delete(ItemId);
      }
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   virtual void     Undo               ()
@@ -690,7 +690,7 @@ class P3DRemoveStemCommand : public P3DEditCommand
 
     BranchModel = 0;
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   private          :
@@ -769,7 +769,7 @@ void               P3DPlantModelTreeCtrl::OnRemoveStemClick
 
   ParentBranchModel = ((P3DPlantModelTreeCtrlItemData*)(GetItemData(ParentId)))->GetBranchModel();
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DRemoveStemCommand(ParentBranchModel,SubBranchIndex - 1,this));
  }
 
@@ -854,11 +854,11 @@ void               P3DPlantModelTreeCtrl::OnRenameStemClick
      {
       P3DBranchModel  *TempBranchModel;
 
-      TempBranchModel = P3DPlantModel::GetBranchModelByName(wxGetApp().GetModel(),NewName.mb_str(wxConvUTF8));
+      TempBranchModel = P3DPlantModel::GetBranchModelByName(P3DApp::GetApp()->GetModel(),NewName.mb_str(wxConvUTF8));
 
       if (TempBranchModel == 0)
        {
-        wxGetApp().ExecEditCmd
+        P3DApp::GetApp()->ExecEditCmd
          (new RenameStemCommand(BranchModel,NewName,this));
        }
       else
@@ -971,7 +971,7 @@ class ChangeStemModelCommand : public P3DEditCommand
         (ModelTreeCtrl->GetItemData(ItemId)))->SetBranchModel(NextBranchModel);
      }
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
 
     if (RefreshPanel)
      {
@@ -997,7 +997,7 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelTubeClick
 
   BranchModel = ((P3DPlantModelTreeCtrlItemData*)(GetItemData(GetSelection())))->GetBranchModel();
 
-  StemModel = wxGetApp().CreateStemModelTube();
+  StemModel = P3DApp::GetApp()->CreateStemModelTube();
 
   unsigned int SubBranchIndex;
   wxTreeItemId ItemId;
@@ -1012,7 +1012,7 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelTubeClick
     SubBranchIndex++;
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new ChangeStemModelCommand
          (GetBranchModelByItemId(ParentItemId),
           SubBranchIndex,
@@ -1033,7 +1033,7 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelQuadClick
 
   BranchModel = ((P3DPlantModelTreeCtrlItemData*)(GetItemData(GetSelection())))->GetBranchModel();
 
-  StemModel = wxGetApp().CreateStemModelQuad();
+  StemModel = P3DApp::GetApp()->CreateStemModelQuad();
 
   unsigned int SubBranchIndex;
   wxTreeItemId ItemId;
@@ -1048,7 +1048,7 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelQuadClick
     SubBranchIndex++;
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new ChangeStemModelCommand
          (GetBranchModelByItemId(ParentItemId),
           SubBranchIndex,
@@ -1104,7 +1104,7 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelWingsClick
     SubBranchIndex++;
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new ChangeStemModelCommand
          (ParentBranchModel,
           SubBranchIndex,
@@ -1124,7 +1124,7 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelGMeshClick
   P3DBranchModel                      *NewBranchModel;
   P3DStemModelGMesh                   *StemModel;
   int                                  PluginIndex;
-  const P3DPluginInfoVector           &GMeshPlugins = wxGetApp().GetGMeshPlugins();
+  const P3DPluginInfoVector           &GMeshPlugins = P3DApp::GetApp()->GetGMeshPlugins();
   unsigned int                         SubBranchIndex;
 
   PluginIndex = event.GetId() - wxID_GMESH_PLUGIN_FIRST;
@@ -1156,7 +1156,7 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelGMeshClick
     SubBranchIndex++;
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new ChangeStemModelCommand
          (GetBranchModelByItemId(ParentItemId),
           SubBranchIndex,
@@ -1185,7 +1185,7 @@ class HideShowEditCommand : public P3DEditCommand
    {
     Material->SetHidden(!Material->IsHidden());
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   virtual void     Undo               ()
@@ -1208,7 +1208,7 @@ void               P3DPlantModelTreeCtrl::OnHideShowStemClick
   BranchModel = ((P3DPlantModelTreeCtrlItemData*)(GetItemData(GetSelection())))->GetBranchModel();
   MaterialSimple = dynamic_cast<P3DMaterialInstanceSimple*>(BranchModel->GetMaterialInstance());
 
-  wxGetApp().ExecEditCmd(new HideShowEditCommand(MaterialSimple));
+  P3DApp::GetApp()->ExecEditCmd(new HideShowEditCommand(MaterialSimple));
  }
 
 void               P3DPlantModelTreeCtrl::OnItemRightClick
@@ -1253,7 +1253,7 @@ void               P3DPlantModelTreeCtrl::OnItemRightClick
       StemModelMenu->Enable(P3D_SET_STEM_MODEL_WINGS_ID,false);
      }
 
-    const P3DPluginInfoVector &GMeshPlugins = wxGetApp().GetGMeshPlugins();
+    const P3DPluginInfoVector &GMeshPlugins = P3DApp::GetApp()->GetGMeshPlugins();
 
     if (GMeshPlugins.size() > 0)
      {
@@ -1362,7 +1362,7 @@ void               P3DPlantModelTreeCtrl::UpdateLabel
 void               P3DPlantModelTreeCtrl::PlantInvalidated
                                       ()
  {
-  P3DMathRNGSimple           RNG(wxGetApp().GetModel()->GetBaseSeed());
+  P3DMathRNGSimple           RNG(P3DApp::GetApp()->GetModel()->GetBaseSeed());
 
   UpdateLabel(GetRootItem());
  }
@@ -1373,7 +1373,7 @@ wxString           P3DPlantModelTreeCtrl::MakeTreeItemLabel
  {
   wxString         Result;
 
-  if ((BranchModel == 0) || (wxGetApp().IsPlantObjectDirty()))
+  if ((BranchModel == 0) || (P3DApp::GetApp()->IsPlantObjectDirty()))
    {
     Result = wxString(Prefix,wxConvUTF8) + wxT(" [?/?]");
    }
@@ -1381,7 +1381,7 @@ wxString           P3DPlantModelTreeCtrl::MakeTreeItemLabel
    {
     const P3DPlantObject    *PlantObject;
 
-    PlantObject = wxGetApp().GetPlantObject();
+    PlantObject = P3DApp::GetApp()->GetPlantObject();
 
     if (BranchModel->GetStemModel() == 0)
      {
@@ -1398,7 +1398,7 @@ wxString           P3DPlantModelTreeCtrl::MakeTreeItemLabel
       P3DMaterialInstanceSimple       *SimpleMaterial;
       wxString                         StatStr;
 
-      Model = wxGetApp().GetModel();
+      Model = P3DApp::GetApp()->GetModel();
 
       GroupIndex      = 0;
       TempBranchModel = P3DPlantModel::GetBranchModelByIndex(Model,GroupIndex);
@@ -1520,7 +1520,7 @@ void               P3DModelEditPanel::CreateControls
   AutoUpdateCheckBox = new wxCheckBox(this,P3D_AUTO_UPDATE_ID,wxT("Auto-update"));
   UpdateButton       = new wxButton(this,P3D_UPDATE_ID,wxT("Update"));
 
-  if (wxGetApp().IsAutoUpdateMode())
+  if (P3DApp::GetApp()->IsAutoUpdateMode())
    {
     AutoUpdateCheckBox->SetValue(true);
     UpdateButton->Disable();
@@ -1535,17 +1535,17 @@ void               P3DModelEditPanel::CreateControls
 
   TopSizer->Add(UpdateControlSizer,0,wxGROW | wxALL,2);
 
-  BranchPanel = new P3DBranchPanel(this,wxGetApp().GetModel()->GetPlantBase());
+  BranchPanel = new P3DBranchPanel(this,P3DApp::GetApp()->GetModel()->GetPlantBase());
 
   TopSizer->Add(BranchPanel,0,wxGROW,0);
 
-  CalcPanelMinSize(&MinWidth,&MinHeight,BranchPanel,wxGetApp().GetModel()->GetPlantBase());
+  CalcPanelMinSize(&MinWidth,&MinHeight,BranchPanel,P3DApp::GetApp()->GetModel()->GetPlantBase());
 
   TopSizer->SetItemMinSize(BranchPanel,MinWidth,MinHeight);
 
   BranchPanel->SetSizeHints(MinWidth,MinHeight);
 
-  PlantModelTreeCtrl = new P3DPlantModelTreeCtrl(this,wxGetApp().GetModel(),BranchPanel);
+  PlantModelTreeCtrl = new P3DPlantModelTreeCtrl(this,P3DApp::GetApp()->GetModel(),BranchPanel);
 
   ExpandTreeCtrlRecursive(PlantModelTreeCtrl,PlantModelTreeCtrl->GetRootItem());
 
@@ -1635,7 +1635,7 @@ void               P3DModelEditPanel::UpdateControls
 void               P3DModelEditPanel::OnAutoUpdateChanged
                                       (wxCommandEvent     &Event)
  {
-  wxGetApp().SetAutoUpdateMode(Event.IsChecked());
+  P3DApp::GetApp()->SetAutoUpdateMode(Event.IsChecked());
 
   wxButton   *UpdateButton = (wxButton*)FindWindow(P3D_UPDATE_ID);
 
@@ -1646,13 +1646,13 @@ void               P3DModelEditPanel::OnAutoUpdateChanged
 
   if (Event.IsChecked())
    {
-    wxGetApp().ForceUpdate();
+    P3DApp::GetApp()->ForceUpdate();
    }
  }
 
 void               P3DModelEditPanel::OnUpdateClicked
                                       (wxCommandEvent     &Event)
  {
-  wxGetApp().ForceUpdate();
+  P3DApp::GetApp()->ForceUpdate();
  }
 

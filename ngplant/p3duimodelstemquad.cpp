@@ -158,7 +158,7 @@ typedef P3DParamCurveEditCmdTemplate<P3DStemModelQuad> P3DStemQuadCurveParamEdit
 void               P3DStemQuadPanel::OnStemLengthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
   (new P3DStemQuadFloatParamEditCmd
         (model,
          event.GetFloatValue(),
@@ -169,7 +169,7 @@ void               P3DStemQuadPanel::OnStemLengthChanged
 void               P3DStemQuadPanel::OnStemWidthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemQuadFloatParamEditCmd
          (model,
           event.GetFloatValue(),
@@ -180,7 +180,7 @@ void               P3DStemQuadPanel::OnStemWidthChanged
 void               P3DStemQuadPanel::OnScalingChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemQuadCurveParamEditCmd
          (model,
           event.GetCurve(),
@@ -191,7 +191,7 @@ void               P3DStemQuadPanel::OnScalingChanged
 void               P3DStemQuadPanel::OnSectionCountChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemQuadUIntParamEditCmd
          (model,
           event.GetIntValue(),
@@ -202,7 +202,7 @@ void               P3DStemQuadPanel::OnSectionCountChanged
 void               P3DStemQuadPanel::OnCurvatureChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemQuadCurveParamEditCmd
          (model,
           event.GetCurve(),
@@ -213,7 +213,7 @@ void               P3DStemQuadPanel::OnCurvatureChanged
 void               P3DStemQuadPanel::OnThicknessChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemQuadFloatParamEditCmd
          (model,
           event.GetFloatValue(),

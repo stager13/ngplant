@@ -75,7 +75,7 @@ typedef P3DParamEditCmdTemplate<P3DBranchingAlgWings,float> P3DBAlgWingsFloatPar
 void               P3DBranchingAlgWingsPanel::OnRotAngleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgWingsFloatParamEditCmd
          (Alg,
           P3DMATH_DEG2RAD((float)(event.GetIntValue())),
