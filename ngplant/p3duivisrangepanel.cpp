@@ -120,14 +120,14 @@ class SetVisRangeCommand : public P3DEditCommand
    {
     VisRangeState->SetRange(NewRangeMin,NewRangeMax);
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   virtual void     Undo               ()
    {
     VisRangeState->SetRange(OldRangeMin,OldRangeMax);
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   private          :
@@ -164,7 +164,7 @@ void               P3DVisRangePanel::OnMinChanged
     NewMax = OldMax;
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new SetVisRangeCommand(State,NewMin,NewMax));
  }
 
@@ -193,7 +193,7 @@ void               P3DVisRangePanel::OnMaxChanged
     NewMin = OldMin;
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new SetVisRangeCommand(State,NewMin,NewMax));
  }
 
@@ -202,7 +202,7 @@ typedef P3DParamEditCmdTemplate<P3DVisRangeState,bool> P3DVisRangeBoolParamEditC
 void               P3DVisRangePanel::OnEnabledChanged
                                       (wxCommandEvent     &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DVisRangeBoolParamEditCmd
          (State,
           event.IsChecked(),

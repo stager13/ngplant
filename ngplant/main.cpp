@@ -67,6 +67,8 @@ enum
   wxID_EXPORT_PLUGIN_LAST  = wxID_EXPORT_PLUGIN_FIRST + 250
  };
 
+P3DApp *P3DApp::SelfPtr = NULL;
+
 BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_NEW,P3DMainFrame::OnNew)
  EVT_MENU(wxID_OPEN,P3DMainFrame::OnOpen)
@@ -140,7 +142,7 @@ class P3DUndoRedoMenuStateUpdater
   wxMenu          *HelpMenu = new wxMenu();
   wxMenu          *ExportMenu = new wxMenu();
   const P3DPluginInfoVector
-                  &ExportPlugins = wxGetApp().GetExportPlugins();
+                  &ExportPlugins = P3DApp::GetApp()->GetExportPlugins();
   int              MenuItemId = wxID_EXPORT_PLUGIN_FIRST;
 
   SetIcon(wxICON(ngplant));
@@ -209,13 +211,13 @@ void               P3DMainFrame::OnAbout  (wxCommandEvent     &event)
 
 void               P3DMainFrame::OnSave   (wxCommandEvent     &event)
  {
-  if (wxGetApp().GetFileName().empty())
+  if (P3DApp::GetApp()->GetFileName().empty())
    {
     OnSaveAs(event);
    }
   else
    {
-    Save(wxGetApp().GetFileName().mb_str());
+    Save(P3DApp::GetApp()->GetFileName().mb_str());
    }
  }
 
@@ -266,19 +268,19 @@ void               P3DMainFrame::OnEditPreferences
 
   unsigned char R,G,B;
 
-  wxGetApp().GetGroundColor(&R,&G,&B);
+  P3DApp::GetApp()->GetGroundColor(&R,&G,&B);
 
   PreferencesDialog.SetGroundColor(R,G,B);
-  PreferencesDialog.SetGroundVisible(wxGetApp().IsGroundVisible());
+  PreferencesDialog.SetGroundVisible(P3DApp::GetApp()->IsGroundVisible());
 
-  wxGetApp().GetBackgroundColor(&R,&G,&B);
+  P3DApp::GetApp()->GetBackgroundColor(&R,&G,&B);
   PreferencesDialog.SetBackgroundColor(R,G,B);
 
-  PreferencesDialog.SetExport3DPrefs(wxGetApp().GetExport3DPrefs());
-  PreferencesDialog.SetCameraControlPrefs(*wxGetApp().GetCameraControlPrefs());
-  PreferencesDialog.SetRenderQuirksPrefs(wxGetApp().GetRenderQuirksPrefs());
+  PreferencesDialog.SetExport3DPrefs(P3DApp::GetApp()->GetExport3DPrefs());
+  PreferencesDialog.SetCameraControlPrefs(*P3DApp::GetApp()->GetCameraControlPrefs());
+  PreferencesDialog.SetRenderQuirksPrefs(P3DApp::GetApp()->GetRenderQuirksPrefs());
 
-  PreferencesDialog.SetPluginsPath(wxGetApp().GetPluginsPath());
+  PreferencesDialog.SetPluginsPath(P3DApp::GetApp()->GetPluginsPath());
 
   PreferencesDialog.SetCurveCtrlPrefs
    (P3DCurveCtrl::BestWidth,P3DCurveCtrl::BestHeight);
@@ -334,33 +336,33 @@ void               P3DMainFrame::OnEditPreferences
     PreferencesDialog.GetGroundColor(&View3DPrefs.GroundColor.R,
                                      &View3DPrefs.GroundColor.G,
                                      &View3DPrefs.GroundColor.B);
-    wxGetApp().SetGroundColor(View3DPrefs.GroundColor.R,
-                              View3DPrefs.GroundColor.G,
-                              View3DPrefs.GroundColor.B);
+    P3DApp::GetApp()->SetGroundColor(View3DPrefs.GroundColor.R,
+                                     View3DPrefs.GroundColor.G,
+                                     View3DPrefs.GroundColor.B);
 
     View3DPrefs.GroundVisible = PreferencesDialog.GetGroundVisible();
 
-    wxGetApp().SetGroundVisibility(View3DPrefs.GroundVisible);
+    P3DApp::GetApp()->SetGroundVisibility(View3DPrefs.GroundVisible);
 
     PreferencesDialog.GetBackgroundColor(&View3DPrefs.BackgroundColor.R,
                                          &View3DPrefs.BackgroundColor.G,
                                          &View3DPrefs.BackgroundColor.B);
-    wxGetApp().SetBackgroundColor(View3DPrefs.BackgroundColor.R,
-                                  View3DPrefs.BackgroundColor.G,
-                                  View3DPrefs.BackgroundColor.B);
+    P3DApp::GetApp()->SetBackgroundColor(View3DPrefs.BackgroundColor.R,
+                                         View3DPrefs.BackgroundColor.G,
+                                         View3DPrefs.BackgroundColor.B);
 
     View3DPrefs.Save(Cfg);
 
-    wxGetApp().SetCameraControlPrefs(&PreferencesDialog.GetCameraControlPrefs());
+    P3DApp::GetApp()->SetCameraControlPrefs(&PreferencesDialog.GetCameraControlPrefs());
 
-    wxGetApp().GetCameraControlPrefs()->Save(Cfg);
+    P3DApp::GetApp()->GetCameraControlPrefs()->Save(Cfg);
 
-    PreferencesDialog.GetExport3DPrefs(wxGetApp().GetExport3DPrefs());
-    wxGetApp().GetExport3DPrefs()->Save(Cfg);
+    PreferencesDialog.GetExport3DPrefs(P3DApp::GetApp()->GetExport3DPrefs());
+    P3DApp::GetApp()->GetExport3DPrefs()->Save(Cfg);
 
-    wxGetApp().SetPluginsPath(PreferencesDialog.GetPluginsPath());
+    P3DApp::GetApp()->SetPluginsPath(PreferencesDialog.GetPluginsPath());
 
-    Cfg->Write(wxT("/Paths/Plugins"),wxGetApp().GetPluginsPath());
+    Cfg->Write(wxT("/Paths/Plugins"),P3DApp::GetApp()->GetPluginsPath());
 
     unsigned int   NewBestWidth;
     unsigned int   NewBestHeight;
@@ -378,8 +380,8 @@ void               P3DMainFrame::OnEditPreferences
 
     P3DUIControlsPrefs::Save(Cfg);
 
-    wxGetApp().SetRenderQuirksPrefs(PreferencesDialog.GetRenderQuirksPrefs());
-    wxGetApp().GetRenderQuirksPrefs().Save(Cfg);
+    P3DApp::GetApp()->SetRenderQuirksPrefs(PreferencesDialog.GetRenderQuirksPrefs());
+    P3DApp::GetApp()->GetRenderQuirksPrefs().Save(Cfg);
 
     InvalidatePlant();
    }
@@ -401,11 +403,11 @@ void               P3DMainFrame::OnExportObj
     bool ExportHiddenGroups;
     bool ExportOutVisRangeGroups;
 
-    if      (wxGetApp().GetExport3DPrefs()->HiddenGroupsExportMode == P3D_ALWAYS)
+    if      (P3DApp::GetApp()->GetExport3DPrefs()->HiddenGroupsExportMode == P3D_ALWAYS)
      {
       ExportHiddenGroups = true;
      }
-    else if (wxGetApp().GetExport3DPrefs()->HiddenGroupsExportMode == P3D_NEVER)
+    else if (P3DApp::GetApp()->GetExport3DPrefs()->HiddenGroupsExportMode == P3D_NEVER)
      {
       ExportHiddenGroups = false;
      }
@@ -421,11 +423,11 @@ void               P3DMainFrame::OnExportObj
        }
      }
 
-    if      (wxGetApp().GetExport3DPrefs()->OutVisRangeExportMode == P3D_ALWAYS)
+    if      (P3DApp::GetApp()->GetExport3DPrefs()->OutVisRangeExportMode == P3D_ALWAYS)
      {
       ExportOutVisRangeGroups = true;
      }
-    else if (wxGetApp().GetExport3DPrefs()->OutVisRangeExportMode == P3D_NEVER)
+    else if (P3DApp::GetApp()->GetExport3DPrefs()->OutVisRangeExportMode == P3D_NEVER)
      {
       ExportOutVisRangeGroups = false;
      }
@@ -444,10 +446,10 @@ void               P3DMainFrame::OnExportObj
 
     if (!P3DModelExportOBJ(FileName.mb_str(),
                            MTLFileName.GetFullPath().mb_str(),
-                           wxGetApp().GetModel(),
+                           P3DApp::GetApp()->GetModel(),
                            ExportHiddenGroups,
                            ExportOutVisRangeGroups,
-                           wxGetApp().GetLODLevel()))
+                           P3DApp::GetApp()->GetLODLevel()))
      {
       ::wxMessageBox(wxT("Error while exporting model"),wxT("Error"),wxOK | wxICON_ERROR);
      }
@@ -459,7 +461,7 @@ void               P3DMainFrame::OnExportObjPlugin
  {
   int              PluginIndex;
   const P3DPluginInfoVector
-                  &ExportPlugins = wxGetApp().GetExportPlugins();
+                  &ExportPlugins = P3DApp::GetApp()->GetExportPlugins();
 
   PluginIndex = event.GetId() - wxID_EXPORT_PLUGIN_FIRST;
 
@@ -469,7 +471,7 @@ void               P3DMainFrame::OnExportObjPlugin
    }
 
   P3DPlugLuaRunScript(ExportPlugins[PluginIndex].GetFileName(),
-                      wxGetApp().GetModel());
+                      P3DApp::GetApp()->GetModel());
  }
 
 void               P3DMainFrame::OnRunScript
@@ -481,7 +483,7 @@ void               P3DMainFrame::OnRunScript
 
   if (!FileName.empty())
    {
-    P3DPlugLuaRunScript(FileName.mb_str(),wxGetApp().GetModel());
+    P3DPlugLuaRunScript(FileName.mb_str(),P3DApp::GetApp()->GetModel());
    }
  }
 
@@ -494,11 +496,11 @@ void               P3DMainFrame::Save  (const char         *FileName)
 
     TargetStream.Open(FileName);
 
-    wxGetApp().GetModel()->Save(&TargetStream,&MaterialSaver);
+    P3DApp::GetApp()->GetModel()->Save(&TargetStream,&MaterialSaver);
 
     TargetStream.Close();
 
-    wxGetApp().SetFileName(FileName);
+    P3DApp::GetApp()->SetFileName(FileName);
    }
   catch (...)
    {
@@ -514,13 +516,13 @@ void               P3DMainFrame::OnNew(wxCommandEvent     &event)
    {
     P3DPlantModel                     *NewModel;
 
-    NewModel = wxGetApp().CreateNewPlantModel();
+    NewModel = P3DApp::GetApp()->CreateNewPlantModel();
 
     EditPanel->HideAll();
 
-    wxGetApp().SetModel(NewModel);
+    P3DApp::GetApp()->SetModel(NewModel);
 
-    wxGetApp().SetFileName("");
+    P3DApp::GetApp()->SetFileName("");
 
     EditPanel->RestoreAll();
    }
@@ -542,8 +544,8 @@ void               P3DMainFrame::OnOpen
      {
       P3DInputStringStreamFile         SourceStream;
       P3DIDEMaterialFactory            MaterialFactory
-                                        (wxGetApp().GetTexManager(),
-                                         wxGetApp().GetShaderManager());
+                                        (P3DApp::GetApp()->GetTexManager(),
+                                         P3DApp::GetApp()->GetShaderManager());
 
       SourceStream.Open(FileName.mb_str());
 
@@ -553,11 +555,11 @@ void               P3DMainFrame::OnOpen
 
       SourceStream.Close();
 
-      wxGetApp().SetFileName(FileName.mb_str());
+      P3DApp::GetApp()->SetFileName(FileName.mb_str());
 
       EditPanel->HideAll();
 
-      wxGetApp().SetModel(NewModel);
+      P3DApp::GetApp()->SetModel(NewModel);
 
       NewModel = 0;
 
@@ -575,13 +577,13 @@ void               P3DMainFrame::OnOpen
 void               P3DMainFrame::OnUndo
                                       (wxCommandEvent     &event)
  {
-  wxGetApp().Undo();
+  P3DApp::GetApp()->Undo();
  }
 
 void               P3DMainFrame::OnRedo
                                       (wxCommandEvent     &event)
  {
-  wxGetApp().Redo();
+  P3DApp::GetApp()->Redo();
  }
 
 void               P3DMainFrame::UpdateControls
@@ -998,6 +1000,8 @@ bool               P3DApp::OnInit     ()
  {
   UseShaders = true;
 
+  SelfPtr = this;
+
   if (!wxApp::OnInit())
    {
     return(false);
@@ -1228,5 +1232,10 @@ void               P3DApp::SetRenderQuirksPrefs
                                                           &Prefs)
  {
   RenderQuirks = Prefs;
+ }
+
+P3DApp            *P3DApp::GetApp     ()
+ {
+  return SelfPtr;
  }
 

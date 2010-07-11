@@ -74,7 +74,7 @@ P3DMaterialInstance
    {
     if (MatDef.GetTexName(TexLayer) != NULL)
      {
-      std::string SystemName = wxGetApp().GetTexFS()->Generic2System(MatDef.GetTexName(TexLayer));
+      std::string SystemName = P3DApp::GetApp()->GetTexFS()->Generic2System(MatDef.GetTexName(TexLayer));
 
       if (SystemName.length() > 0)
        {

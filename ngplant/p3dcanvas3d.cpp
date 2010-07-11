@@ -123,7 +123,7 @@ void               P3DCanvas3D::OnPaint            (wxPaintEvent       &event)
         (!GLEW_ARB_vertex_shader)  ||
         (!GLEW_ARB_fragment_shader))
      {
-      wxGetApp().DisableShaders();
+      P3DApp::GetApp()->DisableShaders();
 
       P3DLogInfo(wxT("Hardware/driver lacks GLSL support - shaders disabled\n"));
      }
@@ -137,7 +137,7 @@ void               P3DCanvas3D::OnPaint            (wxPaintEvent       &event)
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_ALPHA_TEST);
 
-  wxGetApp().GetBackgroundColor(&R,&G,&B);
+  P3DApp::GetApp()->GetBackgroundColor(&R,&G,&B);
 
   glClearColor((float)R / 255.0f,(float)G / 255.0f,(float)B / 255.0f,1.0f);
 
@@ -189,14 +189,14 @@ void               P3DCanvas3D::OnPaint            (wxPaintEvent       &event)
 
   glDisable(GL_TEXTURE_2D);
 
-  if (wxGetApp().IsShadersEnabled())
+  if (P3DApp::GetApp()->IsShadersEnabled())
    {
     glUseProgramObjectARB(0);
    }
 
-  if (wxGetApp().IsGroundVisible())
+  if (P3DApp::GetApp()->IsGroundVisible())
    {
-    wxGetApp().GetGroundColor(&R,&G,&B);
+    P3DApp::GetApp()->GetGroundColor(&R,&G,&B);
 
     glColor3f((float)R / 255.0f,(float)G / 255.0f,(float)B / 255.0f);
 
@@ -211,7 +211,7 @@ void               P3DCanvas3D::OnPaint            (wxPaintEvent       &event)
 
   const P3DPlantObject    *PlantObject;
 
-  PlantObject = wxGetApp().GetPlantObject();
+  PlantObject = P3DApp::GetApp()->GetPlantObject();
 
   if (PlantObject != 0)
    {
@@ -270,7 +270,7 @@ void               P3DCanvas3D::OnMouseMotion   (wxMouseEvent       &event)
        {
         const P3DCameraControlPrefs   *CameraControlPrefs;
 
-        CameraControlPrefs = wxGetApp().GetCameraControlPrefs();
+        CameraControlPrefs = P3DApp::GetApp()->GetCameraControlPrefs();
 
         if (dy != 0)
          {
@@ -294,7 +294,7 @@ void               P3DCanvas3D::OnMouseMotion   (wxMouseEvent       &event)
     m_x += dx; m_y += dy;
    }
 
-  wxGetApp().InvalidateCamera();
+  P3DApp::GetApp()->InvalidateCamera();
   Refresh();
  }
 
@@ -306,7 +306,7 @@ void               P3DCanvas3D::OnMouseWheel    (wxMouseEvent       &event)
 
   ZoomFactor *= WheelMove < 0.0f ? 4.0f / 3.0f : 0.75f;
 
-  wxGetApp().InvalidateCamera();
+  P3DApp::GetApp()->InvalidateCamera();
   Refresh();
  }
 
@@ -418,7 +418,7 @@ void               P3DCanvas3D::OnChar          (wxKeyEvent         &event)
 
   if (CameraChanged)
    {
-    wxGetApp().InvalidateCamera();
+    P3DApp::GetApp()->InvalidateCamera();
     Refresh();
    }
  }

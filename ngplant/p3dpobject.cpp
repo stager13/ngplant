@@ -160,7 +160,7 @@ static void        UpdateBillboardsInfo
   if (MaterialDef->GetTexName(P3D_TEX_DIFFUSE) != 0)
    {
     MaterialData.DiffuseTexHandle =
-     wxGetApp().GetTexManager()->GetHandleByGenericName
+     P3DApp::GetApp()->GetTexManager()->GetHandleByGenericName
       (MaterialDef->GetTexName(P3D_TEX_DIFFUSE));
    }
   else
@@ -171,7 +171,7 @@ static void        UpdateBillboardsInfo
   if (MaterialDef->GetTexName(P3D_TEX_NORMAL_MAP) != 0)
    {
     MaterialData.NormalMapHandle =
-     wxGetApp().GetTexManager()->GetHandleByGenericName
+     P3DApp::GetApp()->GetTexManager()->GetHandleByGenericName
       (MaterialDef->GetTexName(P3D_TEX_NORMAL_MAP));
    }
   else
@@ -180,7 +180,7 @@ static void        UpdateBillboardsInfo
    }
 
   MaterialData.ShaderHandle =
-   wxGetApp().GetShaderManager()->GenShader
+   P3DApp::GetApp()->GetShaderManager()->GenShader
     (MaterialData.DiffuseTexHandle != P3DTexHandleNULL,
      MaterialData.NormalMapHandle != P3DTexHandleNULL,
      MaterialData.TwoSided);
@@ -191,7 +191,7 @@ static void        UpdateBillboardsInfo
    {
     GLhandleARB    ProgHandle;
 
-    ProgHandle = wxGetApp().GetShaderManager()->GetProgramHandle
+    ProgHandle = P3DApp::GetApp()->GetShaderManager()->GetProgramHandle
                   (MaterialData.ShaderHandle);
 
     if (ProgHandle != 0)
@@ -288,17 +288,17 @@ static void        UpdateBillboardsInfo
  {
   if (MaterialData.ShaderHandle != P3DShaderHandleNULL)
    {
-    wxGetApp().GetShaderManager()->FreeShader(MaterialData.ShaderHandle);
+    P3DApp::GetApp()->GetShaderManager()->FreeShader(MaterialData.ShaderHandle);
    }
 
   if (MaterialData.DiffuseTexHandle != P3DTexHandleNULL)
    {
-    wxGetApp().GetTexManager()->FreeTexture(MaterialData.DiffuseTexHandle);
+    P3DApp::GetApp()->GetTexManager()->FreeTexture(MaterialData.DiffuseTexHandle);
    }
 
   if (MaterialData.NormalMapHandle != P3DTexHandleNULL)
    {
-    wxGetApp().GetTexManager()->FreeTexture(MaterialData.NormalMapHandle);
+    P3DApp::GetApp()->GetTexManager()->FreeTexture(MaterialData.NormalMapHandle);
    }
 
   free(ColorBuffer);
@@ -368,7 +368,7 @@ void               P3DBranchGroupObject::Render
 
   float LODLevel;
 
-  LODLevel = wxGetApp().GetLODLevel();
+  LODLevel = P3DApp::GetApp()->GetLODLevel();
 
   if ((LODVisRangeEnabled) &&
       ((LODLevel < LODVisRangeMinLOD) || (LODLevel > LODVisRangeMaxLOD)))
@@ -397,7 +397,7 @@ void               P3DBranchGroupObject::Render
     float          AlphaTestValue;
 
     /*FIXME: need more generic way to get current LOD level */
-    AlphaTestValue = CalcAlphaTestValue(wxGetApp().GetLODLevel());
+    AlphaTestValue = CalcAlphaTestValue(P3DApp::GetApp()->GetLODLevel());
 
     glAlphaFunc(GL_GREATER,AlphaTestValue);
     glEnable(GL_ALPHA_TEST);
@@ -416,7 +416,7 @@ void               P3DBranchGroupObject::Render
     glEnable(GL_TEXTURE_2D);
 
     glBindTexture
-     (GL_TEXTURE_2D,wxGetApp().GetTexManager()->GetGLHandle(MaterialData.DiffuseTexHandle));
+     (GL_TEXTURE_2D,P3DApp::GetApp()->GetTexManager()->GetGLHandle(MaterialData.DiffuseTexHandle));
    }
 
   GLhandleARB      ProgHandle;
@@ -425,7 +425,7 @@ void               P3DBranchGroupObject::Render
 
   if (MaterialData.ShaderHandle != P3DShaderHandleNULL)
    {
-    ProgHandle = wxGetApp().GetShaderManager()->GetProgramHandle
+    ProgHandle = P3DApp::GetApp()->GetShaderManager()->GetProgramHandle
                   (MaterialData.ShaderHandle);
 
     if (ProgHandle != 0)
@@ -441,7 +441,7 @@ void               P3DBranchGroupObject::Render
       glEnable(GL_TEXTURE_2D);
 
       glBindTexture
-       (GL_TEXTURE_2D,wxGetApp().GetTexManager()->GetGLHandle(MaterialData.NormalMapHandle));
+       (GL_TEXTURE_2D,P3DApp::GetApp()->GetTexManager()->GetGLHandle(MaterialData.NormalMapHandle));
       glActiveTexture(GL_TEXTURE0);
      }
    }

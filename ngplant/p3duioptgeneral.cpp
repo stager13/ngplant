@@ -48,7 +48,7 @@ END_EVENT_TABLE()
 
   SeedGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Seed")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
-  wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_SEED_CTRL,wxSPINSLIDER_MODE_INTEGER,wxGetApp().GetModel()->GetBaseSeed(),1,100000);
+  wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_SEED_CTRL,wxSPINSLIDER_MODE_INTEGER,P3DApp::GetApp()->GetModel()->GetBaseSeed(),1,100000);
   spin_slider->SetStdStep(10);
   spin_slider->SetSmallStep(1);
   spin_slider->SetLargeMove(100);
@@ -68,7 +68,7 @@ END_EVENT_TABLE()
 
   LODGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("LOD level")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
-  spin_slider = new wxSpinSliderCtrl(this,wxID_LOD_CTRL,wxSPINSLIDER_MODE_FLOAT,wxGetApp().GetLODLevel(),0.0f,1.0f);
+  spin_slider = new wxSpinSliderCtrl(this,wxID_LOD_CTRL,wxSPINSLIDER_MODE_FLOAT,P3DApp::GetApp()->GetLODLevel(),0.0f,1.0f);
   spin_slider->SetStdStep(0.1);
   spin_slider->SetSmallStep(0.01);
   spin_slider->SetLargeMove(0.05);
@@ -94,20 +94,20 @@ class P3DEditCmdChangeModelSeed : public P3DEditCommand
                    P3DEditCmdChangeModelSeed
                                       (unsigned int        NewSeed)
    {
-    OldSeed       = wxGetApp().GetModel()->GetBaseSeed();
+    OldSeed       = P3DApp::GetApp()->GetModel()->GetBaseSeed();
     this->NewSeed = NewSeed;
    }
 
   virtual void     Exec               ()
    {
-    wxGetApp().GetModel()->SetBaseSeed(NewSeed);
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->GetModel()->SetBaseSeed(NewSeed);
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   virtual void     Undo               ()
    {
-    wxGetApp().GetModel()->SetBaseSeed(OldSeed);
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->GetModel()->SetBaseSeed(OldSeed);
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   private          :
@@ -119,15 +119,15 @@ class P3DEditCmdChangeModelSeed : public P3DEditCommand
 void               P3DOptGeneralPanel::OnSeedChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd(new P3DEditCmdChangeModelSeed(event.GetIntValue()));
+  P3DApp::GetApp()->ExecEditCmd(new P3DEditCmdChangeModelSeed(event.GetIntValue()));
  }
 
 void               P3DOptGeneralPanel::OnLODChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().SetLODLevel(event.GetFloatValue());
+  P3DApp::GetApp()->SetLODLevel(event.GetFloatValue());
 
-  wxGetApp().InvalidatePlant();
+  P3DApp::GetApp()->InvalidatePlant();
  }
 
 void               P3DOptGeneralPanel::UpdateControls
@@ -139,7 +139,7 @@ void               P3DOptGeneralPanel::UpdateControls
 
   if (SpinSlider != NULL)
    {
-    SpinSlider->SetValue(wxGetApp().GetModel()->GetBaseSeed());
+    SpinSlider->SetValue(P3DApp::GetApp()->GetModel()->GetBaseSeed());
    }
  }
 

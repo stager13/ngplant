@@ -76,7 +76,7 @@ typedef P3DParamEditCmdTemplate<P3DBranchingAlgBase,float> P3DBAlgBaseFloatParam
 void               P3DBranchingAlgBasePanel::OnRotAngleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DBAlgBaseFloatParamEditCmd
          (Alg,
           P3DMATH_DEG2RAD((float)(event.GetIntValue())),

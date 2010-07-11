@@ -153,13 +153,13 @@ static const char *TexLayerNames[] =
 
   if (Material->GetTexHandle(ActiveTexLayer) == P3DTexHandleNULL)
    {
-    BaseTexButton->SetBitmapLabel(wxGetApp().GetBitmap(P3D_BITMAP_NO_TEXTURE));
+    BaseTexButton->SetBitmapLabel(P3DApp::GetApp()->GetBitmap(P3D_BITMAP_NO_TEXTURE));
    }
   else
    {
     const wxBitmap *TexBitmap;
 
-    TexBitmap = wxGetApp().GetTexManager()->GetBitmap(Material->GetTexHandle(ActiveTexLayer));
+    TexBitmap = P3DApp::GetApp()->GetTexManager()->GetBitmap(Material->GetTexHandle(ActiveTexLayer));
 
     BaseTexButton->SetBitmapLabel(*TexBitmap);
    }
@@ -168,7 +168,7 @@ static const char *TexLayerNames[] =
 
   TexImageControlSizer->Add(BaseTexButton,1,wxGROW,0);
 
-  RemoveTexButton = new wxBitmapButton(this,wxID_REMOVETEXTURE_CTRL,wxGetApp().GetBitmap(P3D_BITMAP_REMOVE_TEXTURE),wxDefaultPosition,wxSize(18,18));
+  RemoveTexButton = new wxBitmapButton(this,wxID_REMOVETEXTURE_CTRL,P3DApp::GetApp()->GetBitmap(P3D_BITMAP_REMOVE_TEXTURE),wxDefaultPosition,wxSize(18,18));
 
   if (Material->GetTexHandle(ActiveTexLayer) == P3DTexHandleNULL)
    {
@@ -350,14 +350,14 @@ class P3DColorParamEditCommand : public P3DEditCommand
    {
     Material->SetColor(NewR,NewG,NewB);
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   virtual void     Undo               ()
    {
     Material->SetColor(OldR,OldG,OldB);
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   private          :
@@ -393,7 +393,7 @@ void               P3DMaterialStdPanel::OnBaseColorClicked
 
     wxColour Color = UserColorData.GetColour();
 
-    wxGetApp().ExecEditCmd
+    P3DApp::GetApp()->ExecEditCmd
      (new P3DColorParamEditCommand
            (Material,
             Color.Red()   / 255.0f,
@@ -410,7 +410,7 @@ typedef P3DParamEditCmdTemplate<P3DMaterialInstanceSimple,float> P3DMaterialFloa
 void               P3DMaterialStdPanel::OnUScaleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeFloatParamEditCmd
         (StemModelTube,
          event.GetFloatValue(),
@@ -421,7 +421,7 @@ void               P3DMaterialStdPanel::OnUScaleChanged
 void               P3DMaterialStdPanel::OnVModeChanged
                                       (wxCommandEvent     &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeUIntParamEditCmd
         (StemModelTube,
          event.GetSelection() == 0 ? P3DTexCoordModeRelative :
@@ -433,7 +433,7 @@ void               P3DMaterialStdPanel::OnVModeChanged
 void               P3DMaterialStdPanel::OnVScaleChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeFloatParamEditCmd
         (StemModelTube,
          event.GetFloatValue(),
@@ -469,14 +469,14 @@ void               P3DMaterialStdPanel::OnTexLayerClicked
 
     if (Material->GetTexHandle(ActiveTexLayer) == P3DTexHandleNULL)
      {
-      BaseTexButton->SetBitmapLabel(wxGetApp().GetBitmap(P3D_BITMAP_NO_TEXTURE));
+      BaseTexButton->SetBitmapLabel(P3DApp::GetApp()->GetBitmap(P3D_BITMAP_NO_TEXTURE));
       RemoveTexButton->Enable(FALSE);
      }
     else
      {
       const wxBitmap *TexBitmap;
 
-      TexBitmap = wxGetApp().GetTexManager()->GetBitmap(Material->GetTexHandle(ActiveTexLayer));
+      TexBitmap = P3DApp::GetApp()->GetTexManager()->GetBitmap(Material->GetTexHandle(ActiveTexLayer));
 
       BaseTexButton->SetBitmapLabel(*TexBitmap);
 
@@ -516,7 +516,7 @@ class ChangeTextureCommand : public P3DEditCommand
    {
     if (TexHandle != P3DTexHandleNULL)
      {
-      wxGetApp().GetTexManager()->FreeTexture(TexHandle);
+      P3DApp::GetApp()->GetTexManager()->FreeTexture(TexHandle);
      }
    }
 
@@ -540,14 +540,14 @@ class ChangeTextureCommand : public P3DEditCommand
 
     if (CurrTexHandle != P3DTexHandleNULL)
      {
-      wxGetApp().GetTexManager()->IncRefCount(CurrTexHandle);
+      P3DApp::GetApp()->GetTexManager()->IncRefCount(CurrTexHandle);
      }
 
     Material->SetTexHandle(Layer,TexHandle);
 
     TexHandle = CurrTexHandle;
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   P3DMaterialInstanceSimple           *Material;
@@ -565,7 +565,7 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
   unsigned int                         ImgFormatIndex;
   wxString                             FileWildcard;
 
-  ImgFormatCount = wxGetApp().GetTexManager()->GetFmtHandler()->FormatCount();
+  ImgFormatCount = P3DApp::GetApp()->GetTexManager()->GetFmtHandler()->FormatCount();
 
   wxString  FormatExt;
   wxString  AllImgFormatExt;
@@ -573,7 +573,7 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
 
   for (ImgFormatIndex = 0; ImgFormatIndex < ImgFormatCount; ImgFormatIndex++)
    {
-    FormatExt = wxString(wxGetApp().GetTexManager()->GetFmtHandler()->FormatExt(ImgFormatIndex),wxConvUTF8);
+    FormatExt = wxString(P3DApp::GetApp()->GetTexManager()->GetFmtHandler()->FormatExt(ImgFormatIndex),wxConvUTF8);
 
     FileWildcard += wxString::Format(wxT("%s files (*.%s)|*.%s|"),
                                      FormatExt.Upper().c_str(),
@@ -604,7 +604,7 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
    {
     wxString                  ErrorMessage;
 
-    TexHandle = wxGetApp().GetTexManager()->LoadFromFile(FileName.mb_str(),ErrorMessage);
+    TexHandle = P3DApp::GetApp()->GetTexManager()->LoadFromFile(FileName.mb_str(),ErrorMessage);
 
     if (TexHandle == P3DTexHandleNULL)
      {
@@ -613,7 +613,7 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
       return;
      }
 
-    BaseTexButton->SetBitmapLabel(*(wxGetApp().GetTexManager()->GetBitmap(TexHandle)));
+    BaseTexButton->SetBitmapLabel(*(P3DApp::GetApp()->GetTexManager()->GetBitmap(TexHandle)));
 
     wxToggleButton *Button = (wxToggleButton*)FindWindow(wxID_TEXLAYER_BUTTON_MIN + ActiveTexLayer);
 
@@ -624,7 +624,7 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
 
     RemoveTexButton->Enable(TRUE);
 
-    wxGetApp().ExecEditCmd
+    P3DApp::GetApp()->ExecEditCmd
      (new ChangeTextureCommand(Material,ActiveTexLayer,TexHandle));
    }
  }
@@ -634,7 +634,7 @@ void               P3DMaterialStdPanel::OnRemoveTexClicked
  {
   RemoveTexButton->Enable(FALSE);
 
-  BaseTexButton->SetBitmapLabel(wxGetApp().GetBitmap(P3D_BITMAP_NO_TEXTURE));
+  BaseTexButton->SetBitmapLabel(P3DApp::GetApp()->GetBitmap(P3D_BITMAP_NO_TEXTURE));
 
   wxToggleButton *Button = (wxToggleButton*)FindWindow(wxID_TEXLAYER_BUTTON_MIN + ActiveTexLayer);
 
@@ -643,14 +643,14 @@ void               P3DMaterialStdPanel::OnRemoveTexClicked
     Button->SetForegroundColour(*wxBLACK);
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new ChangeTextureCommand(Material,ActiveTexLayer,P3DTexHandleNULL));
  }
 
 void               P3DMaterialStdPanel::OnDoubleSidedChanged
                                       (wxCommandEvent     &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DMaterialBoolParamEditCmd
          (Material,
           event.IsChecked(),
@@ -661,7 +661,7 @@ void               P3DMaterialStdPanel::OnDoubleSidedChanged
 void               P3DMaterialStdPanel::OnTransparentChanged
                                       (wxCommandEvent     &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DMaterialBoolParamEditCmd
          (Material,
           event.IsChecked(),
@@ -713,7 +713,7 @@ class ChangeBillboardModeCommand : public P3DEditCommand
 
     Mode = OldMode;
 
-    wxGetApp().InvalidatePlant();
+    P3DApp::GetApp()->InvalidatePlant();
    }
 
   P3DMaterialInstanceSimple           *Material;
@@ -741,7 +741,7 @@ void               P3DMaterialStdPanel::OnBillboardModeChanged
     BillboardMode = P3D_BILLBOARD_MODE_NONE;
    }
 
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new ChangeBillboardModeCommand
          (Material,StemModelQuad,BillboardMode));
  }
@@ -749,7 +749,7 @@ void               P3DMaterialStdPanel::OnBillboardModeChanged
 void               P3DMaterialStdPanel::OnAlphaCtrlEnabledChanged
                                       (wxCommandEvent     &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DMaterialBoolParamEditCmd
          (Material,
           event.IsChecked(),
@@ -760,7 +760,7 @@ void               P3DMaterialStdPanel::OnAlphaCtrlEnabledChanged
 void               P3DMaterialStdPanel::OnAlphaFadeInChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DMaterialFloatParamEditCmd
          (Material,
           event.GetFloatValue(),
@@ -771,7 +771,7 @@ void               P3DMaterialStdPanel::OnAlphaFadeInChanged
 void               P3DMaterialStdPanel::OnAlphaFadeOutChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DMaterialFloatParamEditCmd
          (Material,
           event.GetFloatValue(),
@@ -828,7 +828,7 @@ void               P3DMaterialStdPanel::UpdateControls
          {
           const wxBitmap *TexBitmap;
 
-          TexBitmap = wxGetApp().GetTexManager()->GetBitmap(TexHandle);
+          TexBitmap = P3DApp::GetApp()->GetTexManager()->GetBitmap(TexHandle);
 
           BaseTexButton->SetBitmapLabel(*TexBitmap);
 
@@ -842,7 +842,7 @@ void               P3DMaterialStdPanel::UpdateControls
         if (TexLayer == ActiveTexLayer)
          {
           BaseTexButton->SetBitmapLabel
-           (wxGetApp().GetBitmap(P3D_BITMAP_NO_TEXTURE));
+           (P3DApp::GetApp()->GetBitmap(P3D_BITMAP_NO_TEXTURE));
           RemoveTexButton->Enable(FALSE);
          }
        }

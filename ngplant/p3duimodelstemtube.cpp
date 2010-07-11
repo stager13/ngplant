@@ -206,7 +206,7 @@ typedef P3DParamCurveEditCmdTemplate<P3DStemModelTube> P3DStemTubeCurveParamEdit
 void               P3DStemTubePanel::OnStemLengthChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeFloatParamEditCmd
          (model,
           event.GetFloatValue(),
@@ -217,7 +217,7 @@ void               P3DStemTubePanel::OnStemLengthChanged
 void               P3DStemTubePanel::OnStemLengthVChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeFloatParamEditCmd
          (model,
           event.GetFloatValue(),
@@ -228,7 +228,7 @@ void               P3DStemTubePanel::OnStemLengthVChanged
 void               P3DStemTubePanel::OnStemAxisVariationChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeFloatParamEditCmd
          (model,
           event.GetFloatValue(),
@@ -239,7 +239,7 @@ void               P3DStemTubePanel::OnStemAxisVariationChanged
 void               P3DStemTubePanel::OnLengthOffsetInfluenceChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeCurveParamEditCmd
          (model,
           event.GetCurve(),
@@ -250,7 +250,7 @@ void               P3DStemTubePanel::OnLengthOffsetInfluenceChanged
 void               P3DStemTubePanel::OnAxisResolutionChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeUIntParamEditCmd
          (model,
           event.GetIntValue(),
@@ -261,7 +261,7 @@ void               P3DStemTubePanel::OnAxisResolutionChanged
 void               P3DStemTubePanel::OnTrunkProfileScaleBaseChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeFloatParamEditCmd
          (model,
           event.GetFloatValue(),
@@ -272,7 +272,7 @@ void               P3DStemTubePanel::OnTrunkProfileScaleBaseChanged
 void               P3DStemTubePanel::OnRadiusProfileScaleChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeCurveParamEditCmd
          (model,
           event.GetCurve(),
@@ -283,7 +283,7 @@ void               P3DStemTubePanel::OnRadiusProfileScaleChanged
 void               P3DStemTubePanel::OnProfileResolutionChanged
                                       (wxSpinSliderEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeUIntParamEditCmd
          (model,
           event.GetIntValue(),
@@ -294,7 +294,7 @@ void               P3DStemTubePanel::OnProfileResolutionChanged
 void               P3DStemTubePanel::OnPhototropismCurveChanged
                                       (P3DCurveCtrlEvent  &event)
  {
-  wxGetApp().ExecEditCmd
+  P3DApp::GetApp()->ExecEditCmd
    (new P3DStemTubeCurveParamEditCmd
          (model,
           event.GetCurve(),

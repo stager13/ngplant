@@ -183,6 +183,8 @@ class P3DApp : public wxApp
   bool             IsShadersEnabled   () const;
   void             DisableShaders     ();
 
+  static P3DApp   *GetApp             ();
+
   private          :
 
   void             InitTexFS          ();
@@ -220,6 +222,8 @@ class P3DApp : public wxApp
   bool             UseShaders;
 
   P3DEditCommandQueue                 *CommandQueue;
+
+  static P3DApp   *SelfPtr;
  };
 
 DECLARE_APP(P3DApp)
