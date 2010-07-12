@@ -9,6 +9,7 @@ uniform sampler2D  NormalMapSampler;
 #ifdef HAVE_NORMAL_MAP
 
 varying vec3 LightDir;
+varying vec4 DiffuseProduct;
 
 void     main     ()
  {
