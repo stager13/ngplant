@@ -213,6 +213,10 @@ if LuaEnabled:
             BaseEnv.Replace(LUA_LIBPATH=LuaConfEnv['LIBPATH'])
             BaseEnv.Replace(LUA_LIBS=LuaConfEnv['LIBS'])
             del LuaConfEnv
+
+            if not BaseConf.CheckLuaFunc('luaL_newmetatable'):
+                print 'Lua installation seems to be broken. Using internal Lua sources...'
+                LuaInternal = True
         else:
             # Fall to internal Lua
             print 'No installed Lua libraries found. Using internal Lua sources...'
