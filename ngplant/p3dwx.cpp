@@ -421,7 +421,7 @@ void               wxSpinSliderCtrl::OnPaint
                    client_width,
                    client_height);
 
-  dc.SetPen(*wxBLACK_PEN);
+  dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
   dc.DrawLine(5,client_height / 2, client_height - 4, client_height / 2);
   dc.DrawLine(client_width - client_height + 5,
               client_height / 2,
@@ -435,6 +435,7 @@ void               wxSpinSliderCtrl::OnPaint
   /* draw value */
 
   dc.SetFont(*wxSMALL_FONT);
+  dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
 
   if (mode == wxSPINSLIDER_MODE_INTEGER)
    {
