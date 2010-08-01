@@ -129,7 +129,7 @@ static const char *TexLayerNames[] =
 
     if (Material->GetTexHandle(TexLayer) == P3DTexHandleNULL)
      {
-      LayerButton->SetForegroundColour(*wxBLACK);
+      LayerButton->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
      }
     else
      {
@@ -640,7 +640,7 @@ void               P3DMaterialStdPanel::OnRemoveTexClicked
 
   if (Button != 0)
    {
-    Button->SetForegroundColour(*wxBLACK);
+    Button->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
    }
 
   P3DApp::GetApp()->ExecEditCmd
@@ -837,7 +837,7 @@ void               P3DMaterialStdPanel::UpdateControls
        }
       else
        {
-        Button->SetForegroundColour(*wxBLACK);
+        Button->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
 
         if (TexLayer == ActiveTexLayer)
          {
