@@ -71,6 +71,18 @@ static const char *TexLayerNames[] =
   "Dif", "Nor", "Aux0", "Aux1"
  };
 
+static wxColour GetUnusedTexTextColour()
+ {
+  return wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT);
+ }
+
+static wxColour GetUsedTexTextColour  ()
+ {
+  wxColour Colour = GetUnusedTexTextColour();
+
+  return wxColour(Colour.Red(),Colour.Green(),255 - Colour.Blue());
+ }
+
                    P3DMaterialStdPanel::P3DMaterialStdPanel
                                       (wxWindow           *Parent,
                                        P3DMaterialInstanceSimple
@@ -133,7 +145,7 @@ static const char *TexLayerNames[] =
      }
     else
      {
-      LayerButton->SetForegroundColour(*wxBLUE);
+      LayerButton->SetForegroundColour(GetUsedTexTextColour());
      }
 
     LayerButton->SetValue(TexLayer == ActiveTexLayer);
@@ -619,7 +631,7 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
 
     if (Button != 0)
      {
-      Button->SetForegroundColour(*wxBLUE);
+      Button->SetForegroundColour(GetUsedTexTextColour());
      }
 
     RemoveTexButton->Enable(TRUE);
@@ -822,7 +834,7 @@ void               P3DMaterialStdPanel::UpdateControls
 
       if (TexHandle != P3DTexHandleNULL)
        {
-        Button->SetForegroundColour(*wxBLUE);
+        Button->SetForegroundColour(GetUsedTexTextColour());
 
         if (TexLayer == ActiveTexLayer)
          {
