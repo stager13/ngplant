@@ -141,7 +141,7 @@ static wxColour GetUsedTexTextColour  ()
 
     if (Material->GetTexHandle(TexLayer) == P3DTexHandleNULL)
      {
-      LayerButton->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
+      LayerButton->SetForegroundColour(GetUnusedTexTextColour());
      }
     else
      {
@@ -652,7 +652,7 @@ void               P3DMaterialStdPanel::OnRemoveTexClicked
 
   if (Button != 0)
    {
-    Button->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
+    Button->SetForegroundColour(GetUnusedTexTextColour());
    }
 
   P3DApp::GetApp()->ExecEditCmd
@@ -849,7 +849,7 @@ void               P3DMaterialStdPanel::UpdateControls
        }
       else
        {
-        Button->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
+        Button->SetForegroundColour(GetUnusedTexTextColour());
 
         if (TexLayer == ActiveTexLayer)
          {
