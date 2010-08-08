@@ -54,6 +54,7 @@ class P3DAppOptDialog : public wxDialog
   void             CreateControls     ();
   void             CreateTexPathsPage (wxNotebook         *Notebook);
   void             CreateExportPage   (wxNotebook         *Notebook);
+  void             CreateModelPage    (wxNotebook         *Notebook);
   void             CreateCameraControlPage
                                       (wxNotebook         *Notebook);
   void             CreateMiscPage     (wxNotebook         *Notebook);
@@ -135,6 +136,15 @@ class P3DAppOptDialog : public wxDialog
   void             GetCurveCtrlPrefs  (unsigned int       *BestWidth,
                                        unsigned int       *BestHeight) const;
 
+  const P3DModelPrefs
+                  &GetModelPrefs      () const;
+  void             SetModelPrefs      (const P3DModelPrefs&Prefs);
+
+  void             GetTubeCrossSectResolutions
+                                      (unsigned int       *Level0,
+                                       unsigned int       *Level1,
+                                       unsigned int       *Level2);
+
   private          :
 
   wxNotebook                          *OptsNotebook;
@@ -149,6 +159,7 @@ class P3DAppOptDialog : public wxDialog
   P3DExport3DPrefs                     Export3DPrefs;
   P3DCameraControlPrefs                CameraControlPrefs;
   P3DRenderQuirksPrefs                 RenderQuirksPrefs;
+  P3DModelPrefs                        ModelPrefs;
 
   wxString                             PluginsPath;
 

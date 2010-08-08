@@ -496,7 +496,30 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchNewClick
 
   P3DPlantModel::BranchModelSetUniqueName(P3DApp::GetApp()->GetModel(),ChildBranchModel);
 
-  ChildBranchModel->SetStemModel(P3DApp::GetApp()->CreateStemModelStd());
+  P3DStemModelTube *StemModel = P3DApp::GetApp()->CreateStemModelTube();
+  unsigned int      Level     = 0;
+
+  for (wxTreeItemId ItemId  = GetSelection();
+                    ItemId != GetRootItem();
+                    ItemId  = GetItemParent(ItemId))
+   {
+    Level++;
+   }
+
+  if      (Level == 0)
+   {
+    StemModel->SetProfileResolution(P3DApp::GetApp()->GetModelPrefs().TubeCrossSectResolution[0]);
+   }
+  else if (Level == 1)
+   {
+    StemModel->SetProfileResolution(P3DApp::GetApp()->GetModelPrefs().TubeCrossSectResolution[1]);
+   }
+  else
+   {
+    StemModel->SetProfileResolution(P3DApp::GetApp()->GetModelPrefs().TubeCrossSectResolution[2]);
+   }
+
+  ChildBranchModel->SetStemModel(StemModel);
 
   if (GetSelection() == GetRootItem())
    {
