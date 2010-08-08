@@ -394,6 +394,20 @@ void               wxSpinSliderCtrl::SetSmallMove
   small_move = step;
  }
 
+void               wxSpinSliderCtrl::SetSensitivity
+                                      (float               stdStep,
+                                       float               smallStep,
+                                       float               largeMove,
+                                       float               stdMove,
+                                       float               smallMove)
+ {
+  SetStdStep(stdStep);
+  SetSmallStep(smallStep);
+  SetLargeMove(largeMove);
+  SetStdMove(stdMove);
+  SetSmallMove(stdMove);
+ }
+
 void               wxSpinSliderCtrl::OnPaint
                                       (wxPaintEvent       &event)
  {
@@ -808,6 +822,12 @@ bool               wxSpinSliderCtrl::SetValue
    }
 
   return(false);
+ }
+
+float              wxSpinSliderCtrl::GetValue
+                                      () const
+ {
+  return value;
  }
 
 void               wxSpinSliderCtrl::SendChangedEvent

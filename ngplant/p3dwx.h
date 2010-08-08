@@ -61,7 +61,14 @@ class wxSpinSliderCtrl : public wxControl
   void             SetStdMove         (float               step);
   void             SetSmallMove       (float               step);
 
+  void             SetSensitivity     (float               stdStep,
+                                       float               smallStep,
+                                       float               largeMove,
+                                       float               stdMove,
+                                       float               smallMove);
+
   bool             SetValue           (float               Value);
+  float            GetValue           () const;
 
   void             Init               ();
 
