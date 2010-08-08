@@ -122,5 +122,19 @@ struct P3DRenderQuirksPrefs
   void             SetDefaults        ();
  };
 
+struct P3DModelPrefs
+ {
+                   P3DModelPrefs      ();
+
+  void             Read               (const wxConfigBase *Config);
+  void             Save               (wxConfigBase       *Config) const;
+
+  unsigned int     TubeCrossSectResolution[3];
+
+  private          :
+
+  void             SetDefaults        ();
+ };
+
 #endif
 

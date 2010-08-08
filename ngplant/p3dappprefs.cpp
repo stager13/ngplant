@@ -302,3 +302,50 @@ void               P3DRenderQuirksPrefs::SetDefaults
   UseColorArray = false;
  }
 
+static const wxChar    *TubeCrossSectResolution0Path  = wxT("/Model/Tube/CrossResolution0");
+static const wxChar    *TubeCrossSectResolution1Path  = wxT("/Model/Tube/CrossResolution1");
+static const wxChar    *TubeCrossSectResolution2Path  = wxT("/Model/Tube/CrossResolution2");
+
+                   P3DModelPrefs::P3DModelPrefs
+                                      ()
+ {
+  SetDefaults();
+ }
+
+void               P3DModelPrefs::Read(const wxConfigBase *Config)
+ {
+  int              CfgParamInt;
+
+  SetDefaults();
+
+  if (Config->Read(TubeCrossSectResolution0Path,&CfgParamInt))
+   {
+    TubeCrossSectResolution[0] = CfgParamInt < 3 ? 3 : CfgParamInt;
+   }
+
+  if (Config->Read(TubeCrossSectResolution1Path,&CfgParamInt))
+   {
+    TubeCrossSectResolution[1] = CfgParamInt < 3 ? 3 : CfgParamInt;
+   }
+
+  if (Config->Read(TubeCrossSectResolution2Path,&CfgParamInt))
+   {
+    TubeCrossSectResolution[2] = CfgParamInt < 3 ? 3 : CfgParamInt;
+   }
+ }
+
+void               P3DModelPrefs::Save(wxConfigBase       *Config) const
+ {
+  wxConfigBaseWriteIntWrapper(Config,TubeCrossSectResolution0Path,TubeCrossSectResolution[0]);
+  wxConfigBaseWriteIntWrapper(Config,TubeCrossSectResolution1Path,TubeCrossSectResolution[1]);
+  wxConfigBaseWriteIntWrapper(Config,TubeCrossSectResolution2Path,TubeCrossSectResolution[2]);
+ }
+
+void               P3DModelPrefs::SetDefaults
+                                      ()
+ {
+  TubeCrossSectResolution[0] = 8;
+  TubeCrossSectResolution[1] = 6;
+  TubeCrossSectResolution[2] = 4;
+ }
+

@@ -28,6 +28,10 @@
 #include <wx/colordlg.h>
 
 #include <p3duiappopt.h>
+#include <p3dwx.h>
+
+#define TUBE_CROSS_SECT_RESOLUTION_MIN (3)
+#define TUBE_CROSS_SECT_RESOLUTION_MAX (16)
 
 enum
  {
@@ -52,7 +56,11 @@ enum
 
   ID_CURVE_CTRL_WIDTH,
   ID_CURVE_CTRL_HEIGHT,
-  ID_USE_COLOR_ARRAY
+  ID_USE_COLOR_ARRAY,
+
+  ID_CROSSSECT_RES_LEVEL0,
+  ID_CROSSSECT_RES_LEVEL1,
+  ID_CROSSSECT_RES_LEVEL2
  };
 
 IMPLEMENT_CLASS(P3DAppOptDialog,wxDialog)
@@ -146,6 +154,7 @@ void               P3DAppOptDialog::CreateControls
   CreateTexPathsPage(OptsNotebook);
   CreateExportPage(OptsNotebook);
   CreateCameraControlPage(OptsNotebook);
+  CreateModelPage(OptsNotebook);
   CreateMiscPage(OptsNotebook);
 
   OptsNotebook->Fit();
@@ -262,6 +271,56 @@ void               P3DAppOptDialog::CreateExportPage
   Notebook->AddPage(ExportPanel,wxT("Export"));
 
   ExportPanel->SetAutoLayout(true);
+ }
+
+void               P3DAppOptDialog::CreateModelPage
+                                      (wxNotebook         *Notebook)
+ {
+  wxBoxSizer       *TopSizer          = new wxBoxSizer(wxVERTICAL);
+  wxPanel          *ModelPanel        = new wxPanel(Notebook,wxID_ANY);
+  wxStaticBoxSizer *TubeParamsSizer   = new wxStaticBoxSizer(wxVERTICAL,ModelPanel,wxT("Tube stem cross-section resolution"));
+  wxFlexGridSizer  *CrossSectResSizer = new wxFlexGridSizer(3,2,2,2);
+  wxSpinSliderCtrl *SpinSlider;
+
+  CrossSectResSizer->AddGrowableCol(1);
+
+  CrossSectResSizer->Add(new wxStaticText(ModelPanel,wxID_ANY,wxT("Level 0 (trunk)")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  SpinSlider = new wxSpinSliderCtrl
+                    (ModelPanel,ID_CROSSSECT_RES_LEVEL0, wxSPINSLIDER_MODE_INTEGER,
+                     ModelPrefs.TubeCrossSectResolution[0],TUBE_CROSS_SECT_RESOLUTION_MIN,TUBE_CROSS_SECT_RESOLUTION_MAX);
+  SpinSlider->SetSensitivity(1,1,1,1,1);
+
+  CrossSectResSizer->Add(SpinSlider,0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  CrossSectResSizer->Add(new wxStaticText(ModelPanel,wxID_ANY,wxT("Level 1")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  SpinSlider = new wxSpinSliderCtrl
+                    (ModelPanel,ID_CROSSSECT_RES_LEVEL1, wxSPINSLIDER_MODE_INTEGER,
+                     ModelPrefs.TubeCrossSectResolution[1],TUBE_CROSS_SECT_RESOLUTION_MIN,TUBE_CROSS_SECT_RESOLUTION_MAX);
+  SpinSlider->SetSensitivity(1,1,1,1,1);
+
+  CrossSectResSizer->Add(SpinSlider,0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  CrossSectResSizer->Add(new wxStaticText(ModelPanel,wxID_ANY,wxT("Level 2 and above")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  SpinSlider = new wxSpinSliderCtrl
+                    (ModelPanel,ID_CROSSSECT_RES_LEVEL2, wxSPINSLIDER_MODE_INTEGER,
+                     ModelPrefs.TubeCrossSectResolution[2],TUBE_CROSS_SECT_RESOLUTION_MIN,TUBE_CROSS_SECT_RESOLUTION_MAX);
+  SpinSlider->SetSensitivity(1,1,1,1,1);
+
+  CrossSectResSizer->Add(SpinSlider,0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  TubeParamsSizer->Add(CrossSectResSizer,1,wxGROW,0);
+  TopSizer->Add(TubeParamsSizer,0,wxALL,5);
+
+  ModelPanel->SetSizer(TopSizer);
+  TopSizer->Fit(ModelPanel);
+  TopSizer->SetSizeHints(ModelPanel);
+
+  Notebook->AddPage(ModelPanel,wxT("Model"));
+
+  ModelPanel->SetAutoLayout(true);
  }
 
 void               P3DAppOptDialog::CreateCameraControlPage
@@ -514,6 +573,27 @@ bool               P3DAppOptDialog::TransferDataToWindow
     UseColorArrayCheckBox->SetValue(RenderQuirksPrefs.UseColorArray);
    }
 
+  wxSpinSliderCtrl* SpinSlider = (wxSpinSliderCtrl*)FindWindow(ID_CROSSSECT_RES_LEVEL0);
+
+  if (SpinSlider != 0)
+   {
+    SpinSlider->SetValue(ModelPrefs.TubeCrossSectResolution[0]);
+   }
+
+  SpinSlider = (wxSpinSliderCtrl*)FindWindow(ID_CROSSSECT_RES_LEVEL1);
+
+  if (SpinSlider != 0)
+   {
+    SpinSlider->SetValue(ModelPrefs.TubeCrossSectResolution[1]);
+   }
+
+  SpinSlider = (wxSpinSliderCtrl*)FindWindow(ID_CROSSSECT_RES_LEVEL2);
+
+  if (SpinSlider != 0)
+   {
+    SpinSlider->SetValue(ModelPrefs.TubeCrossSectResolution[2]);
+   }
+
   return(true);
  }
 
@@ -710,6 +790,27 @@ bool               P3DAppOptDialog::TransferDataFromWindow
   if (UseColorArrayCheckBox != 0)
    {
     RenderQuirksPrefs.UseColorArray = UseColorArrayCheckBox->GetValue();
+   }
+
+  wxSpinSliderCtrl* SpinSlider = (wxSpinSliderCtrl*)FindWindow(ID_CROSSSECT_RES_LEVEL0);
+
+  if (SpinSlider != 0)
+   {
+    ModelPrefs.TubeCrossSectResolution[0] = (unsigned int)SpinSlider->GetValue();
+   }
+
+  SpinSlider = (wxSpinSliderCtrl*)FindWindow(ID_CROSSSECT_RES_LEVEL1);
+
+  if (SpinSlider != 0)
+   {
+    ModelPrefs.TubeCrossSectResolution[1] = (unsigned int)SpinSlider->GetValue();
+   }
+
+  SpinSlider = (wxSpinSliderCtrl*)FindWindow(ID_CROSSSECT_RES_LEVEL2);
+
+  if (SpinSlider != 0)
+   {
+    ModelPrefs.TubeCrossSectResolution[2] = (unsigned int)SpinSlider->GetValue();
    }
 
   return(true);
@@ -1176,5 +1277,18 @@ void               P3DAppOptDialog::GetCurveCtrlPrefs
  {
   *BestWidth  = CurveCtrlBestWidth;
   *BestHeight = CurveCtrlBestHeight;
+ }
+
+const P3DModelPrefs
+                  &P3DAppOptDialog::GetModelPrefs
+                                      () const
+ {
+  return ModelPrefs;
+ }
+
+void               P3DAppOptDialog::SetModelPrefs
+                                      (const P3DModelPrefs&Prefs)
+ {
+  ModelPrefs = Prefs;
  }
 

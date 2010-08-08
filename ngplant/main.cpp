@@ -279,6 +279,7 @@ void               P3DMainFrame::OnEditPreferences
   PreferencesDialog.SetExport3DPrefs(P3DApp::GetApp()->GetExport3DPrefs());
   PreferencesDialog.SetCameraControlPrefs(*P3DApp::GetApp()->GetCameraControlPrefs());
   PreferencesDialog.SetRenderQuirksPrefs(P3DApp::GetApp()->GetRenderQuirksPrefs());
+  PreferencesDialog.SetModelPrefs(P3DApp::GetApp()->GetModelPrefs());
 
   PreferencesDialog.SetPluginsPath(P3DApp::GetApp()->GetPluginsPath());
 
@@ -382,6 +383,9 @@ void               P3DMainFrame::OnEditPreferences
 
     P3DApp::GetApp()->SetRenderQuirksPrefs(PreferencesDialog.GetRenderQuirksPrefs());
     P3DApp::GetApp()->GetRenderQuirksPrefs().Save(Cfg);
+
+    P3DApp::GetApp()->SetModelPrefs(PreferencesDialog.GetModelPrefs());
+    P3DApp::GetApp()->GetModelPrefs().Save(Cfg);
 
     InvalidatePlant();
    }
@@ -689,37 +693,31 @@ const wxBitmap    &P3DApp::GetBitmap  (unsigned int        Bitmap)
   return(Bitmaps[Bitmap]);
  }
 
-P3DStemModel      *P3DApp::CreateStemModelStd
+P3DStemModelTube  *P3DApp::CreateStemModelTube
                                       () const
  {
-  return(CreateStemModelTube());
- }
+  P3DStemModelTube *TubeStemModel = new P3DStemModelTube();
 
-P3DStemModel      *P3DApp::CreateStemModelTube
-                                      () const
- {
-  P3DStemModelTube *StdStemModel = new P3DStemModelTube();
-
-  StdStemModel->SetLength(0.5f);
+  TubeStemModel->SetLength(0.5f);
 
   P3DMathNaturalCubicSpline TempCurve;
 
   TempCurve.SetLinear(0.0f,1.0f,1.0f,0.0f);
 
-  StdStemModel->SetProfileScaleCurve(&TempCurve);
+  TubeStemModel->SetProfileScaleCurve(&TempCurve);
 
-  return(StdStemModel);
+  return(TubeStemModel);
  }
 
-P3DStemModel      *P3DApp::CreateStemModelQuad
+P3DStemModelQuad  *P3DApp::CreateStemModelQuad
                                       () const
  {
-  P3DStemModelQuad *StdStemModel = new P3DStemModelQuad();
+  P3DStemModelQuad *QuadStemModel = new P3DStemModelQuad();
 
-  StdStemModel->SetLength(0.5f);
-  StdStemModel->SetWidth(0.5f);
+  QuadStemModel->SetLength(0.5f);
+  QuadStemModel->SetWidth(0.5f);
 
-  return(StdStemModel);
+  return(QuadStemModel);
  }
 
 P3DBranchingAlg   *P3DApp::CreateBranchingAlgStd
@@ -867,6 +865,7 @@ P3DPlantModel     *P3DApp::CreateNewPlantModel
   BranchingAlg   = new P3DBranchingAlgBase();
 
   TrunkStemModel->SetLength(15.0f);
+  TrunkStemModel->SetProfileResolution(ModelPrefs.TubeCrossSectResolution[0]);
 
   P3DMathNaturalCubicSpline TempCurve;
 
@@ -1044,6 +1043,7 @@ bool               P3DApp::OnInit     ()
   P3DUIControlsPrefs::Read(Cfg);
   Export3DPrefs.Read(Cfg);
   RenderQuirks.Read(Cfg);
+  ModelPrefs.Read(Cfg);
 
   if (!Cfg->Read(wxT("Paths/Plugins"),&PluginsPath))
    {
@@ -1232,6 +1232,18 @@ void               P3DApp::SetRenderQuirksPrefs
                                                           &Prefs)
  {
   RenderQuirks = Prefs;
+ }
+
+const P3DModelPrefs
+                  &P3DApp::GetModelPrefs
+                                      () const
+ {
+  return ModelPrefs;
+ }
+
+void             P3DApp::SetModelPrefs(const P3DModelPrefs&Prefs)
+ {
+  ModelPrefs = Prefs;
  }
 
 P3DApp            *P3DApp::GetApp     ()

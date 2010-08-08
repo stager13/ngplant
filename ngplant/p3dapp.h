@@ -26,6 +26,8 @@
 #include <wx/wx.h>
 
 #include <ngpcore/p3dmodel.h>
+#include <ngpcore/p3dmodelstemtube.h>
+#include <ngpcore/p3dmodelstemquad.h>
 
 #include <p3dtexture.h>
 #include <p3dshaders.h>
@@ -100,12 +102,11 @@ class P3DApp : public wxApp
   P3DTexManagerGL *GetTexManager      ();
   P3DShaderManager*GetShaderManager   ();
 
-  P3DStemModel    *CreateStemModelStd () const;
   P3DBranchingAlg *CreateBranchingAlgStd
                                       () const;
 
-  P3DStemModel    *CreateStemModelTube() const;
-  P3DStemModel    *CreateStemModelQuad() const;
+  P3DStemModelTube*CreateStemModelTube() const;
+  P3DStemModelQuad*CreateStemModelQuad() const;
 
   P3DMaterialInstanceSimple
                   *CreateMatInstanceStd
@@ -166,6 +167,10 @@ class P3DApp : public wxApp
                                       (const P3DRenderQuirksPrefs
                                                           &Prefs);
 
+  const P3DModelPrefs
+                  &GetModelPrefs      () const;
+  void             SetModelPrefs      (const P3DModelPrefs&Prefs);
+
   void             SetPluginsPath     (const wxString     &PluginsPath);
   const wxString  &GetPluginsPath     () const;
   void             ScanPlugins        ();
@@ -212,6 +217,7 @@ class P3DApp : public wxApp
   P3DExport3DPrefs           Export3DPrefs;
   P3DCameraControlPrefs      CameraControlPrefs;
   P3DRenderQuirksPrefs       RenderQuirks;
+  P3DModelPrefs              ModelPrefs;
 
   wxString         PluginsPath;
   P3DPluginInfoVector                  ExportPlugins;
