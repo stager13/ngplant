@@ -1,3 +1,5 @@
+import sys
+
 from sctool.SConcheck import *
 from sctool.SConcompat import *
 
@@ -86,7 +88,14 @@ elif (NGPlantEnv['PLATFORM'] == 'win32') or\
 else:
     if not ProfilingEnabled:
         NGPlantEnv.Append(LINKFLAGS='-s')
-    NGPlantEnv.ParseConfig(NGPlantEnv['WX_CONFIG'] + ' --cxxflags --libs --gl-libs')
+
+    try:
+        NGPlantEnv.ParseConfig(NGPlantEnv['WX_CONFIG'] + ' --cxxflags --libs --gl-libs')
+    except OSError,e:
+        sys.stderr.write('error: wxWidgets configuration tool can not be run' +
+                         '(%s),\nplease make sure that you have wxWidgets development package(s) installed\n' % (e))
+        sys.exit(1)
+
     static_libs = Split(NGPlantEnv['WX_LIB_STATIC'])
     if len(static_libs) > 0:
         # Thanks Blender SConstruct file for this trick
