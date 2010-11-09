@@ -392,6 +392,8 @@ if src_filename == nil then
  return nil
 end
 
+local GenerateTangentSpaceInfo = ShowYesNoMessageBox('Generate tangent space info?','Tangent space')
+
 source_file = io.open(src_filename,"r")
 
 vattrs =
@@ -439,9 +441,21 @@ end
 
 source_file:close()
 
-ftangents,fbinormals = calc_tangent_spacef(vattrs,vindices)
+if GenerateTangentSpaceInfo then
+ ftangents,fbinormals = calc_tangent_spacef(vattrs,vindices)
 
-fill_tangent_spacev(vattrs,vindices,ftangents,fbinormals)
+ fill_tangent_spacev(vattrs,vindices,ftangents,fbinormals)
+else
+ table.insert(vattrs.tangent,{ 1.0, 0.0, 0.0 })
+ table.insert(vattrs.binormal,{ 0.0, 1.0, 0.0 })
+
+ for f in ivalues(vindices) do
+  for v in ivalues(f) do
+   v[NGP_ATTR_TANGENTN]  = 1
+   v[NGP_ATTR_BINORMALN] = 1
+  end
+ end
+end
 
 attrs,indices = convert2indexed(vattrs,vindices)
 
