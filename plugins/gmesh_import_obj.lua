@@ -432,7 +432,7 @@ for line in filtered_lines(source_file) do
          k == "usemap" or
          k == "g"      or
          k == "s" then
-   -- skip unsignificant (for our target) lines
+   -- skip unsignificant (for our purposes) lines
   else
    error("unsupported keyword (" .. k .. ") found in .obj file")
   end
