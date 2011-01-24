@@ -192,7 +192,7 @@ class P3DStemModelTube : public P3DStemModel
                                                           *Curve);
 
   const P3DMathNaturalCubicSpline
-                  *GetLengthOffsetInfuenceCurve
+                  *GetLengthOffsetInfluenceCurve
                                       () const;
 
   void             SetAxisVariation   (float               AxisVariation);
@@ -234,7 +234,7 @@ class P3DStemModelTube : public P3DStemModel
   void             SetTexCoordVScale  (float               Scale);
   float            GetTexCoordVScale  () const;
 
-  static void      MakeDefaultLengthOffsetInfuenceCurve
+  static void      MakeDefaultLengthOffsetInfluenceCurve
                                       (P3DMathNaturalCubicSpline
                                                           &Curve);
   static void      MakeDefaultProfileScaleCurve

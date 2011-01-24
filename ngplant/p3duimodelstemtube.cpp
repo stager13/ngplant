@@ -93,9 +93,9 @@ END_EVENT_TABLE()
 
   AxisParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Offset influence")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
-  P3DCurveCtrl *length_off_infulence_ctrl = new P3DCurveCtrl(this,wxID_LENGTH_OFFSET_INFLUENCE_CTRL,*(model->GetLengthOffsetInfuenceCurve()));
+  P3DCurveCtrl *length_off_infulence_ctrl = new P3DCurveCtrl(this,wxID_LENGTH_OFFSET_INFLUENCE_CTRL,*(model->GetLengthOffsetInfluenceCurve()));
 
-  P3DStemModelTube::MakeDefaultLengthOffsetInfuenceCurve(DefaultCurve);
+  P3DStemModelTube::MakeDefaultLengthOffsetInfluenceCurve(DefaultCurve);
   length_off_infulence_ctrl->SetDefaultCurve(DefaultCurve);
 
   AxisParamsGridSizer->Add(length_off_infulence_ctrl,1,wxALL | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT,1);
@@ -243,7 +243,7 @@ void               P3DStemTubePanel::OnLengthOffsetInfluenceChanged
    (new P3DStemTubeCurveParamEditCmd
          (model,
           event.GetCurve(),
-          model->GetLengthOffsetInfuenceCurve(),
+          model->GetLengthOffsetInfluenceCurve(),
           &P3DStemModelTube::SetLengthOffsetInfluenceCurve));
  }
 
@@ -308,7 +308,7 @@ void               P3DStemTubePanel::UpdateControls
   P3DUpdateParamSpinSlider(wxID_STEM_LENGTH_CTRL,GetLength);
   P3DUpdateParamSpinSlider(wxID_STEM_LENGTHV_CTRL,GetLengthV);
   P3DUpdateParamSpinSlider(wxID_AXIS_VARIATION_CTRL,GetAxisVariation);
-  P3DUpdateParamCurveCtrl(wxID_LENGTH_OFFSET_INFLUENCE_CTRL,GetLengthOffsetInfuenceCurve);
+  P3DUpdateParamCurveCtrl(wxID_LENGTH_OFFSET_INFLUENCE_CTRL,GetLengthOffsetInfluenceCurve);
   P3DUpdateParamSpinSlider(wxID_AXIS_RESOLUTION_CTRL,GetAxisResolution);
   P3DUpdateParamSpinSlider(wxID_TRUNK_RADIUS_CTRL,GetProfileScaleBase);
   P3DUpdateParamCurveCtrl(wxID_TRUNK_PROFILE_SCALE_CTRL,GetProfileScaleCurve);

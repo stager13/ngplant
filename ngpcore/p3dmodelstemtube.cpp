@@ -409,7 +409,7 @@ void               P3DStemModelTubeInstance::SetSegOrientation
   AxisResolution    = 5;
   ProfileResolution = 8;
 
-  MakeDefaultLengthOffsetInfuenceCurve(LengthOffsetInfluenceCurve);
+  MakeDefaultLengthOffsetInfluenceCurve(LengthOffsetInfluenceCurve);
   MakeDefaultProfileScaleCurve(ProfileScaleCurve);
   MakeDefaultPhototropismCurve(PhototropismCurve);
 
@@ -419,7 +419,7 @@ void               P3DStemModelTubeInstance::SetSegOrientation
   VScale = 1.0f;
  }
 
-void               P3DStemModelTube::MakeDefaultLengthOffsetInfuenceCurve
+void               P3DStemModelTube::MakeDefaultLengthOffsetInfluenceCurve
                                       (P3DMathNaturalCubicSpline
                                                           &Curve)
  {
@@ -1253,7 +1253,7 @@ void               P3DStemModelTube::SetLengthOffsetInfluenceCurve
  }
 
 const P3DMathNaturalCubicSpline
-                  *P3DStemModelTube::GetLengthOffsetInfuenceCurve
+                  *P3DStemModelTube::GetLengthOffsetInfluenceCurve
                                       () const
  {
   return(&LengthOffsetInfluenceCurve);
