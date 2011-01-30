@@ -4,6 +4,14 @@
 many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
+Changes since 0.9.8:
+- color of text in numeric editors and texture layer selectors now depends on
+  used color theme
+- default cross-section resolution for tube stem model can be set in
+  preferences dialog for each branch level
+- tangent-space calculation can be disabled during .obj file import
+- some improvements in build procedure
+
 Changes since 0.9.7:
 - Undo/Redo functionality implemented.
 - PNG images support added.
