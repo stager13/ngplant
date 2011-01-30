@@ -567,7 +567,7 @@ void               P3DStemModelTube::ApplyPhototropism
 
     P3DQuaternionf::RotateVectorInv(YVector.v,SegToWorldQuat.q);
 
-    if ((YVector.Y() > 0.9999f) || (YVector.Y() < -0.9999f))
+    if ((YVector.Y() >= 1.0f) || (YVector.Y() <= -1.0f))
      {
       ZVector.X() = 0.0f;
       ZVector.Y() = 0.0f;
