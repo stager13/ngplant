@@ -1,0 +1,23 @@
+syntax: regexp
+
+^.sconf_temp
+^config.log$
+^.sconsign.dblite$
+
+^ngpcore/libngpcore.a$
+^ngput/libngput.a$
+^ngput/libngputimg.a$
+
+^extern/libs
+
+^ngplant/shaders/default_fs.h
+^ngplant/shaders/default_vs.h
+
+^docapi/hliapicpp.html$
+^docapi/hliapipython.html$
+
+^ngplant/ngplant$
+^ngpshot/ngpshot$
+^ngpview/ngpview$
+^devtools/ngpbench$
+
