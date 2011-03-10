@@ -608,9 +608,9 @@ void               P3DStemModelTube::ApplyAxisVariation
  {
   float                                Angle1;
   float                                Angle2;
-  P3DQuaternionf                       Q1;
-  P3DQuaternionf                       Q2;
-  P3DQuaternionf                       Q3;
+  float                                SinAngle1;
+  float                                CosAngle1;
+  P3DQuaternionf                       Q;
   unsigned int                         SegIndex;
 
   if (RNG == 0)
@@ -620,27 +620,14 @@ void               P3DStemModelTube::ApplyAxisVariation
 
   for (SegIndex = 0; SegIndex < (AxisResolution - 1); SegIndex++)
    {
-    Angle1 = RNG->UniformFloat(-AxisVariation,AxisVariation) * P3DMATH_PI;
+    Angle1 = RNG->UniformFloat(0,P3DMATH_PI * 2.0f);
     Angle2 = RNG->UniformFloat(-AxisVariation,AxisVariation) * P3DMATH_PI;
 
-    /*
-     Next several lines are simplified code for :
-    Q1.FromAxisAndAngle(0.0f,0.0f,1.0f,Angle1);
-    Q2.FromAxisAndAngle(1.0f,0.0f,0.0f,Angle2);
-    P3DQuaternionf::CrossProduct(Q3.q,Q1.q,Q2.q);
-    */
-    float q1q2,q1q3;
-    float q2q0,q2q3;
+    P3DMath::SinCosf(&SinAngle1,&CosAngle1,Angle1);
 
-    P3DMath::SinCosf(&q1q2,&q1q3,Angle1 * 0.5f);
-    P3DMath::SinCosf(&q2q0,&q2q3,Angle2 * 0.5f);
+    Q.FromAxisAndAngle(CosAngle1,0.0f,SinAngle1,Angle2);
 
-    Q3.q[3] = q1q3 * q2q3;
-    Q3.q[0] = q1q3 * q2q0;
-    Q3.q[1] = q1q2 * q2q0;
-    Q3.q[2] = q1q2 * q2q3;
-
-    Instance->SetSegOrientation(SegIndex,Q3.q);
+    Instance->SetSegOrientation(SegIndex,Q.q);
    }
  }
 
