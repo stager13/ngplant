@@ -471,133 +471,127 @@ P3DStemModel      *P3DStemModelTube::CreateCopy
  {
  }
 
+/*
+ * CurrOrientation is in parent seg space
+ * DestVector is in parent seg space
+ */
+static void        ApplyPhototropismToSegment
+                                      (P3DQuaternionf       *NewOrientation,
+                                       const float          *CurrOrientation,
+                                       const float          *DestVector,
+                                       float                 Factor)
+ {
+  // Find  branch direction after applying phototopism effect
+
+  P3DVector3f SegmentY;
+
+  SegmentY.Set(0.0f,1.0f,0.0);
+
+  P3DQuaternionf::RotateVector(SegmentY.v,CurrOrientation);
+
+  float CosA = P3DVector3f::ScalarProduct(DestVector,SegmentY.v);
+
+  if (CosA >= 1.0f)
+   {
+    NewOrientation->Set(CurrOrientation);
+
+    return; // nothing to do, SegmentY already points in DestVector direction
+   }
+
+  float Angle = P3DMath::ACosf(CosA);
+
+  P3DVector3f Axis;
+
+  if (Angle >= P3DMATH_PI)
+   {
+    Axis.Set(0.0f,0.0f,1.0f);
+   }
+  else
+   {
+    P3DVector3f::CrossProduct(Axis.v,SegmentY.v,DestVector);
+    Axis.Normalize();
+   }
+
+  P3DQuaternionf Rotation;
+
+  Rotation.FromAxisAndAngle(Axis.X(),Axis.Y(),Axis.Z(),Angle * Factor);
+
+  P3DQuaternionf::RotateVector(SegmentY.v,Rotation.q);
+
+  // Now find transformation from parent branch to SegmentY
+  // CosA = P3DVector3f::ScalarProduct(SegmentY,(0,1,0));
+  CosA = SegmentY.Y();
+
+  if (CosA >= 1.0f)
+   {
+    NewOrientation->MakeIdentity();
+   }
+  else if (CosA <= -1.0f)
+   {
+    // P3Quaternion::FromAxisAndAngle((0,0,1),PI);
+    NewOrientation->Set(0.0f,0.0f,1.0f,0.0f);
+   }
+  else
+   {
+    //Axis = P3DVector3f::CrossProduct(Axis.v,(0,1,0),SegmentY);
+
+    Axis.Set(SegmentY.Z(),0.0f,-SegmentY.X());
+    Axis.Normalize();
+
+    NewOrientation->FromAxisAndAngle(Axis.X(),Axis.Y(),Axis.Z(),P3DMath::ACosf(CosA));
+   }
+ }
+
 void               P3DStemModelTube::ApplyPhototropism
                                       (P3DStemModelTubeInstance
                                                           *Instance) const
  {
   unsigned int                         SegIndex;
-  P3DVector3f                          UpVector;
-  P3DVector3f                          ZVector;
   P3DVector3f                          YVector;
+  P3DQuaternionf                       SegOrientation;
   P3DMatrix4x4f                        WorldTransform;
   P3DMatrix4x4f                        WorldRotation;
-  float                                UpAngle;
   float                                Factor;
-  P3DQuaternionf                       Rotation;
-  P3DQuaternionf                       SegToWorldQuat;
-  P3DQuaternionf                       BaseSegToWorldQuat;
-  P3DQuaternionf                       Temp1;
 
   Instance->GetWorldTransform(WorldTransform.m);
 
   P3DMatrix4x4f::GetRotationOnly(WorldRotation.m,WorldTransform.m);
 
-  BaseSegToWorldQuat.MakeIdentity();
+  YVector.Set(0.0f,1.0f,0.0f);
+
+  YVector.MultMatrixTranspose(&WorldRotation);
 
   for (SegIndex = 0; SegIndex < (AxisResolution - 1); SegIndex++)
    {
-    P3DQuaternionf::CrossProduct(SegToWorldQuat.q,
-                                 Instance->GetSegOrientation(SegIndex),
-                                 BaseSegToWorldQuat.q);
-
-    /* Simplification of:
-    UpVector.X() = 0.0f;
-    UpVector.Y() = 1.0f;
-    UpVector.Z() = 0.0f;
-
-    P3DQuaternionf::RotateVector(UpVector.v,SegToWorldQuat.q);
-    */
-
-    UpVector.X() = (SegToWorldQuat.q[1] * SegToWorldQuat.q[0] - SegToWorldQuat.q[2] * SegToWorldQuat.q[3]) + (SegToWorldQuat.q[0] * SegToWorldQuat.q[1] - SegToWorldQuat.q[3] * SegToWorldQuat.q[2]);
-    UpVector.Y() = (SegToWorldQuat.q[1] * SegToWorldQuat.q[1] + SegToWorldQuat.q[3] * SegToWorldQuat.q[3]) - (SegToWorldQuat.q[0] * SegToWorldQuat.q[0] + SegToWorldQuat.q[2] * SegToWorldQuat.q[2]);
-    UpVector.Z() = (SegToWorldQuat.q[1] * SegToWorldQuat.q[2] + SegToWorldQuat.q[0] * SegToWorldQuat.q[3]) + (SegToWorldQuat.q[2] * SegToWorldQuat.q[1] + SegToWorldQuat.q[3] * SegToWorldQuat.q[0]);
-
-    UpVector.MultMatrix(&WorldRotation);
-    UpVector.Normalize();
-
-    UpAngle = P3DMath::ACosf(UpVector.Y());
-
     if (AxisResolution > 2)
      {
       Factor = PhototropismCurve.GetValue((float)SegIndex / (AxisResolution - 2));
      }
     else
      {
-      Factor = PhototropismCurve.GetValue(0.5f);
+      Factor = P3DMath::Clampf(0.0f,1.0f,PhototropismCurve.GetValue(0.5f));
      }
 
-    if (Factor >= 0.5f)
+    Factor = (Factor * 2.0f) - 1.0f;
+
+    if (Factor < 0.0f)
      {
-      /* Optimization of:
-      YVector.X() = 0.0f;
-      YVector.Y() = 1.0f;
-      YVector.Z() = 0.0f;
+      P3DVector3f YVectorNeg;
 
-      YVector.MultMatrixTranspose(&WorldRotation);
-      */
+      YVectorNeg.Set(-YVector.X(),-YVector.Y(),-YVector.Z());
 
-      YVector.X() = WorldRotation.m[1];
-      YVector.Y() = WorldRotation.m[5];
-      YVector.Z() = WorldRotation.m[9];
-
-      Factor = (Factor - 0.5f) * 2.0f;
+      ApplyPhototropismToSegment
+       (&SegOrientation,Instance->GetSegOrientation(SegIndex),YVectorNeg.v,-Factor);
      }
     else
      {
-      /* Optimization of:
-      YVector.X() = 0.0f;
-      YVector.Y() = -1.0f;
-      YVector.Z() = 0.0f;
-
-      YVector.MultMatrixTranspose(&WorldRotation);
-      */
-
-      YVector.X() = -WorldRotation.m[1];
-      YVector.Y() = -WorldRotation.m[5];
-      YVector.Z() = -WorldRotation.m[9];
-
-      UpAngle = P3DMATH_PI - UpAngle;
-
-      Factor = (0.5f - Factor) * 2.0f;
+      ApplyPhototropismToSegment
+       (&SegOrientation,Instance->GetSegOrientation(SegIndex),YVector.v,Factor);
      }
 
-    UpAngle *= Factor;
+    Instance->SetSegOrientation(SegIndex,SegOrientation.q);
 
-    YVector.Normalize();
-
-    P3DQuaternionf::RotateVectorInv(YVector.v,SegToWorldQuat.q);
-
-    if ((YVector.Y() >= 1.0f) || (YVector.Y() <= -1.0f))
-     {
-      ZVector.X() = 0.0f;
-      ZVector.Y() = 0.0f;
-      ZVector.Z() = 1.0f;
-     }
-    else
-     {
-      ZVector.X() = YVector.Z();
-      ZVector.Y() = 0.0f;
-      ZVector.Z() = -YVector.X();
-
-      ZVector.Normalize();
-     }
-
-    Rotation.FromAxisAndAngle(ZVector.X(),ZVector.Y(),ZVector.Z(),UpAngle);
-
-    P3DQuaternionf::CrossProduct(Temp1.q,
-                                 Rotation.q,
-                                 Instance->GetSegOrientation(SegIndex));
-
-    Instance->SetSegOrientation(SegIndex,Temp1.q);
-
-    if (SegIndex < (AxisResolution - 2))
-     {
-      P3DQuaternionf::CrossProduct(Temp1.q,
-                                   Instance->GetSegOrientation(SegIndex),
-                                   BaseSegToWorldQuat.q);
-
-      BaseSegToWorldQuat = Temp1;
-     }
+    P3DQuaternionf::RotateVectorInv(YVector.v,SegOrientation.q);
    }
  }
 
