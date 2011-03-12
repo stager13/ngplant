@@ -74,7 +74,7 @@ class P3DVector3f
                                        float               y,
                                        float               z)
    {
-    v[0] = x; v[1] = y; v[2] = z;
+    Set(x,y,z);
    }
 
                    P3DVector3f        (const P3DVector3f  &Source)
@@ -83,6 +83,13 @@ class P3DVector3f
     v[1] = Source.v[1];
     v[2] = Source.v[2];
    };
+
+  void             Set                (float               x,
+                                       float               y,
+                                       float               z)
+   {
+    v[0] = x; v[1] = y; v[2] = z;
+   }
 
   float           &X                  ()
    {
@@ -209,6 +216,22 @@ class P3DQuaternionf
    {
     q[0] = q[1] = q[2] = 0.0f;
     q[3] = 1.0f;
+   }
+
+  void             Set                (float               x,
+                                       float               y,
+                                       float               z,
+                                       float               w)
+   {
+    q[0] = x; q[1] = y; q[2] = z; q[3] = w;
+   }
+
+  void             Set                (const float        *q)
+   {
+    for (unsigned int i = 0; i < 4; i++)
+     {
+      this->q[i] = q[i];
+     }
    }
 
   void             Normalize          ()
