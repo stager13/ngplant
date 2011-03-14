@@ -352,8 +352,6 @@ END_EVENT_TABLE()
 
   PlantBase = PlantModel->GetPlantBase();
 
-  P3DMathRNGSimple           RNG(PlantModel->GetBaseSeed());
-
   wxTreeItemId RootId = AddRoot(MakeTreeItemLabel(PlantBase->GetName(),PlantBase));
 
   SetItemData(RootId,new P3DPlantModelTreeCtrlItemData(PlantBase));
@@ -1385,8 +1383,6 @@ void               P3DPlantModelTreeCtrl::UpdateLabel
 void               P3DPlantModelTreeCtrl::PlantInvalidated
                                       ()
  {
-  P3DMathRNGSimple           RNG(P3DApp::GetApp()->GetModel()->GetBaseSeed());
-
   UpdateLabel(GetRootItem());
  }
 
