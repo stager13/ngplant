@@ -137,11 +137,11 @@ void               P3DHLIGetBranchCountMulti
 
   P3DMathRNGSimple                     RNG(PlantModel->GetBaseSeed());
 
-  P3DHLIBranchCalculatorMulti          Calculator(&RNG,
-                                                   PlantModel->GetPlantBase(),
-                                                   0,
-                                                   0,
-                                                   BranchCounts);
+  P3DHLIBranchCalculatorMulti Calculator((PlantModel->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) ? 0 : &RNG,
+                                          PlantModel->GetPlantBase(),
+                                          0,
+                                          0,
+                                          BranchCounts);
 
   Calculator.GenerateBranch(0.0f,0);
  }
@@ -328,7 +328,7 @@ void               P3DHLIFillVAttrBuffersIMulti
      }
 
     P3DMathRNGSimple                     RNG(PlantModel->GetBaseSeed());
-    P3DHLIFillVAttrBuffersIMultiHelper   Helper(&RNG,
+    P3DHLIFillVAttrBuffersIMultiHelper   Helper((PlantModel->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) ? 0 : &RNG,
                                                  PlantModel->GetPlantBase(),
                                                  0,
                                                  0,

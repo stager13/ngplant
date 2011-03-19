@@ -27,12 +27,14 @@
 enum
  {
   wxID_SEED_CTRL = wxID_HIGHEST + 1,
-  wxID_LOD_CTRL
+  wxID_LOD_CTRL,
+  wxID_RANDOMNESS_STATE_CTRL
  };
 
 BEGIN_EVENT_TABLE(P3DOptGeneralPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_SEED_CTRL,P3DOptGeneralPanel::OnSeedChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_LOD_CTRL,P3DOptGeneralPanel::OnLODChanged)
+ EVT_CHECKBOX(wxID_RANDOMNESS_STATE_CTRL,P3DOptGeneralPanel::OnRandomnessStateChanged)
 END_EVENT_TABLE()
 
                    P3DOptGeneralPanel::P3DOptGeneralPanel
@@ -42,7 +44,7 @@ END_EVENT_TABLE()
   wxBoxSizer *TopSizer = new wxBoxSizer(wxVERTICAL);
 
   wxStaticBoxSizer *SeedTopSizer  = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Randomness")),wxVERTICAL);
-  wxFlexGridSizer  *SeedGridSizer = new wxFlexGridSizer(1,2,3,3);
+  wxFlexGridSizer  *SeedGridSizer = new wxFlexGridSizer(2,2,3,3);
 
   SeedGridSizer->AddGrowableCol(1);
 
@@ -56,6 +58,13 @@ END_EVENT_TABLE()
   spin_slider->SetSmallMove(1);
 
   SeedGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
+
+  SeedGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Disable randomness")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  wxCheckBox *RandomnessDisabledCheckBox = new wxCheckBox(this,wxID_RANDOMNESS_STATE_CTRL,wxT(""));
+  RandomnessDisabledCheckBox->SetValue((P3DApp::GetApp()->GetModel()->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) != 0);
+
+  SeedGridSizer->Add(RandomnessDisabledCheckBox,1,wxALL | wxALIGN_RIGHT,1);
 
   SeedTopSizer->Add(SeedGridSizer,0,wxEXPAND,0);
 
@@ -130,6 +139,25 @@ void               P3DOptGeneralPanel::OnLODChanged
   P3DApp::GetApp()->InvalidatePlant();
  }
 
+void               P3DOptGeneralPanel::OnRandomnessStateChanged
+                                      (wxCommandEvent     &event)
+ {
+  P3DPlantModel* Model = P3DApp::GetApp()->GetModel();
+  unsigned int   Flags = Model->GetFlags();
+
+  if (event.IsChecked())
+   {
+    Flags |= P3D_MODEL_FLAG_NO_RANDOMNESS;
+   }
+  else
+   {
+    Flags &= ~P3D_MODEL_FLAG_NO_RANDOMNESS;
+   }
+
+  Model->SetFlags(Flags);
+  P3DApp::GetApp()->InvalidatePlant();
+ }
+
 void               P3DOptGeneralPanel::UpdateControls
                                       ()
  {
@@ -140,6 +168,16 @@ void               P3DOptGeneralPanel::UpdateControls
   if (SpinSlider != NULL)
    {
     SpinSlider->SetValue(P3DApp::GetApp()->GetModel()->GetBaseSeed());
+   }
+
+  wxCheckBox *CheckBox;
+
+  CheckBox = (wxCheckBox*)FindWindow(wxID_RANDOMNESS_STATE_CTRL);
+
+  if (CheckBox != NULL)
+   {
+    CheckBox->SetValue
+     ((P3DApp::GetApp()->GetModel()->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) != 0);
    }
  }
 

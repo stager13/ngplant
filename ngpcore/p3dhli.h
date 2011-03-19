@@ -32,6 +32,7 @@
 #ifndef __P3DHLI_H__
 #define __P3DHLI_H__
 
+#include <ngpcore/p3dmathrng.h>
 #include <ngpcore/p3dmodel.h>
 
 #define P3DHLI_VER_MAJOR    (0)
@@ -188,6 +189,8 @@ class P3D_DLL_ENTRY P3DHLIPlantInstance
                                        unsigned int        GroupIndex) const;
 
   private          :
+
+  bool             IsRandomnessEnabled() const;
 
   const P3DPlantModel                 *Model;
   unsigned int                         BaseSeed;

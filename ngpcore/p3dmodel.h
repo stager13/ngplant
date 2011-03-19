@@ -401,6 +401,8 @@ class P3DBranchModel
   unsigned int                         SubBranchCount;
  };
 
+#define P3D_MODEL_FLAG_NO_RANDOMNESS (0x1)
+
 class P3D_DLL_ENTRY P3DPlantModel
  {
   public           :
@@ -414,6 +416,9 @@ class P3D_DLL_ENTRY P3DPlantModel
 
   unsigned int     GetBaseSeed        () const;
   void             SetBaseSeed        (unsigned int        BaseSeed);
+
+  unsigned int     GetFlags           () const;
+  void             SetFlags           (unsigned int        Flags);
 
   void             Save               (P3DOutputStringStream
                                                           *TargetStream,
@@ -446,6 +451,7 @@ class P3D_DLL_ENTRY P3DPlantModel
 
   P3DBranchModel                      *PlantBase;
   unsigned int                         BaseSeed;
+  unsigned int                         Flags;
  };
 
 /*FIXME: not best header for next prototype (implemented in p3dmodelstemtube.cpp) */

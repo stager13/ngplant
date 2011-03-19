@@ -882,7 +882,7 @@ unsigned int       P3DHLIPlantInstance::GetBranchCount
 
   P3DMathRNGSimple                     RNG(BaseSeed);
 
-  P3DHLIBranchCalculator               Calculator(&RNG,
+  P3DHLIBranchCalculator               Calculator( IsRandomnessEnabled() ? &RNG : 0,
                                                    Model->GetPlantBase(),
                                                    0,
                                                    BranchModel,
@@ -1003,11 +1003,11 @@ static void        P3DHLICalcBBox     (float              *Min,
   Max[0] = Max[1] = Max[2] = 0.0f;
 
   P3DBranchingFactoryBoundCalc
-   BranchingFactory ( (const_cast<P3DPlantModel*>(Model))->GetPlantBase(),
-                      0,
-                     &RNG,
-                      Min,
-                      Max);
+   BranchingFactory ((const_cast<P3DPlantModel*>(Model))->GetPlantBase(),
+                     0,
+                     (Model->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) ? 0 : &RNG,
+                     Min,
+                     Max);
 
   BranchingFactory.GenerateBranch(0.0f,0);
  }
@@ -1046,12 +1046,12 @@ void               P3DHLIPlantInstance::FillVAttrBuffer
 
   Buffer = (unsigned char*)VAttrBuffer;
 
-  P3DHLIFillVAttrBufferHelper          Helper(&RNG,
-                                               Model->GetPlantBase(),
-                                               0,
-                                               BranchModel,
-                                               Attr,
-                                              &Buffer);
+  P3DHLIFillVAttrBufferHelper Helper( IsRandomnessEnabled() ? &RNG : 0,
+                                      Model->GetPlantBase(),
+                                      0,
+                                      BranchModel,
+                                      Attr,
+                                     &Buffer);
 
   Helper.GenerateBranch(0.0f,0);
  }
@@ -1083,12 +1083,12 @@ void               P3DHLIPlantInstance::FillVAttrBufferI
 
   Buffer = (unsigned char*)VAttrBuffer;
 
-  P3DHLIFillVAttrBufferIHelper         Helper(&RNG,
-                                               Model->GetPlantBase(),
-                                               0,
-                                               BranchModel,
-                                               VAttrFormat,
-                                              &Buffer);
+  P3DHLIFillVAttrBufferIHelper Helper( IsRandomnessEnabled() ? &RNG : 0,
+                                       Model->GetPlantBase(),
+                                       0,
+                                       BranchModel,
+                                       VAttrFormat,
+                                      &Buffer);
 
   Helper.GenerateBranch(0.0f,0);
  }
@@ -1110,13 +1110,18 @@ void               P3DHLIPlantInstance::FillVAttrBuffersI
     DataBuffers[AttrIndex] = VAttrBuffers->GetAttrBuffer(AttrIndex);
    }
 
-  P3DHLIFillVAttrBuffersIHelper        Helper(&RNG,
-                                               Model->GetPlantBase(),
-                                               0,
-                                               BranchModel,
-                                               VAttrBuffers,
-                                               DataBuffers);
+  P3DHLIFillVAttrBuffersIHelper Helper(IsRandomnessEnabled() ? &RNG : 0,
+                                       Model->GetPlantBase(),
+                                       0,
+                                       BranchModel,
+                                       VAttrBuffers,
+                                       DataBuffers);
 
   Helper.GenerateBranch(0.0f,0);
+ }
+
+bool               P3DHLIPlantInstance::IsRandomnessEnabled() const
+ {
+  return (Model->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) == 0;
  }
 
