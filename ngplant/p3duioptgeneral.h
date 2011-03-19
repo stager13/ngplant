@@ -34,6 +34,8 @@ class P3DOptGeneralPanel : public P3DUIParamPanel
 
   void             OnSeedChanged      (wxSpinSliderEvent  &event);
   void             OnLODChanged       (wxSpinSliderEvent  &event);
+  void             OnRandomnessStateChanged
+                                      (wxCommandEvent     &event);
 
   virtual void     UpdateControls     ();
 

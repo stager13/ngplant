@@ -1040,6 +1040,7 @@ void               P3DBranchModel::Load
  {
   PlantBase = new P3DBranchModel();
   BaseSeed  = 0;
+  Flags     = 0;
  }
 
                    P3DPlantModel::~P3DPlantModel
@@ -1071,6 +1072,18 @@ void               P3DPlantModel::SetBaseSeed
                                       (unsigned int        BaseSeed)
  {
   this->BaseSeed = BaseSeed;
+ }
+
+unsigned int       P3DPlantModel::GetFlags
+                                      () const
+ {
+  return Flags;
+ }
+
+void               P3DPlantModel::SetFlags
+                                      (unsigned int        Flags)
+ {
+  this->Flags = Flags;
  }
 
 #define P3D_VERSION_MINOR (5)

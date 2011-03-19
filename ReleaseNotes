@@ -5,6 +5,8 @@ many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
 Changes since 0.9.8:
+- "disable randomness" feature added to ngplant, it allows to disable
+  model variations temporarily
 - color of text in numeric editors and texture layer selectors now depends on
   used color theme
 - default cross-section resolution for tube stem model can be set in
