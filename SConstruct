@@ -16,8 +16,8 @@ CustomConfFileName = ARGUMENTS.get('config',None)
 if CustomConfFileName is not None:
     CustomConfFileName = os.path.join('config',CustomConfFileName + ".py")
 
-opts = Options(CustomConfFileName,ARGUMENTS)
-opts.Add(BoolOption('cross','Set to build in cross-compile mode','no'))
+opts = Variables(CustomConfFileName,ARGUMENTS)
+opts.Add(BoolVariable('cross','Set to build in cross-compile mode','no'))
 opts.Add('CC','The C compiler')
 opts.Add('CXX','The C++ compiler')
 opts.Add('RANLIB','The archive indexer')
@@ -30,25 +30,25 @@ opts.Add('WX_LIBPATH','wxWidgets libraries path(s)')
 opts.Add('WX_CONFIG','wx-config command','wx-config')
 opts.Add('WX_LIB_STATIC','wxWidgets static libraries','')
 
-opts.Add(BoolOption('WITH_LUA','Enable Lua plug-ins support','yes'))
-opts.Add(BoolOption('LUA_INTERNAL','Compile Lua libraries from sources in extern/lua','no'))
+opts.Add(BoolVariable('WITH_LUA','Enable Lua plug-ins support','yes'))
+opts.Add(BoolVariable('LUA_INTERNAL','Compile Lua libraries from sources in extern/lua','no'))
 opts.Add('LUA_INC','Lua headers path(s)','')
 opts.Add('LUA_LIBS','Lua libraries','')
 opts.Add('LUA_LIBPATH','Lua libraries path(s)','')
 
-opts.Add(BoolOption('GLEW_INTERNAL','Compile GLEW library from sources in extern/glew','no'))
+opts.Add(BoolVariable('GLEW_INTERNAL','Compile GLEW library from sources in extern/glew','no'))
 opts.Add('GLEW_INC','GLEW headers path(s)','')
 opts.Add('GLEW_LIBS','GLEW libraries','')
 opts.Add('GLEW_LIBPATH','GLEW libraries path(s)','')
 
-opts.Add(BoolOption('WITH_LIBPNG','Enable PNG support','yes'))
+opts.Add(BoolVariable('WITH_LIBPNG','Enable PNG support','yes'))
 opts.Add('LIBPNG_INC','libpng headers path(s)','')
 opts.Add('LIBPNG_LIBS','libpng library','')
 opts.Add('LIBPNG_LIBPATH','libpng library path','')
 opts.Add('LIBPNG_DEFINES','libpng additional preprocessor definitions','')
 opts.Add('LIBPNG_CONFIG','libpng pkg-config custom command line','')
 
-opts.Add(BoolOption('WITH_LIBJPEG','Enable JPEG support','yes'))
+opts.Add(BoolVariable('WITH_LIBJPEG','Enable JPEG support','yes'))
 opts.Add('LIBJPEG_INC','libjpeg headers path(s)','')
 opts.Add('LIBJPEG_LIBS','libjpeg library','')
 opts.Add('LIBJPEG_LIBPATH','libjpeg library path','')
@@ -57,8 +57,8 @@ opts.Add('LIBJPEG_CONFIG','libjpeg pkg-config custom command line','')
 
 opts.Add('PLUGINS_DIR','The search path for ngplant plugins',None)
 
-opts.Add(BoolOption('enable_timings','Set to enable debug timings dump on ngplant','no'))
-opts.Add(BoolOption('enable_profiling','Set to pass profiling options to compiler and linker ','no'))
+opts.Add(BoolVariable('enable_timings','Set to enable debug timings dump on ngplant','no'))
+opts.Add(BoolVariable('enable_profiling','Set to pass profiling options to compiler and linker ','no'))
 
 BaseEnv = Environment(ENV = os.environ,options=opts)
 
