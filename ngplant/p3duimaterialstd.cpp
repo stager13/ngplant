@@ -610,7 +610,7 @@ void               P3DMaterialStdPanel::OnBaseTexClicked
                               wxEmptyString,
                               wxEmptyString,
                               FileWildcard,
-                              wxOPEN | wxFILE_MUST_EXIST);
+                              wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (!FileName.empty())
    {

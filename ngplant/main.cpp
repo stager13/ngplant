@@ -225,7 +225,7 @@ void               P3DMainFrame::OnSaveAs (wxCommandEvent     &event)
  {
   wxString                                 FileName;
 
-  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxSAVE | wxOVERWRITE_PROMPT);
+  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (!FileName.empty())
    {
@@ -396,7 +396,7 @@ void               P3DMainFrame::OnExportObj
  {
   wxString                                 FileName;
 
-  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".obj"),wxT("*.obj"),wxSAVE | wxOVERWRITE_PROMPT);
+  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".obj"),wxT("*.obj"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (!FileName.empty())
    {
@@ -483,7 +483,7 @@ void               P3DMainFrame::OnRunScript
  {
   wxString                                 FileName;
 
-  FileName = ::wxFileSelector(wxT("Select script to run"),wxT(""),wxT(""),wxT(".obj"),wxT("*.lua"),wxOPEN | wxFILE_MUST_EXIST);
+  FileName = ::wxFileSelector(wxT("Select script to run"),wxT(""),wxT(""),wxT(".obj"),wxT("*.lua"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (!FileName.empty())
    {
@@ -538,7 +538,7 @@ void               P3DMainFrame::OnOpen
   wxString                             FileName;
   P3DPlantModel                       *NewModel;
 
-  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxOPEN | wxFILE_MUST_EXIST);
+  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (!FileName.empty())
    {
