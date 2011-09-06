@@ -546,7 +546,7 @@ bool               P3DAppOptDialog::TransferDataToWindow
 
   if (PluginsPathCtrl != 0)
    {
-    PluginsPathCtrl->SetValue(wxString(PluginsPath.c_str(),wxConvUTF8));
+    PluginsPathCtrl->SetValue(PluginsPath);
    }
 
   wxString    Str;
