@@ -420,7 +420,7 @@ static int         ShowFileOpenDialog (lua_State          *State)
                             wxEmptyString,
                             wxEmptyString,
                             wxT("*.*"),
-                            wxOPEN | wxFILE_MUST_EXIST);
+                            wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
   if (!FileName.empty())
    {
@@ -451,7 +451,7 @@ static int         ShowFileSaveDialog (lua_State          *State)
                             wxEmptyString,
                             wxEmptyString,
                             wxT("*.*"),
-                            wxSAVE | wxOVERWRITE_PROMPT);
+                            wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (!FileName.empty())
    {
