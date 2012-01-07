@@ -36,6 +36,10 @@ opts.Add('LUA_INC','Lua headers path(s)','')
 opts.Add('LUA_LIBS','Lua libraries','')
 opts.Add('LUA_LIBPATH','Lua libraries path(s)','')
 
+opts.Add('GLU_INC','GLU headers path(s)','')
+opts.Add('GLU_LIBS','GLU libraries','')
+opts.Add('GLU_LIBPATH','GLU libraries path(s)','')
+
 opts.Add(BoolVariable('GLEW_INTERNAL','Compile GLEW library from sources in extern/glew','no'))
 opts.Add('GLEW_INC','GLEW headers path(s)','')
 opts.Add('GLEW_LIBS','GLEW libraries','')
@@ -90,6 +94,7 @@ BaseConf = Configure(BaseEnv,
                 'CheckEndianess' : CheckEndianess,
                 'CheckCommand' : CheckCommand,
                 'CheckLuaFunc' : CheckLuaFunc,
+                'ConfigureGLU' : ConfigureGLU,
                 'ConfigureGLEW' : ConfigureGLEW,
                 'ConfigureLibPng' : ConfigureLibPng,
                 'ConfigureLibJpeg' : ConfigureLibJpeg})
@@ -156,6 +161,8 @@ else:
             BaseEnv.Append(CPPDEFINES=['HAVE_ROUNDF'])
     except:
         pass
+
+BaseConf.ConfigureGLU()
 
 if BaseConf.CheckCXXHeader('GL/glut.h'):
     HaveGLUTDev = True

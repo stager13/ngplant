@@ -80,6 +80,14 @@ int main (int argc,char *argv[])
  }
 """
 
+P3DCheckGLUUsabilitySrc = """
+#include <GL/glu.h>
+
+int main (int argc,char *argv[])
+ {
+  return(gluErrorString(GLU_OUT_OF_MEMORY) != NULL);
+ }
+"""
 
 def CheckGXXSupportArgAttrUnused(Context):
     Context.Message('Checking for __attribute__((unused)) support presence in g++... ')
@@ -184,6 +192,54 @@ def CheckLuaFunc(Context,FuncName):
     Context.Result(Ret)
 
     return Ret
+
+def ConfigureGLU(Context):
+    Context.Message('Checking GLU presence and usability ... ')
+
+    if   not Context.env.has_key('GLU_INC'):
+        Context.env.Append(GLU_INC=[])
+    elif Context.env['GLU_INC'] != '':
+        Context.env.Replace(GLU_INC=Split(Context.env['GLU_INC']))
+    else:
+        Context.env.Replace(GLU_INC=[])
+
+    if   not Context.env.has_key('GLU_LIBPATH'):
+        Context.env.Append(GLU_LIBPATH=[])
+    elif Context.env['GLU_LIBPATH'] != '':
+        Context.env.Replace(GLU_LIBPATH=Split(Context.env['GLU_LIBPATH']))
+    else:
+        Context.env.Replace(GLU_LIBPATH=[])
+
+    if Context.env["PLATFORM"] == 'posix' and not Context.env["cross"]:
+        DefaultGLULibs=['GLU']
+    else:
+        DefaultGLULibs=[]
+
+    if  not Context.env.has_key('GLU_LIBS'):
+        Context.env.Append(GLU_LIBS=['GLU'])
+    elif Context.env['GLU_LIBS'] != '':
+        Context.env.Replace(GLU_LIBS=Split(Context.env['GLU_LIBS']))
+    else:
+        Context.env.Replace(GLU_LIBS=['GLU'])
+
+    lastLIBS    = GetEnvKeyOpt(Context.env,'LIBS')
+    lastLIBPATH = GetEnvKeyOpt(Context.env,'LIBPATH')
+    lastCPPPATH = GetEnvKeyOpt(Context.env,'CPPPATH')
+
+    Context.env.Append(CPPPATH=Context.env['GLU_INC'])
+    Context.env.Append(LIBPATH=Context.env['GLU_LIBPATH'])
+    Context.env.Append(LIBS=Context.env['GLU_LIBS'])
+
+    Ret = Context.TryLink(P3DCheckGLUUsabilitySrc,".c")
+
+    Context.env.Replace(LIBS=lastLIBS)
+    Context.env.Replace(LIBPATH=lastLIBPATH)
+    Context.env.Replace(CPPPATH=lastCPPPATH)
+
+    Context.Result(Ret)
+
+    return Ret
+
 
 def ConfigureGLEW(Context):
     Context.Message('Checking GLEW presence and usability ... ')

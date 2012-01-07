@@ -138,6 +138,14 @@ if CrossCompileMode or NGPlantEnv['PLATFORM'] == 'win32' or NGPlantEnv['PLATFORM
 if NGPlantEnv['PLATFORM'] == 'darwin':
     NGPlantEnv.Append(FRAMEWORKS=['OpenGL'])
 
+# GLU library
+if len(NGPlantEnv['GLU_INC']) > 0:
+    NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLU_INC'])
+if len(NGPlantEnv['GLU_LIBS']) > 0:
+    NGPlantEnv.Append(LIBS=NGPlantEnv['GLU_LIBS'])
+if len(NGPlantEnv['GLU_LIBPATH']) > 0:
+    NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLU_LIBPATH'])
+
 Default(ngplant)
 Clean(ngplant,['.sconsign','images/.sconsign'])
 
