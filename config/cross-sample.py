@@ -28,6 +28,13 @@ LUA_LIBS = ""
 # Lua libraries path(s) (space-separated)
 LUA_LIBPATH = ""
 
+# GLU headers path(s) (space-separated)
+GLU_INC     = ""
+# GLU libraries (space-separated)
+GLU_LIBS    = ""
+# GLU libraries path(s) (space-separated)
+GLU_LIBPATH = ""
+
 # Build GLEW library from sources in extern/glew
 GLEW_INTERNAL= "yes"
 # GLEW headers path(s) (space-separated)
