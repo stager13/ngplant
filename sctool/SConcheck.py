@@ -216,11 +216,11 @@ def ConfigureGLU(Context):
         DefaultGLULibs=[]
 
     if  not Context.env.has_key('GLU_LIBS'):
-        Context.env.Append(GLU_LIBS=['GLU'])
+        Context.env.Append(GLU_LIBS=DefaultGLULibs)
     elif Context.env['GLU_LIBS'] != '':
         Context.env.Replace(GLU_LIBS=Split(Context.env['GLU_LIBS']))
     else:
-        Context.env.Replace(GLU_LIBS=['GLU'])
+        Context.env.Replace(GLU_LIBS=DefaultGLULibs)
 
     lastLIBS    = GetEnvKeyOpt(Context.env,'LIBS')
     lastLIBPATH = GetEnvKeyOpt(Context.env,'LIBPATH')
