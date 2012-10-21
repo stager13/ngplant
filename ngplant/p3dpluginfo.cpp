@@ -103,7 +103,7 @@ bool               P3DPluginInfo::LoadInfo
   std::string      Value;
   unsigned int     TempType;
 
-  P3DLogInfo(wxT("Searching plugin header in %s\n"),wxString(FileName,wxConvUTF8).c_str());
+//  P3DLogInfo(wxT("Searching plugin header in %s\n"),wxString(FileName,wxConvUTF8).c_str());
 
   Found     = false;
   LineIndex = 0;
