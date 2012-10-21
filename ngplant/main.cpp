@@ -27,6 +27,7 @@
 #include <wx/image.h>
 #include <wx/cmdline.h>
 #include <wx/dir.h>
+#include <wx/stdpaths.h>
 
 #if !defined(__WXMSW__) && !defined(__WXPM__)
  #include "images/ngplant.xpm"
@@ -1049,6 +1050,11 @@ bool               P3DApp::OnInit     ()
    {
     #if defined(PLUGINS_DIR)
     PluginsPath = wxT(PLUGINS_DIR);
+    #elif defined(__WXOSX__)
+    wxFileName TmpPluginsPath = wxFileName(wxStandardPaths::Get().GetResourcesDir(),wxT(""));
+    TmpPluginsPath.AppendDir(wxT("plugins"));
+
+    PluginsPath = TmpPluginsPath.GetPath();
     #else
     PluginsPath = wxT("plugins");
     #endif
