@@ -30,6 +30,9 @@ enum
  {
   wxID_DENSITY_CTRL  = wxID_HIGHEST + 1,
   wxID_DENSITYV_CTRL,
+  wxID_MIN_NUMBER_CTRL,
+  wxID_MAX_LIMIT_ENABLED_CTRL,
+  wxID_MAX_NUMBER_CTRL,
   wxID_MULTIPLICITY_CTRL,
   wxID_MIN_OFFSET_CTRL,
   wxID_MAX_OFFSET_CTRL,
@@ -43,6 +46,9 @@ enum
 BEGIN_EVENT_TABLE(P3DBranchingAlgStdPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_DENSITY_CTRL,P3DBranchingAlgStdPanel::OnDensityChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_DENSITYV_CTRL,P3DBranchingAlgStdPanel::OnDensityVChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_MIN_NUMBER_CTRL,P3DBranchingAlgStdPanel::OnMinNumberChanged)
+ EVT_CHECKBOX(wxID_MAX_LIMIT_ENABLED_CTRL,P3DBranchingAlgStdPanel::OnMaxLimitEnabledChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_MAX_NUMBER_CTRL,P3DBranchingAlgStdPanel::OnMaxNumberChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_MULTIPLICITY_CTRL,P3DBranchingAlgStdPanel::OnMultiplicityChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_MIN_OFFSET_CTRL,P3DBranchingAlgStdPanel::OnMinOffsetChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_MAX_OFFSET_CTRL,P3DBranchingAlgStdPanel::OnMaxOffsetChanged)
@@ -52,6 +58,54 @@ BEGIN_EVENT_TABLE(P3DBranchingAlgStdPanel,wxPanel)
  EVT_P3DCURVECTRL_VALUE_CHANGED(wxID_DECLINATION_CURVE_CTRL,P3DBranchingAlgStdPanel::OnDeclinationCurveChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_DECLINATIONV_CTRL,P3DBranchingAlgStdPanel::OnDeclinationVChanged)
 END_EVENT_TABLE()
+
+class P3DBAlgStdMinMaxNumberEditCmd : public P3DEditCommand
+ {
+  public           :
+
+  P3DBAlgStdMinMaxNumberEditCmd (P3DBranchingAlgStd       *Alg,
+                                 unsigned int              NewMinNumber,
+                                 unsigned int              NewMaxNumber,
+                                 bool                      NewMaxLimitEnabled,
+                                 unsigned int              OldMinNumber,
+                                 unsigned int              OldMaxNumber,
+                                 bool                      OldMaxLimitEnabled)
+   {
+    this->Alg                = Alg;
+    this->NewMinNumber       = NewMinNumber;
+    this->NewMaxNumber       = NewMaxNumber;
+    this->NewMaxLimitEnabled = NewMaxLimitEnabled;
+    this->OldMinNumber       = OldMinNumber;
+    this->OldMaxNumber       = OldMaxNumber;
+    this->OldMaxLimitEnabled = OldMaxLimitEnabled;
+   }
+
+  virtual void Exec ()
+   {
+    Alg->SetMinNumber(NewMinNumber);
+    Alg->SetMaxLimitEnabled(NewMaxLimitEnabled);
+    Alg->SetMaxNumber(NewMaxNumber);
+    wxGetApp().InvalidatePlant();
+   }
+
+  virtual void Undo ()
+   {
+    Alg->SetMinNumber(OldMinNumber);
+    Alg->SetMaxLimitEnabled(OldMaxLimitEnabled);
+    Alg->SetMaxNumber(OldMaxNumber);
+    wxGetApp().InvalidatePlant();
+   }
+
+  private          :
+
+  P3DBranchingAlgStd       *Alg;
+  unsigned int              NewMinNumber;
+  unsigned int              NewMaxNumber;
+  bool                      NewMaxLimitEnabled;
+  unsigned int              OldMinNumber;
+  unsigned int              OldMaxNumber;
+  bool                      OldMaxLimitEnabled;
+ };
 
                    P3DBranchingAlgStdPanel::P3DBranchingAlgStdPanel
                                       (wxWindow           *Parent,
@@ -64,7 +118,7 @@ END_EVENT_TABLE()
 
   wxBoxSizer           *TopSizer        = new wxBoxSizer(wxVERTICAL);
   wxStaticBoxSizer     *ParametersSizer = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Parameters")),wxVERTICAL);
-  wxFlexGridSizer      *GridSizer       = new wxFlexGridSizer(10,2,2,2);
+  wxFlexGridSizer      *GridSizer       = new wxFlexGridSizer(13,2,2,2);
 
   GridSizer->AddGrowableCol(1);
 
@@ -91,6 +145,41 @@ END_EVENT_TABLE()
   spin_slider->SetLargeMove(0.2);
   spin_slider->SetStdMove(0.1);
   spin_slider->SetSmallMove(0.01);
+
+  GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
+
+  /* Min. number */
+
+  GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Min. number")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  spin_slider = new wxSpinSliderCtrl(this,wxID_MIN_NUMBER_CTRL,wxSPINSLIDER_MODE_INTEGER,Alg->GetMinNumber(),0,1000);
+  spin_slider->SetStdStep(1);
+  spin_slider->SetSmallStep(1);
+  spin_slider->SetLargeMove(2);
+  spin_slider->SetStdMove(1);
+  spin_slider->SetSmallMove(1);
+
+  GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
+
+  /* Max. limit enabled */
+
+  GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Limit max.")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  wxCheckBox *EnabledCheckBox = new wxCheckBox(this,wxID_MAX_LIMIT_ENABLED_CTRL,wxT(""));
+  EnabledCheckBox->SetValue(Alg->IsMaxLimitEnabled());
+
+  GridSizer->Add(EnabledCheckBox,1,wxALL | wxALIGN_RIGHT,1);
+
+  /* Max. number */
+
+  GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Max. number")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  spin_slider = new wxSpinSliderCtrl(this,wxID_MAX_NUMBER_CTRL,wxSPINSLIDER_MODE_INTEGER,Alg->GetMaxNumber(),0,1000);
+  spin_slider->SetStdStep(1);
+  spin_slider->SetSmallStep(1);
+  spin_slider->SetLargeMove(2);
+  spin_slider->SetStdMove(1);
+  spin_slider->SetSmallMove(1);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -234,6 +323,83 @@ void               P3DBranchingAlgStdPanel::OnDensityVChanged
           &P3DBranchingAlgStd::SetDensityV));
  }
 
+void               P3DBranchingAlgStdPanel::OnMinNumberChanged
+                                      (wxSpinSliderEvent  &event)
+ {
+  unsigned int OldMinNumber = Alg->GetMinNumber();
+  unsigned int OldMaxNumber = Alg->GetMaxNumber();
+  unsigned int NewMinNumber = event.GetIntValue();
+  bool         LimitEnabled = Alg->IsMaxLimitEnabled();
+  unsigned int NewMaxNumber;
+
+  if (OldMaxNumber < NewMinNumber)
+   {
+    NewMaxNumber = NewMinNumber;
+
+    wxSpinSliderCtrl *SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_MAX_NUMBER_CTRL);
+
+    if (SpinSlider != NULL)
+     {
+      SpinSlider->SetValue(NewMaxNumber);
+     }
+   }
+  else
+   {
+    NewMaxNumber = OldMaxNumber;
+   }
+
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBAlgStdMinMaxNumberEditCmd
+         (Alg,
+          NewMinNumber,NewMaxNumber,LimitEnabled,
+          OldMinNumber,OldMaxNumber,LimitEnabled));
+ }
+
+void               P3DBranchingAlgStdPanel::OnMaxLimitEnabledChanged
+                                      (wxCommandEvent     &event)
+ {
+  unsigned int MinNumber = Alg->GetMinNumber();
+  unsigned int MaxNumber = Alg->GetMaxNumber();
+
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBAlgStdMinMaxNumberEditCmd
+         (Alg,
+          MinNumber,MaxNumber,event.IsChecked(),
+          MinNumber,MaxNumber,Alg->IsMaxLimitEnabled()));
+ }
+
+void               P3DBranchingAlgStdPanel::OnMaxNumberChanged
+                                      (wxSpinSliderEvent  &event)
+ {
+  unsigned int OldMinNumber = Alg->GetMinNumber();
+  unsigned int OldMaxNumber = Alg->GetMaxNumber();
+  unsigned int NewMaxNumber = event.GetIntValue();
+  bool         LimitEnabled = Alg->IsMaxLimitEnabled();
+  unsigned int NewMinNumber;
+
+  if (OldMinNumber > NewMaxNumber)
+   {
+    NewMinNumber = NewMaxNumber;
+
+    wxSpinSliderCtrl *SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_MIN_NUMBER_CTRL);
+
+    if (SpinSlider != NULL)
+     {
+      SpinSlider->SetValue(NewMinNumber);
+     }
+   }
+  else
+   {
+    NewMinNumber = OldMinNumber;
+   }
+
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBAlgStdMinMaxNumberEditCmd
+         (Alg,
+          NewMinNumber,NewMaxNumber,LimitEnabled,
+          OldMinNumber,OldMaxNumber,LimitEnabled));
+ }
+
 void               P3DBranchingAlgStdPanel::OnMultiplicityChanged
                                       (wxSpinSliderEvent  &event)
  {
@@ -329,6 +495,9 @@ void               P3DBranchingAlgStdPanel::UpdateControls
  {
   P3DUpdateParamSpinSlider(wxID_DENSITY_CTRL,GetDensity);
   P3DUpdateParamSpinSlider(wxID_DENSITYV_CTRL,GetDensityV);
+  P3DUpdateParamSpinSlider(wxID_MIN_NUMBER_CTRL,GetMinNumber);
+  P3DUpdateParamCheckBox(wxID_MAX_LIMIT_ENABLED_CTRL,IsMaxLimitEnabled);
+  P3DUpdateParamSpinSlider(wxID_MAX_NUMBER_CTRL,GetMaxNumber);
   P3DUpdateParamSpinSlider(wxID_MULTIPLICITY_CTRL,GetMultiplicity);
   P3DUpdateParamSpinSlider(wxID_MIN_OFFSET_CTRL,GetMinOffset);
   P3DUpdateParamSpinSlider(wxID_MAX_OFFSET_CTRL,GetMaxOffset);

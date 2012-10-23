@@ -39,6 +39,10 @@ class P3DBranchingAlgStdPanel : public P3DUIParamPanel
 
   void             OnDensityChanged   (wxSpinSliderEvent  &event);
   void             OnDensityVChanged  (wxSpinSliderEvent  &event);
+  void             OnMinNumberChanged (wxSpinSliderEvent  &event);
+  void             OnMaxLimitEnabledChanged
+                                      (wxCommandEvent     &event);
+  void             OnMaxNumberChanged (wxSpinSliderEvent  &event);
   void             OnMultiplicityChanged
                                       (wxSpinSliderEvent  &event);
   void             OnRevAngleChanged  (wxSpinSliderEvent  &event);
