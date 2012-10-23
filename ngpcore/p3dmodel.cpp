@@ -1086,7 +1086,7 @@ void               P3DPlantModel::SetFlags
   this->Flags = Flags;
  }
 
-#define P3D_VERSION_MINOR (5)
+#define P3D_VERSION_MINOR (6)
 #define P3D_VERSION_MAJOR (0)
 
 void               P3DPlantModel::Save(P3DOutputStringStream

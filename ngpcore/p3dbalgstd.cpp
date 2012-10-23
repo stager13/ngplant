@@ -37,6 +37,9 @@
  {
   Density      = 1.0f;
   DensityV     = 0.0f;
+  MinNumber    = 0;
+  MaxLimitEnabled = false;
+  MaxNumber    = 0;
   Multiplicity = 1;
   RevAngle     = 0.0f;
   RevAngleV    = 0.0f;
@@ -66,6 +69,9 @@ P3DBranchingAlg   *P3DBranchingAlgStd::CreateCopy
 
   Result->Density      = Density;
   Result->DensityV     = DensityV;
+  Result->MinNumber    = MinNumber;
+  Result->MaxLimitEnabled = MaxLimitEnabled;
+  Result->MaxNumber    = MaxNumber;
   Result->Multiplicity = Multiplicity;
   Result->RevAngle     = RevAngle;
   Result->RevAngleV    = RevAngleV;
@@ -109,6 +115,52 @@ void               P3DBranchingAlgStd::SetDensityV
                                       (float                         DensityV)
  {
   this->DensityV = P3DMath::Clampf(0.0f,1.0f,DensityV);
+ }
+
+unsigned int       P3DBranchingAlgStd::GetMinNumber
+                                      () const
+ {
+  return MinNumber;
+ }
+
+void               P3DBranchingAlgStd::SetMinNumber
+                                      (unsigned int                  MinNumber)
+ {
+  this->MinNumber = MinNumber;
+
+  if (MinNumber > MaxNumber)
+   {
+    MaxNumber = MinNumber;
+   }
+ }
+
+bool               P3DBranchingAlgStd::IsMaxLimitEnabled
+                                      () const
+ {
+  return MaxLimitEnabled;
+ }
+
+void               P3DBranchingAlgStd::SetMaxLimitEnabled
+                                      (bool                          IsEnabled)
+ {
+  MaxLimitEnabled = IsEnabled;
+ }
+
+unsigned int       P3DBranchingAlgStd::GetMaxNumber
+                                      () const
+ {
+  return MaxNumber;
+ }
+
+void               P3DBranchingAlgStd::SetMaxNumber
+                                      (unsigned int                  MaxNumber)
+ {
+  this->MaxNumber = MaxNumber;
+
+  if (MaxNumber < MinNumber)
+   {
+    MinNumber = MaxNumber;
+   }
  }
 
 unsigned int       P3DBranchingAlgStd::GetMultiplicity
@@ -247,6 +299,16 @@ void               P3DBranchingAlgStd::CreateBranches
 
   BranchCount /= Multiplicity;
 
+  if (BranchCount < MinNumber)
+   {
+    BranchCount = MinNumber;
+   }
+
+  if (MaxLimitEnabled && BranchCount > MaxNumber)
+   {
+    BranchCount = MaxNumber;
+   }
+
   if (BranchCount > 0)
    {
     P3DQuaternionf                     orientation;
@@ -310,6 +372,10 @@ void               P3DBranchingAlgStd::Save
   FmtStream.WriteString("sf","Density",Density);
   FmtStream.WriteString("sf","DensityV",DensityV);
 
+  FmtStream.WriteString("su","MinNumber",MinNumber);
+  FmtStream.WriteString("sb","MaxLimitEnabled",MaxLimitEnabled);
+  FmtStream.WriteString("su","MaxNumber",MaxNumber);
+
   FmtStream.WriteString("su","Multiplicity",Multiplicity);
 
   FmtStream.WriteString("sf","RevAngle",RevAngle);
@@ -334,11 +400,28 @@ void               P3DBranchingAlgStd::Load
   char                                 StrValue[255 + 1];
   float                                FloatValue;
   unsigned int                         UintValue;
+  bool                                 BoolValue;
 
   SourceStream->ReadFmtStringTagged("Density","f",&FloatValue);
   SetDensity(FloatValue);
   SourceStream->ReadFmtStringTagged("DensityV","f",&FloatValue);
   SetDensityV(FloatValue);
+
+  if (Version->Minor > 5)
+   {
+    SourceStream->ReadFmtStringTagged("MinNumber","u",&UintValue);
+    SetMinNumber(UintValue);
+    SourceStream->ReadFmtStringTagged("MaxLimitEnabled","b",&BoolValue);
+    SetMaxLimitEnabled(BoolValue);
+    SourceStream->ReadFmtStringTagged("MaxNumber","u",&UintValue);
+    SetMaxNumber(UintValue);
+   }
+  else
+   {
+    SetMinNumber(0);
+    SetMaxLimitEnabled(false);
+    SetMaxNumber(0);
+   }
 
   if (Version->Minor > 1)
    {
