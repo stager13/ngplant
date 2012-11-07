@@ -57,6 +57,14 @@
 
 #include <p3dapp.h>
 
+#define NGPLANT_BASE_VER "0.9.8"
+
+#if defined(EXTRA_VERSION)
+ #define NGPLANT_VERSION_STRING NGPLANT_BASE_VER "(" EXTRA_VERSION ")"
+#else
+ #define NGPLANT_VERSION_STRING NGPLANT_BASE_VER
+#endif
+
 enum
  {
   wxID_EXPORT      = wxID_HIGHEST + 1200,
@@ -204,7 +212,7 @@ void               P3DMainFrame::OnQuit   (wxCommandEvent     &event)
 
 void               P3DMainFrame::OnAbout  (wxCommandEvent     &event)
  {
-  ::wxMessageBox(wxT("ngPlant 0.9.8\n\nCopyright (c) 2006-2010 Sergey Prokhorchuk\nProject page: ngplant.sourceforge.net\n\nReleased under the GNU General Public License"),
+  ::wxMessageBox(wxT("ngPlant " NGPLANT_VERSION_STRING "\n\nCopyright (c) 2006-2010 Sergey Prokhorchuk\nProject page: ngplant.sourceforge.net\n\nReleased under the GNU General Public License"),
                  wxT("About - ngPlant"),
                  wxOK,
                  this);
