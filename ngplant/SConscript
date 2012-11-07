@@ -59,6 +59,9 @@ if TimingsEnabled:
 if NGPlantEnv.has_key('PLUGINS_DIR') and NGPlantEnv['PLUGINS_DIR'] is not None:
     NGPlantEnv.Append(CPPDEFINES=[('PLUGINS_DIR','\\"' + NGPlantEnv['PLUGINS_DIR'] + '\\"')])
 
+if NGPlantEnv.has_key('EXTRA_VERSION') and NGPlantEnv['EXTRA_VERSION'] is not None:
+    NGPlantEnv.Append(CPPDEFINES=[('EXTRA_VERSION','\\"' + NGPlantEnv['EXTRA_VERSION'] + '\\"')])
+
 if CrossCompileMode:
     for inc in Split(NGPlantEnv['WX_INC']):
         NGPLANT_INCLUDES.append(inc)

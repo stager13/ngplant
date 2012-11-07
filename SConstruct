@@ -64,6 +64,8 @@ opts.Add('PLUGINS_DIR','The search path for ngplant plugins',None)
 opts.Add(BoolVariable('enable_timings','Set to enable debug timings dump on ngplant','no'))
 opts.Add(BoolVariable('enable_profiling','Set to pass profiling options to compiler and linker ','no'))
 
+opts.Add('EXTRA_VERSION','ngplant version suffix',None)
+
 BaseEnv = Environment(ENV = os.environ,options=opts)
 
 Help(opts.GenerateHelpText(BaseEnv))
