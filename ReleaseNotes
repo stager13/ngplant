@@ -1,20 +1,20 @@
-                    ngPlant 0.9.8 Release Notes
+                    ngPlant 0.9.9 Release Notes
 
-  This is eleventh public release of ngPlant. It is a development release, so
+  This is twelfth public release of ngPlant. It is a development release, so
 many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
-Changes since 0.9.8:
-- GLEW library updated to 1.7.0
+Changes since 0.9.9:
 - "disable randomness" feature added to ngplant, it allows to disable
   model variations temporarily
 - now it is possible to set minimum and maximum number of branches in
   branching algorithm parameters
-- color of text in numeric editors and texture layer selectors now depends on
-  used color theme
 - default cross-section resolution for tube stem model can be set in
   preferences dialog for each branch level
 - tangent-space calculation can be disabled during .obj file import
+- color of text in numeric editors and texture layer selectors now depends on
+  used color theme
+- GLEW library updated to 1.7.0
 - some improvements in build procedure
 
 Changes since 0.9.7:

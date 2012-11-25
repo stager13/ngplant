@@ -57,7 +57,7 @@
 
 #include <p3dapp.h>
 
-#define NGPLANT_BASE_VER "0.9.8"
+#define NGPLANT_BASE_VER "0.9.9"
 
 #if defined(EXTRA_VERSION)
  #define NGPLANT_VERSION_STRING NGPLANT_BASE_VER "(" EXTRA_VERSION ")"
