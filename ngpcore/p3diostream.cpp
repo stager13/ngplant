@@ -47,7 +47,9 @@ typedef struct
 
 static void        SetLocaleNumericStd(P3DLocaleInfo      *OldLocale)
  {
-  OldLocale->Old = strdup(setlocale(LC_NUMERIC,NULL));
+  char *Old = setlocale(LC_NUMERIC,NULL);
+
+  OldLocale->Old = Old != NULL ? strdup(Old) : NULL;
 
   setlocale(LC_NUMERIC,"C");
  }
@@ -55,9 +57,12 @@ static void        SetLocaleNumericStd(P3DLocaleInfo      *OldLocale)
 static void        RestoreLocaleNumeric
                                       (P3DLocaleInfo      *OldLocale)
  {
-  setlocale(LC_NUMERIC,OldLocale->Old);
+  if (OldLocale->Old != NULL)
+   {
+    setlocale(LC_NUMERIC,OldLocale->Old);
 
-  free(OldLocale->Old);
+    free(OldLocale->Old);
+   }
  }
 
 const char        *P3DExceptionIO::GetMessage
