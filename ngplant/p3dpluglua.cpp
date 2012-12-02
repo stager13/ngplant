@@ -41,7 +41,12 @@ static char       *SavedLocale = NULL;
 
 static void        SetCLocale         ()
  {
-  SavedLocale = strdup(setlocale(LC_ALL,NULL));
+  SavedLocale = setlocale(LC_ALL,NULL);
+
+  if (SavedLocale != NULL)
+   {
+    SavedLocale = strdup(SavedLocale);
+   }
 
   setlocale(LC_ALL,"C");
  }

@@ -430,7 +430,12 @@ bool               P3DModelExportOBJ  (const char         *FileName,
 
     PlantInstance = PlantTemplate.CreateInstance();
 
-    SavedLocale = strdup(setlocale(LC_ALL,NULL));
+    SavedLocale = setlocale(LC_ALL,NULL);
+
+    if (SavedLocale != NULL)
+     {
+      SavedLocale = strdup(SavedLocale);
+     }
 
     setlocale(LC_ALL,"C");
 
