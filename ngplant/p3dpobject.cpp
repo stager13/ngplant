@@ -31,8 +31,6 @@
 #include <ngpcore/p3dmodel.h>
 #include <ngpcore/p3dhli.h>
 
-#include <p3dhliext.h>
-
 #include <p3dapp.h>
 #include <p3dpobject.h>
 
@@ -578,9 +576,7 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
 
   unsigned int    *BranchCounts;
 
-  BranchCounts = new unsigned int[GroupCount];
-
-  P3DHLIGetBranchCountMulti(BranchCounts,PlantModel);
+  BranchCounts = 0;
 
   for (GroupIndex = 0; GroupIndex < GroupCount; GroupIndex++)
    {
@@ -592,6 +588,10 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
   try
    {
     Instance = Template.CreateInstance();
+
+    BranchCounts = new unsigned int[GroupCount];
+
+    Instance->GetBranchCountMulti(BranchCounts);
 
     for (GroupIndex = 0; GroupIndex < GroupCount; GroupIndex++)
      {
@@ -659,7 +659,7 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
          }
        }
 
-      P3DHLIFillVAttrBuffersIMulti(Buffers,PlantModel);
+      Instance->FillVAttrBuffersIMulti(Buffers);
 
       for (GroupIndex = 0; GroupIndex < GroupCount; GroupIndex++)
        {

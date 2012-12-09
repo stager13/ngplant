@@ -35,6 +35,28 @@
 #include <ngpcore/p3dmodelstemquad.h>
 #include <ngpcore/p3dhli.h>
 
+/* calculate total group count (including plant base group) */
+static
+unsigned int       CalcInternalGroupCount
+                                      (const P3DBranchModel
+                                                          *BranchModel)
+ {
+  unsigned int                         GroupCount;
+  unsigned int                         SubBranchIndex;
+  unsigned int                         SubBranchCount;
+
+  GroupCount = 1;
+
+  SubBranchCount = BranchModel->GetSubBranchCount();
+
+  for (SubBranchIndex = 0; SubBranchIndex < SubBranchCount; SubBranchIndex++)
+   {
+    GroupCount += CalcInternalGroupCount(BranchModel->GetSubBranchModel(SubBranchIndex));
+   }
+
+  return(GroupCount);
+ }
+
 class P3DHLIMaterial : public P3DMaterialInstance
  {
   public           :
@@ -151,6 +173,83 @@ class P3DHLIBranchCalculator : public P3DBranchingFactory
   const P3DStemModelInstance          *Parent;
   const P3DBranchModel                *CountedBranch;
   unsigned int                        *Counter;
+ };
+
+class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
+ {
+  public           :
+
+                   P3DHLIBranchCalculatorMulti
+                                      (P3DMathRNG         *RNG,
+                                       const P3DBranchModel
+                                                          *BranchModel,
+                                       const P3DStemModelInstance
+                                                          *Parent,
+                                       unsigned int        GroupIndex,
+                                       unsigned int       *Counters)
+   {
+    this->RNG           = RNG;
+    this->BranchModel   = BranchModel;
+    this->Parent        = Parent;
+    this->GroupIndex    = GroupIndex;
+    this->Counters      = Counters;
+   }
+
+  virtual void     GenerateBranch     (float               Offset,
+                                       const P3DQuaternionf
+                                                          *Orientation)
+   {
+    const P3DStemModel              *StemModel;
+    P3DStemModelInstance            *Instance;
+    unsigned int                     SubBranchIndex;
+    unsigned int                     SubBranchCount;
+    unsigned int                     SubGroupIndex;
+
+    StemModel = BranchModel->GetStemModel();
+
+    if (StemModel != 0)
+     {
+      Instance      = StemModel->CreateInstance(RNG,Parent,Offset,Orientation);
+      SubGroupIndex = GroupIndex + 1;
+
+      Counters[GroupIndex]++;
+     }
+    else
+     {
+      Instance      = 0;
+      SubGroupIndex = 0;
+     }
+
+    SubBranchCount = BranchModel->GetSubBranchCount();
+
+    for (SubBranchIndex = 0; SubBranchIndex < SubBranchCount; SubBranchIndex++)
+     {
+      P3DHLIBranchCalculatorMulti Calculator(RNG,
+                                             BranchModel->GetSubBranchModel(SubBranchIndex),
+                                             Instance,
+                                             SubGroupIndex,
+                                             Counters);
+
+      const_cast<P3DBranchingAlg*>(BranchModel->GetSubBranchModel(SubBranchIndex)->GetBranchingAlg())
+       ->CreateBranches(&Calculator,Instance,RNG);
+
+      SubGroupIndex += CalcInternalGroupCount
+                        (BranchModel->GetSubBranchModel(SubBranchIndex));
+     }
+
+    if (Instance != 0)
+     {
+      StemModel->ReleaseInstance(Instance);
+     }
+   }
+
+  private          :
+
+  P3DMathRNG                          *RNG;
+  const P3DBranchModel                *BranchModel;
+  const P3DStemModelInstance          *Parent;
+  unsigned int                         GroupIndex;
+  unsigned int                        *Counters;
  };
 
 class P3DHLIFillVAttrBufferHelper : public P3DBranchingFactory
@@ -548,6 +647,162 @@ class P3DHLIFillVAttrBuffersIHelper : public P3DBranchingFactory
   void                               **DataBuffers;
  };
 
+class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
+ {
+  public           :
+
+                   P3DHLIFillVAttrBuffersIMultiHelper
+                                      (P3DMathRNG         *RNG,
+                                       const P3DBranchModel
+                                                          *BranchModel,
+                                       const P3DStemModelInstance
+                                                          *Parent,
+                                       unsigned int        GroupIndex,
+                                       P3DHLIVAttrBufferSet
+                                                          *VAttrBufferSetArray)
+   {
+    this->RNG                 = RNG;
+    this->BranchModel         = BranchModel;
+    this->Parent              = Parent;
+    this->GroupIndex          = GroupIndex;
+    this->VAttrBufferSetArray = VAttrBufferSetArray;
+   }
+
+  virtual void     GenerateBranch     (float               Offset,
+                                       const P3DQuaternionf
+                                                          *Orientation)
+   {
+    const P3DStemModel                *StemModel;
+    P3DStemModelInstance              *Instance;
+
+    StemModel = BranchModel->GetStemModel();
+
+    if (StemModel != 0)
+     {
+      Instance = StemModel->CreateInstance(RNG,Parent,Offset,Orientation);
+     }
+    else
+     {
+      Instance = 0;
+     }
+
+    if (Instance != 0)
+     {
+      unsigned int                     VAttrIndex;
+      unsigned int                     VAttrCount;
+
+      VAttrCount = Instance->GetVAttrCountI();
+
+      for (VAttrIndex = 0; VAttrIndex < VAttrCount; VAttrIndex++)
+       {
+        if (VAttrBufferSetArray[GroupIndex][P3D_ATTR_VERTEX] != 0)
+         {
+          Instance->GetVAttrValueI
+           (VAttrBufferSetArray[GroupIndex][P3D_ATTR_VERTEX],
+            P3D_ATTR_VERTEX,
+            VAttrIndex);
+
+          VAttrBufferSetArray[GroupIndex][P3D_ATTR_VERTEX] += 3;
+         }
+
+        if (VAttrBufferSetArray[GroupIndex][P3D_ATTR_NORMAL] != 0)
+         {
+          Instance->GetVAttrValueI
+           (VAttrBufferSetArray[GroupIndex][P3D_ATTR_NORMAL],
+            P3D_ATTR_NORMAL,
+            VAttrIndex);
+
+          VAttrBufferSetArray[GroupIndex][P3D_ATTR_NORMAL] += 3;
+         }
+
+        if (VAttrBufferSetArray[GroupIndex][P3D_ATTR_TEXCOORD0] != 0)
+         {
+          Instance->GetVAttrValueI
+           (VAttrBufferSetArray[GroupIndex][P3D_ATTR_TEXCOORD0],
+            P3D_ATTR_TEXCOORD0,
+            VAttrIndex);
+
+          VAttrBufferSetArray[GroupIndex][P3D_ATTR_TEXCOORD0] += 2;
+         }
+
+        if (VAttrBufferSetArray[GroupIndex][P3D_ATTR_TANGENT] != 0)
+         {
+          Instance->GetVAttrValueI
+           (VAttrBufferSetArray[GroupIndex][P3D_ATTR_TANGENT],
+            P3D_ATTR_TANGENT,
+            VAttrIndex);
+
+          VAttrBufferSetArray[GroupIndex][P3D_ATTR_TANGENT] += 3;
+         }
+
+        if (VAttrBufferSetArray[GroupIndex][P3D_ATTR_BINORMAL] != 0)
+         {
+          Instance->GetVAttrValueI
+           (VAttrBufferSetArray[GroupIndex][P3D_ATTR_BINORMAL],
+            P3D_ATTR_BINORMAL,
+            VAttrIndex);
+
+          VAttrBufferSetArray[GroupIndex][P3D_ATTR_BINORMAL] += 3;
+         }
+
+        if (VAttrBufferSetArray[GroupIndex][P3D_ATTR_BILLBOARD_POS] != 0)
+         {
+          Instance->GetVAttrValueI
+           (VAttrBufferSetArray[GroupIndex][P3D_ATTR_BILLBOARD_POS],
+            P3D_ATTR_BILLBOARD_POS,
+            VAttrIndex);
+
+          VAttrBufferSetArray[GroupIndex][P3D_ATTR_BILLBOARD_POS] += 3;
+         }
+       }
+     }
+
+    unsigned int                     SubBranchIndex;
+    unsigned int                     SubBranchCount;
+    unsigned int                     SubGroupIndex;
+
+    if (StemModel != 0)
+     {
+      SubGroupIndex = GroupIndex + 1;
+     }
+    else
+     {
+      SubGroupIndex = 0;
+     }
+
+    SubBranchCount = BranchModel->GetSubBranchCount();
+
+    for (SubBranchIndex = 0; SubBranchIndex < SubBranchCount; SubBranchIndex++)
+     {
+      P3DHLIFillVAttrBuffersIMultiHelper
+                                       Helper(RNG,
+                                              BranchModel->GetSubBranchModel(SubBranchIndex),
+                                              Instance,
+                                              SubGroupIndex,
+                                              VAttrBufferSetArray);
+
+      const_cast<P3DBranchingAlg*>(BranchModel->GetSubBranchModel(SubBranchIndex)->GetBranchingAlg())
+       ->CreateBranches(&Helper,Instance,RNG);
+
+      SubGroupIndex += CalcInternalGroupCount
+                        (BranchModel->GetSubBranchModel(SubBranchIndex));
+     }
+
+    if (Instance != 0)
+     {
+      StemModel->ReleaseInstance(Instance);
+     }
+   }
+
+  private          :
+
+  P3DMathRNG                          *RNG;
+  const P3DBranchModel                *BranchModel;
+  const P3DStemModelInstance          *Parent;
+  unsigned int                         GroupIndex;
+  P3DHLIVAttrBufferSet                *VAttrBufferSetArray;
+ };
+
                    P3DHLIVAttrFormat::P3DHLIVAttrFormat
                                       (unsigned int        Stride)
  {
@@ -669,28 +924,6 @@ unsigned int       P3DHLIVAttrBuffers::GetAttrStride
   CheckVAttrValidity(Attr);
 
   return(Strides[Attr]);
- }
-
-/* calculate total group count (including plant base group) */
-static
-unsigned int       CalcInternalGroupCount
-                                      (const P3DBranchModel
-                                                          *BranchModel)
- {
-  unsigned int                         GroupCount;
-  unsigned int                         SubBranchIndex;
-  unsigned int                         SubBranchCount;
-
-  GroupCount = 1;
-
-  SubBranchCount = BranchModel->GetSubBranchCount();
-
-  for (SubBranchIndex = 0; SubBranchIndex < SubBranchCount; SubBranchIndex++)
-   {
-    GroupCount += CalcInternalGroupCount(BranchModel->GetSubBranchModel(SubBranchIndex));
-   }
-
-  return(GroupCount);
  }
 
 static
@@ -891,6 +1124,30 @@ unsigned int       P3DHLIPlantInstance::GetBranchCount
   Calculator.GenerateBranch(0.0f,0);
 
   return(Counter);
+ }
+
+void               P3DHLIPlantInstance::GetBranchCountMulti
+                                      (unsigned int       *BranchCounts) const
+ {
+  unsigned int                         GroupIndex;
+  unsigned int                         GroupCount;
+
+  GroupCount = CalcInternalGroupCount(Model->GetPlantBase()) - 1;
+
+  for (GroupIndex = 0; GroupIndex < GroupCount; GroupIndex++)
+   {
+    BranchCounts[GroupIndex] = 0;
+   }
+
+  P3DMathRNGSimple                     RNG(Model->GetBaseSeed());
+
+  P3DHLIBranchCalculatorMulti Calculator(IsRandomnessEnabled() ? &RNG : 0,
+                                          Model->GetPlantBase(),
+                                          0,
+                                          0,
+                                          BranchCounts);
+
+  Calculator.GenerateBranch(0.0f,0);
  }
 
 class P3DBranchingFactoryBoundCalc : public P3DBranchingFactory
@@ -1118,6 +1375,43 @@ void               P3DHLIPlantInstance::FillVAttrBuffersI
                                        DataBuffers);
 
   Helper.GenerateBranch(0.0f,0);
+ }
+
+void               P3DHLIPlantInstance::FillVAttrBuffersIMulti
+                                      (P3DHLIVAttrBufferSet
+                                                          *VAttrBufferSet) const
+ {
+  unsigned int                         GroupIndex;
+  unsigned int                         GroupCount;
+
+  GroupCount = CalcInternalGroupCount(Model->GetPlantBase()) - 1;
+
+  if (GroupCount > 0)
+   {
+    P3DHLIVAttrBufferSet              *TempVAttrBufferSet;
+
+    TempVAttrBufferSet = new P3DHLIVAttrBufferSet[GroupCount];
+
+    for (GroupIndex = 0; GroupIndex < GroupCount; GroupIndex++)
+     {
+      for (unsigned int AttrIndex = 0; AttrIndex < P3D_MAX_ATTRS; AttrIndex++)
+       {
+        TempVAttrBufferSet[GroupIndex][AttrIndex] =
+         VAttrBufferSet[GroupIndex][AttrIndex];
+       }
+     }
+
+    P3DMathRNGSimple                     RNG(Model->GetBaseSeed());
+    P3DHLIFillVAttrBuffersIMultiHelper   Helper(IsRandomnessEnabled() ? &RNG : 0,
+                                                 Model->GetPlantBase(),
+                                                 0,
+                                                 0,
+                                                 TempVAttrBufferSet);
+
+    Helper.GenerateBranch(0.0f,0);
+
+    delete TempVAttrBufferSet;
+   }
  }
 
 bool               P3DHLIPlantInstance::IsRandomnessEnabled() const
