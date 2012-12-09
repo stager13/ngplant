@@ -39,6 +39,8 @@
 #define P3DHLI_VER_MINOR    (9)
 #define P3DHLI_VER_RELEASE  (6)
 
+typedef float *(P3DHLIVAttrBufferSet[P3D_MAX_ATTRS]);
+
 class P3D_DLL_ENTRY P3DHLIVAttrBuffers
  {
   public           :
@@ -163,6 +165,7 @@ class P3D_DLL_ENTRY P3DHLIPlantInstance
                                        unsigned int        BaseSeed);
 
   unsigned int     GetBranchCount     (unsigned int        GroupIndex) const;
+  void             GetBranchCountMulti(unsigned int       *BranchCounts) const;
   void             GetBoundingBox     (float              *Min,
                                        float              *Max) const;
 
@@ -187,6 +190,10 @@ class P3D_DLL_ENTRY P3DHLIPlantInstance
   void             FillVAttrBuffersI  (const P3DHLIVAttrBuffers
                                                           *VAttrBuffers,
                                        unsigned int        GroupIndex) const;
+
+  void             FillVAttrBuffersIMulti
+                                      (P3DHLIVAttrBufferSet
+                                                          *VAttrBufferSet) const;
 
   private          :
 

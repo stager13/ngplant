@@ -13,7 +13,7 @@ p3duibalgstd.cpp p3dmaterialstd.cpp p3duimaterialstd.cpp
 p3duioptgeneral.cpp p3dtexture.cpp p3didevfs.cpp p3dexpobj.cpp
 p3duimodelstemquad.cpp p3duimodelstemwings.cpp p3duibalgwings.cpp
 p3duiappopt.cpp p3duibalgbase.cpp p3duivisrangepanel.cpp
-p3dpobject.cpp p3dhliext.cpp p3dshaders.cpp p3dlog.cpp
+p3dpobject.cpp p3dshaders.cpp p3dlog.cpp
 p3dpluginfo.cpp p3duimodelstemempty.cpp p3dappprefs.cpp
 p3dcmdqueue.cpp p3dimagewx.cpp
 """)
