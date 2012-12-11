@@ -27,7 +27,7 @@
                    center(0.0f,0.0f,0.0f),
                    dir(0.0f,0.0f,0.0f,1.0f)
  {
-  distance = -30.0;
+  distance = -30.0f;
  }
 
 void               P3DCameraTrackBall::SetCenter
@@ -65,7 +65,7 @@ void               P3DCameraTrackBall::GetTransformToCS
   P3DMatrix4x4f                        rot_m;
   P3DMatrix4x4f                        temp_m;
 
-  P3DMatrix4x4f::MakeTranslation(tz_m.m,0.0,0.0,distance);
+  P3DMatrix4x4f::MakeTranslation(tz_m.m,0.0f,0.0f,distance);
 
   dir.ToMatrix(rot_m.m);
 
