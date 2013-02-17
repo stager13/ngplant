@@ -177,6 +177,15 @@ class P3D_DLL_ENTRY P3DHLIPlantInstance
   void             GetBoundingBox     (float              *Min,
                                        float              *Max) const;
 
+  /* Per-clone mode (use only for "cloneable" groups) */
+
+  /* size of OffsetBuffer      must be sizeof(float) * GetBranchCount() * 3 */
+  /* size of OrientationBuffer must be sizeof(float) * GetBranchCount() * 4 */
+  void             FillCloneTransformBuffer
+                                      (float              *OffsetBuffer,
+                                       float              *OrientationBuffer,
+                                       unsigned int        GroupIndex) const;
+
   /* Per-attribute mode */
 
   unsigned int     GetVAttrCount      (unsigned int        GroupIndex,
