@@ -252,6 +252,103 @@ class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
   unsigned int                        *Counters;
  };
 
+class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
+ {
+  public           :
+
+                   P3DHLIFillCloneTransformBufferHelper
+                                      (P3DMathRNG         *RNG,
+                                       const P3DBranchModel
+                                                          *BranchModel,
+                                       const P3DStemModelInstance
+                                                          *Parent,
+                                       const P3DBranchModel
+                                                          *RequiredBranch,
+                                       float             **OffsetBuffer,
+                                       float             **OrientationBuffer)
+   {
+    this->RNG               = RNG;
+    this->BranchModel       = BranchModel;
+    this->Parent            = Parent;
+    this->RequiredBranch    = RequiredBranch;
+    this->OffsetBuffer      = OffsetBuffer;
+    this->OrientationBuffer = OrientationBuffer;
+   }
+
+  virtual void     GenerateBranch     (float               Offset,
+                                       const P3DQuaternionf
+                                                          *Orientation)
+   {
+    const P3DStemModel                *StemModel;
+    P3DStemModelInstance              *Instance;
+
+    StemModel = BranchModel->GetStemModel();
+
+    if (StemModel != 0)
+     {
+      Instance = StemModel->CreateInstance(RNG,Parent,Offset,Orientation);
+     }
+    else
+     {
+      Instance = 0;
+     }
+
+    if (BranchModel == RequiredBranch)
+     {
+      P3DMatrix4x4f  m;
+      P3DQuaternionf q;
+
+      Instance->GetWorldTransform(m.m);
+
+      q.FromMatrix(m.m);
+
+      (*OrientationBuffer)[0] = q.q[0];
+      (*OrientationBuffer)[1] = q.q[1];
+      (*OrientationBuffer)[2] = q.q[2];
+      (*OrientationBuffer)[3] = q.q[3];
+
+      (*OffsetBuffer)[0] = m.m[12];
+      (*OffsetBuffer)[1] = m.m[13];
+      (*OffsetBuffer)[2] = m.m[14];
+
+      *OrientationBuffer += 4;
+      *OffsetBuffer      += 3;
+     }
+
+    unsigned int                     SubBranchIndex;
+    unsigned int                     SubBranchCount;
+
+    SubBranchCount = BranchModel->GetSubBranchCount();
+
+    for (SubBranchIndex = 0; SubBranchIndex < SubBranchCount; SubBranchIndex++)
+     {
+      P3DHLIFillCloneTransformBufferHelper Helper(RNG,
+                                            BranchModel->GetSubBranchModel(SubBranchIndex),
+                                            Instance,
+                                            RequiredBranch,
+                                            OffsetBuffer,
+                                            OrientationBuffer);
+
+      const_cast<P3DBranchingAlg*>(BranchModel->GetSubBranchModel(SubBranchIndex)->GetBranchingAlg())
+       ->CreateBranches(&Helper,Instance,RNG);
+     }
+
+    if (StemModel != 0)
+     {
+      StemModel->ReleaseInstance(Instance);
+     }
+   }
+
+  private          :
+
+  P3DMathRNG                          *RNG;
+  const P3DBranchModel                *BranchModel;
+  const P3DStemModelInstance          *Parent;
+  const P3DBranchModel                *RequiredBranch;
+  float                              **OffsetBuffer;
+  float                              **OrientationBuffer;
+ };
+
 class P3DHLIFillVAttrBufferHelper : public P3DBranchingFactory
  {
   public           :
@@ -1008,7 +1105,7 @@ void               P3DHLIPlantTemplate::GetBillboardSize
 bool               P3DHLIPlantTemplate::IsCloneable
                                       (unsigned int        GroupIndex) const
  {
-  GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->IsCloneable();
+  return GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->IsCloneable();
  }
 
 bool               P3DHLIPlantTemplate::IsLODVisRangeEnabled
@@ -1289,6 +1386,27 @@ void               P3DHLIPlantInstance::GetBoundingBox
                                        float              *Max) const
  {
   P3DHLICalcBBox(Min,Max,Model,BaseSeed);
+ }
+
+void               P3DHLIPlantInstance::FillCloneTransformBuffer
+                                      (float              *OffsetBuffer,
+                                       float              *OrientationBuffer,
+                                       unsigned int        GroupIndex) const
+ {
+  const P3DBranchModel                *BranchModel;
+
+  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+
+  P3DMathRNGSimple                     RNG(BaseSeed);
+
+  P3DHLIFillCloneTransformBufferHelper Helper( IsRandomnessEnabled() ? &RNG : 0,
+                                               Model->GetPlantBase(),
+                                               0,
+                                               BranchModel,
+                                              &OffsetBuffer,
+                                              &OrientationBuffer);
+
+  Helper.GenerateBranch(0.0f,0);
  }
 
 unsigned int       P3DHLIPlantInstance::GetVAttrCount
