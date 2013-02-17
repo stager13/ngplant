@@ -244,6 +244,7 @@ class P3DQuaternionf
    };
 
   void             ToMatrix           (float              *m) const;
+  void             FromMatrix         (const float        *m);
 
   void             FromAxisAndAngle   (float               x,
                                        float               y,

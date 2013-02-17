@@ -265,6 +265,73 @@ void               P3DQuaternionf::ToMatrix
   m[15] = 1.0f;
  }
 
+//Method is described here: http://www.flipcode.com/documents/matrfaq.html#Q55
+void               P3DQuaternionf::FromMatrix
+                                      (const float        *m)
+ {
+  float T;
+  float S;
+
+  T = m[0] + m[5] + m[10] + 1.0f;
+
+  if (T > 0.0f)
+   {
+    S = 0.5f / sqrtf(T);
+
+    q[0] = (m[6] - m[9]) * S;
+    q[1] = (m[8] - m[2]) * S;
+    q[2] = (m[1] - m[4]) * S;
+    q[3] = 0.25 / S;
+   }
+  else
+   {
+    bool m10 = false;
+
+    if (m[0] > m[5])
+     {
+      if (m[0] > m[10])
+       {
+        S = sqrtf(1.0f + m[0] - m[5] - m[10]) * 2.0f;
+
+        q[0] = 0.5f / S;
+        q[1] = (m[1] + m[4]) / S;
+        q[2] = (m[2] + m[8]) / S;
+        q[3] = (m[6] + m[9]) / S;
+       }
+      else
+       {
+        m10 = true;
+       }
+     }
+    else
+     {
+      if (m[5] > m[10])
+       {
+        S = sqrtf(1.0f + m[5] - m[0] - m[10]) * 2.0f;
+
+        q[0] = (m[1] + m[4]) / S;
+        q[1] = 0.5f / S;
+        q[2] = (m[6] + m[9]) / S;
+        q[3] = (m[2] + m[8]) / S;
+       }
+      else
+       {
+        m10 = true;
+       }
+     }
+
+    if (m10)
+     {
+      S = sqrtf(1.0f + m[10] - m[0] - m[5]) * 2.0f;
+
+      q[0] = (m[2] + m[8]) / S;
+      q[1] = (m[6] + m[9]) / S;
+      q[2] = 0.5f / S;
+      q[3] = (m[1] + m[4]) / S;
+     }
+   }
+ }
+
 void               P3DQuaternionf::FromAxisAndAngle
                                       (float               x,
                                        float               y,
