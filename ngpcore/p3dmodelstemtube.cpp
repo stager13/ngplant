@@ -767,6 +767,13 @@ unsigned int       P3DStemModelTube::GetVAttrCount
    }
  }
 
+void               P3DStemModelTube::FillCloneVAttrBuffer
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr) const
+ {
+  //NOTE: tube cannot be cloned, so call is ignored
+ }
+
 unsigned int       P3DStemModelTube::GetPrimitiveCount
                                       () const
  {

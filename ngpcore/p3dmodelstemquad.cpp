@@ -621,6 +621,31 @@ unsigned int       P3DStemModelQuad::GetVAttrCount
    }
  }
 
+void               P3DStemModelQuad::FillCloneVAttrBuffer
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr) const
+ {
+  unsigned int     Count = GetVAttrCount(Attr);
+
+  float Scale = ScalingCurve.GetValue(0.0f);
+
+  P3DStemModelQuadInstance *Instance = new P3DStemModelQuadInstance
+                                            ( Length * Scale,
+                                              Width * Scale,
+                                              BillboardMode,
+                                              SectionCount,
+                                             &Curvature,
+                                              Thickness * Scale,
+                                              0);
+
+  for (unsigned int Index = 0; Index < Count; Index++)
+   {
+    Instance->GetVAttrValue(&(((float*)VAttrBuffer)[Index]),Attr,Index);
+   }
+
+  delete Instance;
+ }
+
 unsigned int       P3DStemModelQuad::GetPrimitiveCount
                                       () const
  {

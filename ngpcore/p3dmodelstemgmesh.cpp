@@ -430,6 +430,21 @@ unsigned int       P3DStemModelGMesh::GetVAttrCount
    }
  }
 
+void               P3DStemModelGMesh::FillCloneVAttrBuffer
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr) const
+ {
+  unsigned int               Count    = GetVAttrCount(Attr);
+  P3DStemModelGMeshInstance *Instance = new P3DStemModelGMeshInstance(MeshData,0);
+
+  for (unsigned int Index = 0; Index < Count; Index++)
+   {
+    Instance->GetVAttrValue(&(((float*)VAttrBuffer)[Index]),Attr,Index);
+   }
+
+  delete Instance;
+ }
+
 unsigned int       P3DStemModelGMesh::GetPrimitiveCount
                                       () const
  {
