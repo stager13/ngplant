@@ -264,6 +264,8 @@ class P3DStemModel
   virtual P3DStemModel
                   *CreateCopy         () const = 0;
 
+  virtual bool     IsCloneable        () const = 0;
+
   /* Per-attribute information */
 
   virtual

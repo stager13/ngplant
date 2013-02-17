@@ -555,6 +555,12 @@ void               P3DStemModelWings::ReleaseInstance
   delete Instance;
  }
 
+bool               P3DStemModelWings::IsCloneable
+                                      () const
+ {
+  return(false);
+ }
+
 unsigned int       P3DStemModelWings::GetVAttrCount
                                       (unsigned int        Attr) const
  {

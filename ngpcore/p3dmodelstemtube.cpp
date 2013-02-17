@@ -748,6 +748,12 @@ void               P3DStemModelTube::ReleaseInstance
   delete Instance;
  }
 
+bool               P3DStemModelTube::IsCloneable
+                                      () const
+ {
+  return(false);
+ }
+
 unsigned int       P3DStemModelTube::GetVAttrCount
                                       (unsigned int        Attr) const
  {

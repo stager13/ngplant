@@ -584,6 +584,12 @@ void               P3DStemModelQuad::ReleaseInstance
   delete Instance;
  }
 
+bool               P3DStemModelQuad::IsCloneable
+                                      () const
+ {
+  return(ScalingCurve.IsConstant());
+ }
+
 unsigned int       P3DStemModelQuad::GetVAttrCount
                                       (unsigned int        Attr) const
  {
