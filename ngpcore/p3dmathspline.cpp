@@ -31,6 +31,18 @@
 
 #include <ngpcore/p3dmathspline.h>
 
+#define P3DMathSpEpsilon (1e-5f)
+
+static float P3DMathSpFAbs (float v)
+ {
+  return v < 0.0f ? -v : v;
+ }
+
+static bool P3DMathSpAlmostEqual (float a, float b)
+ {
+  return P3DMathSpFAbs(a-b) < P3DMathSpEpsilon;
+ }
+
 /*NOTE: math is based on "Numerical Recipes in C" */
 
                    P3DMathNaturalCubicSpline::P3DMathNaturalCubicSpline
@@ -175,6 +187,20 @@ float              P3DMathNaturalCubicSpline::GetTangent
            ((((3.0f * a * a) - 1.0f) * h * cp_y2[base - 1]) / 6.0f) +
            ((((3.0f * b * b) - 1.0f) * h * cp_y2[base]) / 6.0f));
    }
+ }
+
+bool               P3DMathNaturalCubicSpline::IsConstant
+                                                () const
+ {
+  for (unsigned int i = 1; i < cp_count; i++)
+   {
+    if (!P3DMathSpAlmostEqual(cp_y[i],cp_y[0]))
+     {
+      return(false);
+     }
+   }
+
+  return(true);
  }
 
 void               P3DMathNaturalCubicSpline::RecalcY2
