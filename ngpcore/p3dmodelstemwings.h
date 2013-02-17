@@ -65,6 +65,8 @@ class P3DStemModelWings : public P3DStemModel
     this->ParentStemModel = ParentStemModel;
    }
 
+  virtual bool     IsCloneable        () const;
+
   /* Per-attribute information */
 
   virtual

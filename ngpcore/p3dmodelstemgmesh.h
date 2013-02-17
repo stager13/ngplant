@@ -56,6 +56,8 @@ class P3DStemModelGMesh : public P3DStemModel
   virtual P3DStemModel
                   *CreateCopy         () const;
 
+  virtual bool     IsCloneable        () const;
+
   /* Per-attribute information */
 
   virtual

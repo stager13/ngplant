@@ -407,6 +407,12 @@ P3DStemModel      *P3DStemModelGMesh::CreateCopy
   return(Result);
  }
 
+bool               P3DStemModelGMesh::IsCloneable
+                                      () const
+ {
+  return(true);
+ }
+
 unsigned int       P3DStemModelGMesh::GetVAttrCount
                                       (unsigned int        Attr) const
  {
