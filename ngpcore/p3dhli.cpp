@@ -1005,6 +1005,12 @@ void               P3DHLIPlantTemplate::GetBillboardSize
   throw P3DExceptionGeneric("trying to get billboard size for non-billboard branches");
  }
 
+bool               P3DHLIPlantTemplate::IsCloneable
+                                      (unsigned int        GroupIndex) const
+ {
+  GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->IsCloneable();
+ }
+
 bool               P3DHLIPlantTemplate::IsLODVisRangeEnabled
                                       (unsigned int        GroupIndex) const
  {

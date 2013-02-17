@@ -111,6 +111,8 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
                                        float              *Height,
                                        unsigned int        GroupIndex) const;
 
+  bool             IsCloneable        (unsigned int        GroupIndex) const;
+
   /* LOD-related */
 
   bool             IsLODVisRangeEnabled
