@@ -127,6 +127,11 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
   unsigned int     GetVAttrCount      (unsigned int        GroupIndex,
                                        unsigned int        Attr) const;
 
+  void             FillCloneVAttrBuffer
+                                      (void               *VAttrBuffer,
+                                       unsigned int        GroupIndex,
+                                       unsigned int        Attr) const;
+
   unsigned int     GetPrimitiveCount  (unsigned int        GroupIndex) const;
   unsigned int     GetPrimitiveType   (unsigned int        GroupIndex,
                                        unsigned int        PrimitiveIndex) const;
@@ -141,6 +146,7 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
   /* Indexed mode */
 
   unsigned int     GetVAttrCountI     (unsigned int        GroupIndex) const;
+
   unsigned int     GetIndexCount      (unsigned int        GroupIndex,
                                        unsigned int        PrimitiveType) const;
 

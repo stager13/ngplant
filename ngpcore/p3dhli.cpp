@@ -1035,6 +1035,15 @@ unsigned int       P3DHLIPlantTemplate::GetVAttrCount
           GetStemModel()->GetVAttrCount(Attr));
  }
 
+void               P3DHLIPlantTemplate::FillCloneVAttrBuffer
+                                      (void               *VAttrBuffer,
+                                       unsigned int        GroupIndex,
+                                       unsigned int        Attr) const
+ {
+  GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->
+   FillCloneVAttrBuffer(VAttrBuffer,Attr);
+ }
+
 unsigned int       P3DHLIPlantTemplate::GetPrimitiveCount
                                       (unsigned int        GroupIndex) const
  {

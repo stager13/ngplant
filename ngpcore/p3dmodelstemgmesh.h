@@ -63,6 +63,10 @@ class P3DStemModelGMesh : public P3DStemModel
   virtual
   unsigned int     GetVAttrCount      (unsigned int        Attr) const;
 
+  virtual void     FillCloneVAttrBuffer
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr) const;
+
   virtual
   unsigned int     GetPrimitiveCount  () const;
   virtual

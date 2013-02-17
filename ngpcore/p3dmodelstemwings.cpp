@@ -576,6 +576,13 @@ unsigned int       P3DStemModelWings::GetVAttrCount
    }
  }
 
+void               P3DStemModelWings::FillCloneVAttrBuffer
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr) const
+ {
+  //NOTE: wings model cannot be cloned, so call is ignored
+ }
+
 unsigned int       P3DStemModelWings::GetPrimitiveCount
                                       () const
  {
