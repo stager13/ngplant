@@ -52,6 +52,8 @@ class P3DMathNaturalCubicSpline
   float            GetValue                     (float               x) const;
   float            GetTangent                   (float               x) const;
 
+  bool             IsConstant                   () const;
+
   void             AddCP                        (float               x,
                                                  float               y);
 
