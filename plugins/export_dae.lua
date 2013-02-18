@@ -5,6 +5,7 @@ menu-name : COLLADA (.dae) (plug-in)
 
 --]]
 
+local MATH_PI = 3.14159265358979
 local XmlNestLevel = 0
 
 local function GetISO8601Time ()
@@ -19,6 +20,18 @@ local function GetISO8601Time ()
   else
     return d
   end
+end
+
+local function QuaternionToAxisAndAngle (Quat)
+  local CosA  = Quat[4]
+  local SinA  = math.sqrt(1.0 - CosA * CosA)
+  local Angle = math.acos(CosA) * 2.0
+
+  if SinA > -0.000001 and SinA < 0.000001 then
+    SinA = 1.0
+  end
+
+  return Quat[1] / SinA,Quat[2] / SinA,Quat[3] / SinA,Angle
 end
 
 local function XmlBeginElement (File,Tag,Attrs,Empty,ContinueLine)
@@ -285,6 +298,14 @@ local function ExportLibraryMaterials(F)
   XmlEndElement(F,"library_materials")
 end
 
+local function GetVAttrBufferForGroup(Group,Attr)
+  if Group:IsCloneable() then
+    return Group:GetCloneVAttrBuffer(Attr)
+  else
+    return Group:GetVAttrBuffer(Attr)
+  end
+end
+
 local function ExportLibraryGeometry(F)
  XmlBeginElement(F,"library_geometries")
 
@@ -296,7 +317,7 @@ local function ExportLibraryGeometry(F)
     XmlBeginElement(F,"mesh")
      XmlBeginElement(F,"source",{ id = GetSourcePosId(Group) })
 
-      local PosBuffer = Group:GetVAttrBuffer(NGP_ATTR_VERTEX)
+      local PosBuffer = GetVAttrBufferForGroup(Group,NGP_ATTR_VERTEX)
 
       WriteFloatArray(F,GetSourcePosArrayId(Group),PosBuffer,3)
 
@@ -313,7 +334,7 @@ local function ExportLibraryGeometry(F)
      XmlEndElement(F,"source")
 
      XmlBeginElement(F,"source",{ id = GetSourceNormalId(Group) })
-      local NormalBuffer = Group:GetVAttrBuffer(NGP_ATTR_NORMAL)
+      local NormalBuffer = GetVAttrBufferForGroup(Group,NGP_ATTR_NORMAL)
 
       WriteFloatArray(F,GetSourceNormalArrayId(Group),NormalBuffer,3)
 
@@ -330,7 +351,7 @@ local function ExportLibraryGeometry(F)
      XmlEndElement(F,"source")
 
      XmlBeginElement(F,"source",{ id = GetSourceTexCoordId(Group) })
-      local TexCoordBuffer = Group:GetVAttrBuffer(NGP_ATTR_TEXCOORD0)
+      local TexCoordBuffer = GetVAttrBufferForGroup(Group,NGP_ATTR_TEXCOORD0)
 
       WriteFloatArray(F,GetSourceTexCoordArrayId(Group),TexCoordBuffer,2)
 
@@ -349,9 +370,10 @@ local function ExportLibraryGeometry(F)
       XmlElement(F,"input",{ semantic = "POSITION" , source = "#"..GetSourcePosId(Group) })
      XmlEndElement(F,"vertices")
 
-     local VertexIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_VERTEX,true)
-     local NormalIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_NORMAL,true)
-     local TexCoordIndexBuffer = Group:GetVAttrIndexBuffer(NGP_ATTR_TEXCOORD0,true)
+     local IsCloneable         = Group:IsCloneable()
+     local VertexIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_VERTEX,not IsCloneable)
+     local NormalIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_NORMAL,not IsCloneable)
+     local TexCoordIndexBuffer = Group:GetVAttrIndexBuffer(NGP_ATTR_TEXCOORD0,not IsCloneable)
 
      local PrimitiveCount = table.getn(VertexIndexBuffer)
 
@@ -427,10 +449,31 @@ local function ExportVisualScenes(F)
    for GroupIndex = 1,PlantModel:GetGroupCount() do
      local Group = PlantModel:GetGroup(GroupIndex)
 
-     XmlBeginElement(F,"node",{ id   = GetNodeId(Group) .. "-sc",
-                                name = GetNodeName(Group) .. "-sc"})
-       XmlElement(F,"instance_node",{ url = "#" .. GetNodeId(Group)})
-     XmlEndElement(F,"node")
+     if Group:IsCloneable() then
+       Translations,Orientations = Group:GetCloneTransformBuffer()
+
+       local CloneCount = table.getn(Translations)
+
+       for CloneIndex = 1,CloneCount do
+         XmlBeginElement(F,"node",{ id   = GetNodeId(Group) .. "-sc" .. string.format("%d",CloneIndex),
+                                    name = GetNodeName(Group) .. "-sc" .. string.format("%d",CloneIndex)})
+           local T = Translations[CloneIndex]
+           local O = Orientations[CloneIndex]
+           local X,Y,Z,A
+
+           X,Y,Z,A = QuaternionToAxisAndAngle(O)
+
+           XmlElement(F,"translate",nil,string.format("%f %f %f",T[1],T[2],T[3]))
+           XmlElement(F,"rotate",nil,string.format("%f %f %f %f",X,Y,Z,A * 180.0 / MATH_PI))
+           XmlElement(F,"instance_node",{ url = "#" .. GetNodeId(Group)})
+         XmlEndElement(F,"node")
+       end
+     else
+       XmlBeginElement(F,"node",{ id   = GetNodeId(Group) .. "-sc",
+                                  name = GetNodeName(Group) .. "-sc"})
+         XmlElement(F,"instance_node",{ url = "#" .. GetNodeId(Group)})
+       XmlEndElement(F,"node")
+     end
    end
 
   XmlEndElement(F,"visual_scene")
