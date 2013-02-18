@@ -22,8 +22,20 @@ local function GetISO8601Time ()
   end
 end
 
+local function QuaternionNormalize (Quat)
+  local X = Quat[1]
+  local Y = Quat[2]
+  local Z = Quat[3]
+  local W = Quat[4]
+
+  local Len = math.sqrt(X * X + Y * Y + Z * Z + W * W)
+
+  return { X / Len, Y / Len, Z / Len, W / Len }
+end
+
 local function QuaternionToAxisAndAngle (Quat)
-  local CosA  = Quat[4]
+  local Q     = QuaternionNormalize(Quat)
+  local CosA  = Q[4]
   local SinA  = math.sqrt(1.0 - CosA * CosA)
   local Angle = math.acos(CosA) * 2.0
 
@@ -31,7 +43,7 @@ local function QuaternionToAxisAndAngle (Quat)
     SinA = 1.0
   end
 
-  return Quat[1] / SinA,Quat[2] / SinA,Quat[3] / SinA,Angle
+  return Q[1] / SinA,Q[2] / SinA,Q[3] / SinA,Angle
 end
 
 local function XmlBeginElement (File,Tag,Attrs,Empty,ContinueLine)
