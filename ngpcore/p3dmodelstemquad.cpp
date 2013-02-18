@@ -625,7 +625,8 @@ void               P3DStemModelQuad::FillCloneVAttrBuffer
                                       (void               *VAttrBuffer,
                                        unsigned int        Attr) const
  {
-  unsigned int     Count = GetVAttrCount(Attr);
+  unsigned int Count         = GetVAttrCount(Attr);
+  unsigned int AttrItemCount = Attr == P3D_ATTR_TEXCOORD0 ? 2 : 3;
 
   float Scale = ScalingCurve.GetValue(0.0f);
 
@@ -640,7 +641,7 @@ void               P3DStemModelQuad::FillCloneVAttrBuffer
 
   for (unsigned int Index = 0; Index < Count; Index++)
    {
-    Instance->GetVAttrValue(&(((float*)VAttrBuffer)[Index]),Attr,Index);
+    Instance->GetVAttrValue(&(((float*)VAttrBuffer)[Index * AttrItemCount]),Attr,Index);
    }
 
   delete Instance;
