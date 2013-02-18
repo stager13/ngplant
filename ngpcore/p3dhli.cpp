@@ -300,19 +300,26 @@ class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
 
       Instance->GetWorldTransform(m.m);
 
-      q.FromMatrix(m.m);
+      if (OrientationBuffer != 0)
+       {
+        q.FromMatrix(m.m);
 
-      (*OrientationBuffer)[0] = q.q[0];
-      (*OrientationBuffer)[1] = q.q[1];
-      (*OrientationBuffer)[2] = q.q[2];
-      (*OrientationBuffer)[3] = q.q[3];
+        (*OrientationBuffer)[0] = q.q[0];
+        (*OrientationBuffer)[1] = q.q[1];
+        (*OrientationBuffer)[2] = q.q[2];
+        (*OrientationBuffer)[3] = q.q[3];
 
-      (*OffsetBuffer)[0] = m.m[12];
-      (*OffsetBuffer)[1] = m.m[13];
-      (*OffsetBuffer)[2] = m.m[14];
+        *OrientationBuffer += 4;
+       }
 
-      *OrientationBuffer += 4;
-      *OffsetBuffer      += 3;
+      if (OffsetBuffer != 0)
+       {
+        (*OffsetBuffer)[0] = m.m[12];
+        (*OffsetBuffer)[1] = m.m[13];
+        (*OffsetBuffer)[2] = m.m[14];
+
+        *OffsetBuffer += 3;
+       }
      }
 
     unsigned int                     SubBranchIndex;
@@ -1397,14 +1404,14 @@ void               P3DHLIPlantInstance::FillCloneTransformBuffer
 
   BranchModel = GetBranchModelByIndex(Model,GroupIndex);
 
-  P3DMathRNGSimple                     RNG(BaseSeed);
+  P3DMathRNGSimple RNG(BaseSeed);
 
-  P3DHLIFillCloneTransformBufferHelper Helper( IsRandomnessEnabled() ? &RNG : 0,
-                                               Model->GetPlantBase(),
-                                               0,
-                                               BranchModel,
-                                              &OffsetBuffer,
-                                              &OrientationBuffer);
+  P3DHLIFillCloneTransformBufferHelper Helper(IsRandomnessEnabled() ? &RNG : 0,
+                                              Model->GetPlantBase(),
+                                              0,
+                                              BranchModel,
+                                              OffsetBuffer != 0 ? &OffsetBuffer : 0,
+                                              OrientationBuffer != 0 ? &OrientationBuffer : 0);
 
   Helper.GenerateBranch(0.0f,0);
  }
