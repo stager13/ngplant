@@ -494,6 +494,31 @@ static int         BranchGroupGetBillboardSize
   return(2);
  }
 
+static int         BranchGroupIsCloneable
+                                      (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  NGPLUABranchGroup                   *BranchGroup;
+
+  BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
+
+  Control.Commit();
+
+  try
+   {
+    Control.PushBool(BranchGroup->Instance->Template->IsCloneable
+                      (BranchGroup->Index));
+   }
+  catch (P3DException       &Error)
+   {
+    Control.RaiseError("%s",Error.GetMessage());
+   }
+
+  Control.Commit();
+
+  return(1);
+ }
+
 static int         BranchGroupIsLODVisRangeEnabled
                                       (lua_State          *State)
  {
@@ -568,6 +593,149 @@ static int         BranchGroupGetVAttrCount
   Control.Commit();
 
   return(1);
+ }
+
+static int         BranchGroupGetCloneVAttrBuffer
+                                      (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  NGPLUABranchGroup                   *BranchGroup;
+  unsigned int                         Attr;
+  unsigned int                         AttrItemCount;
+  unsigned int                         TotalAttrCount;
+  float                               *AttrBuffer;
+
+  BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
+  Attr        = Control.GetArgUInt(2);
+
+  Control.Commit();
+
+  if (Attr > P3D_ATTR_BINORMAL)
+   {
+    Control.RaiseError(ErrorMessageInvalidVAttrType);
+    Control.Commit();
+   }
+
+  Control.PushNewTable();
+
+  if (Attr == P3D_ATTR_TEXCOORD0)
+   {
+    AttrItemCount = 2;
+   }
+  else
+   {
+    AttrItemCount = 3;
+   }
+
+  TotalAttrCount = BranchGroup->Instance->Template->GetVAttrCount(BranchGroup->Index,Attr);
+
+  if (TotalAttrCount > 0)
+   {
+    AttrBuffer = (float*)malloc(sizeof(float) * TotalAttrCount * AttrItemCount);
+
+    if (AttrBuffer != NULL)
+     {
+      float                           *Ptr;
+
+      Ptr = AttrBuffer;
+
+      BranchGroup->Instance->Template->FillCloneVAttrBuffer
+       (AttrBuffer,BranchGroup->Index,Attr);
+
+      for (unsigned int AttrIndex = 0; AttrIndex < TotalAttrCount; AttrIndex++)
+       {
+        Control.PushNewTable();
+        Control.SetTableFloat(1,*Ptr); ++Ptr;
+        Control.SetTableFloat(2,*Ptr); ++Ptr;
+
+        if (AttrItemCount == 3)
+         {
+          Control.SetTableFloat(3,*Ptr); ++Ptr;
+         }
+
+        Control.SetTable(-2,AttrIndex + 1);
+       }
+
+      free(AttrBuffer);
+     }
+    else
+     {
+      Control.RaiseError(ErrorMessageOutOfMemory);
+     }
+   }
+
+  Control.Commit();
+
+  return(1);
+ }
+
+static int         BranchGroupGetCloneTransformBuffer
+                                      (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  NGPLUABranchGroup                   *BranchGroup;
+  unsigned int                         BranchCount;
+  float                               *TranslationBuffer;
+  float                               *OrientationBuffer;
+
+  BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
+
+  Control.Commit();
+
+  Control.PushNewTable();
+  Control.PushNewTable();
+
+  BranchCount = BranchGroup->Instance->Instance->GetBranchCount(BranchGroup->Index);
+
+  if (BranchCount > 0)
+   {
+    TranslationBuffer = (float*)malloc(sizeof(float) * BranchCount * 3);
+    OrientationBuffer = (float*)malloc(sizeof(float) * BranchCount * 4);
+
+    if (TranslationBuffer != NULL && OrientationBuffer != NULL)
+     {
+      float  *TPtr;
+      float  *OPtr;
+
+      TPtr = TranslationBuffer;
+      OPtr = OrientationBuffer;
+
+      BranchGroup->Instance->Instance->FillCloneTransformBuffer
+       (TranslationBuffer,OrientationBuffer,BranchGroup->Index);
+
+      for (unsigned int BranchIndex = 0; BranchIndex < BranchCount; BranchIndex++)
+       {
+        Control.PushNewTable();
+        Control.SetTableFloat(1,*TPtr); ++TPtr;
+        Control.SetTableFloat(2,*TPtr); ++TPtr;
+        Control.SetTableFloat(3,*TPtr); ++TPtr;
+
+        Control.SetTable(-3,BranchIndex + 1);
+
+        Control.PushNewTable();
+        Control.SetTableFloat(1,*OPtr); ++OPtr;
+        Control.SetTableFloat(2,*OPtr); ++OPtr;
+        Control.SetTableFloat(3,*OPtr); ++OPtr;
+        Control.SetTableFloat(4,*OPtr); ++OPtr;
+
+        Control.SetTable(-2,BranchIndex + 1);
+       }
+
+      free(TranslationBuffer);
+      free(OrientationBuffer);
+     }
+    else
+     {
+      free(TranslationBuffer);
+      free(OrientationBuffer);
+
+      Control.RaiseError(ErrorMessageOutOfMemory);
+     }
+   }
+
+  Control.Commit();
+
+  return(2);
  }
 
 static int         BranchGroupGetVAttrBuffer
@@ -1092,6 +1260,9 @@ static luaL_reg   BranchGroupMethods[] =
   { "IsHidden"            , BranchGroupIsHidden             },
   { "GetBranchCount"      , BranchGroupGetBranchCount       },
   { "GetBillboardSize"    , BranchGroupGetBillboardSize     },
+  { "IsCloneable"         , BranchGroupIsCloneable          },
+  { "GetCloneVAttrBuffer" , BranchGroupGetCloneVAttrBuffer  },
+  { "GetCloneTransformBuffer", BranchGroupGetCloneTransformBuffer },
   { "IsLODVisRangeEnabled", BranchGroupIsLODVisRangeEnabled },
   { "GetLODVisRange"      , BranchGroupGetLODVisRange       },
   { "GetVAttrCount"       , BranchGroupGetVAttrCount        },
