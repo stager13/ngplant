@@ -5,6 +5,11 @@ menu-name : COLLADA (.dae) (plug-in)
 
 --]]
 
+local InstanceTransformModeNone     = 0
+local InstanceTransformModeSketchUp = 1
+
+local InstanceTransformMode = InstanceTransformModeSketchUp
+
 local MATH_PI = 3.14159265358979
 local XmlNestLevel = 0
 
@@ -483,6 +488,11 @@ local function ExportVisualScenes(F)
            local X,Y,Z,A
 
            X,Y,Z,A = QuaternionToAxisAndAngle(O)
+
+           if InstanceTransformMode == InstanceTransformModeSketchUp then
+             T[2],T[3] = -T[3],T[2]
+             Y,Z       = -Z,Y
+           end
 
            XmlElement(F,"translate",nil,string.format("%f %f %f",T[1],T[2],T[3]))
            XmlElement(F,"rotate",nil,string.format("%f %f %f %f",X,Y,Z,A * 180.0 / MATH_PI))
