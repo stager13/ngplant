@@ -209,19 +209,28 @@ local function WriteVertexCountArray (F,Group,PrimitiveCount)
 end
 
 local function ExportLibraryImages(F)
-  XmlBeginElement(F,"library_images")
-   for GroupIndex = 1,PlantModel:GetGroupCount() do
-     local Group = PlantModel:GetGroup(GroupIndex)
-     local Material = Group:GetMaterial()
-     local Texture  = Material.TexNames[NGP_TEX_DIFFUSE]
+  local HasImages = false
 
-     if Texture then
-       XmlBeginElement(F,"image",{ id = GetDiffImageId(Group) })
-        XmlElement(F,"init_from",nil,Texture)
-       XmlEndElement(F,"image")
-     end
-   end
-  XmlEndElement(F,"library_images")
+  for GroupIndex = 1,PlantModel:GetGroupCount() do
+    local Group = PlantModel:GetGroup(GroupIndex)
+    local Material = Group:GetMaterial()
+    local Texture  = Material.TexNames[NGP_TEX_DIFFUSE]
+
+    if Texture then
+      if not HasImages then
+        HasImages = true
+        XmlBeginElement(F,"library_images")
+      end
+
+      XmlBeginElement(F,"image",{ id = GetDiffImageId(Group) })
+       XmlElement(F,"init_from",nil,Texture)
+      XmlEndElement(F,"image")
+    end
+  end
+
+  if HasImages then
+    XmlEndElement(F,"library_images")
+  end
 end
 
 local function ExportLibraryEffects(F)
