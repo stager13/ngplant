@@ -95,6 +95,7 @@ void               P3DExport3DPrefs::SetDefaults
 static const wxChar    *RotationModePath  = wxT("/3DView/RotationMode");
 static const wxChar    *MouseRotXSensPath = wxT("/3DView/MouseRotXSens");
 static const wxChar    *MouseRotYSensPath = wxT("/3DView/MouseRotYSens");
+static const wxChar    *EmulateNumpadPath = wxT("/3DView/EmulateNumpad");
 
                    P3DCameraControlPrefs::P3DCameraControlPrefs
                                            ()
@@ -108,6 +109,7 @@ void               P3DCameraControlPrefs::Init
   MouseRotYCS   = false;
   MouseRotXSens = 0.02;
   MouseRotYSens = 0.02;
+  EmulateNumpad = false;
  }
 
 void               P3DCameraControlPrefs::Read
@@ -140,6 +142,11 @@ void               P3DCameraControlPrefs::Read
    {
     MouseRotYSens = (float)ParamDouble;
    }
+
+  if (Config->Read(EmulateNumpadPath,&ParamInt))
+   {
+    EmulateNumpad = (bool)ParamInt;
+   }
  }
 
 void               P3DCameraControlPrefs::Save
@@ -148,6 +155,7 @@ void               P3DCameraControlPrefs::Save
   wxConfigBaseWriteIntWrapper(Config,RotationModePath,MouseRotYCS ? 1 : 0);
   Config->Write(MouseRotXSensPath,MouseRotXSens);
   Config->Write(MouseRotYSensPath,MouseRotYSens);
+  wxConfigBaseWriteIntWrapper(Config,EmulateNumpadPath,EmulateNumpad ? 1 : 0);
  }
 
 static const wxChar    *GroundVisiblePath   = wxT("/3DView/GroundVisible");

@@ -53,6 +53,7 @@ enum
   ID_CAMERA_ROT_Y_SPACE,
   ID_CAMERA_ROT_X_SENS,
   ID_CAMERA_ROT_Y_SENS,
+  ID_EMULATE_NUMPAD,
 
   ID_CURVE_CTRL_WIDTH,
   ID_CURVE_CTRL_HEIGHT,
@@ -327,7 +328,7 @@ void               P3DAppOptDialog::CreateCameraControlPage
                                       (wxNotebook         *Notebook)
  {
   wxBoxSizer      *TopSizer           = new wxBoxSizer(wxVERTICAL);
-  wxFlexGridSizer *GridSizer          = new wxFlexGridSizer(3,2,2,2);
+  wxFlexGridSizer *GridSizer          = new wxFlexGridSizer(4,2,2,2);
   wxPanel         *CameraControlPanel = new wxPanel(Notebook,wxID_ANY);
 
   GridSizer->AddGrowableCol(1);
@@ -347,6 +348,10 @@ void               P3DAppOptDialog::CreateCameraControlPage
   GridSizer->Add(new wxStaticText(CameraControlPanel,wxID_ANY,wxT("Rotation mousensitivity (Y)")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
   Sens = new wxTextCtrl(CameraControlPanel,ID_CAMERA_ROT_Y_SENS);
   GridSizer->Add(Sens,0,wxALL | wxALIGN_LEFT,1);
+
+  GridSizer->Add(new wxStaticText(CameraControlPanel,wxID_ANY,wxT("Emulate NumPad")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+  wxCheckBox *EmulateNumPadCheckBox = new wxCheckBox(CameraControlPanel,ID_EMULATE_NUMPAD,wxT(""));
+  GridSizer->Add(EmulateNumPadCheckBox,0,wxALL | wxALIGN_LEFT,1);
 
   TopSizer->Add(GridSizer,1,wxGROW | wxALL,5);
 
@@ -542,6 +547,13 @@ bool               P3DAppOptDialog::TransferDataToWindow
     Sens->SetValue(SensStr);
    }
 
+  wxCheckBox *EmulateNumPadCheckBox = (wxCheckBox*)FindWindow(ID_EMULATE_NUMPAD);
+
+  if (EmulateNumPadCheckBox != 0)
+   {
+    EmulateNumPadCheckBox->SetValue(CameraControlPrefs.EmulateNumpad);
+   }
+
   wxTextCtrl *PluginsPathCtrl = (wxTextCtrl*)FindWindow(ID_PLUGINS_PATH);
 
   if (PluginsPathCtrl != 0)
@@ -716,6 +728,13 @@ bool               P3DAppOptDialog::TransferDataFromWindow
 
       return false;
      }
+   }
+
+  wxCheckBox *EmulateNumPadCheckBox = (wxCheckBox*)FindWindow(ID_EMULATE_NUMPAD);
+
+  if (EmulateNumPadCheckBox != 0)
+   {
+    CameraControlPrefs.EmulateNumpad = EmulateNumPadCheckBox->GetValue();
    }
 
   wxTextCtrl *PluginsPathCtrl = (wxTextCtrl*)FindWindow(ID_PLUGINS_PATH);
