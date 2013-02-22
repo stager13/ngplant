@@ -310,14 +310,30 @@ void               P3DCanvas3D::OnMouseWheel    (wxMouseEvent       &event)
   Refresh();
  }
 
+static int NumPadEmulationKeyMap[] =
+ {
+  WXK_NUMPAD0, WXK_NUMPAD1, WXK_NUMPAD2, WXK_NUMPAD3, WXK_NUMPAD4,
+  WXK_NUMPAD5, WXK_NUMPAD6, WXK_NUMPAD7, WXK_NUMPAD8, WXK_NUMPAD9
+ };
+
 void               P3DCanvas3D::OnChar          (wxKeyEvent         &event)
  {
   bool             CameraChanged;
+  int              KeyCode;
 
   CameraChanged = true;
 
-  if      ((event.GetKeyCode() == WXK_NUMPAD1) ||
-           (event.GetKeyCode() == WXK_NUMPAD_END))
+  KeyCode = event.GetKeyCode();
+
+  if (P3DApp::GetApp()->GetCameraControlPrefs()->EmulateNumpad)
+   {
+    if (event.CmdDown() && KeyCode >= '0' && KeyCode <= '9')
+     {
+      KeyCode = NumPadEmulationKeyMap[KeyCode - '0'];
+     }
+   }
+
+  if      (KeyCode == WXK_NUMPAD1 || KeyCode == WXK_NUMPAD_END)
    {
     P3DQuaternionf           Rotation;
 
@@ -336,8 +352,7 @@ void               P3DCanvas3D::OnChar          (wxKeyEvent         &event)
       camera.SetDirection(0.0f,0.0f,0.0f,1.0f);
      }
    }
-  else if  ((event.GetKeyCode() == WXK_NUMPAD7) ||
-            (event.GetKeyCode() == WXK_NUMPAD_HOME))
+  else if (KeyCode == WXK_NUMPAD7 || KeyCode == WXK_NUMPAD_HOME)
    {
     P3DQuaternionf           Rotation;
 
@@ -356,8 +371,7 @@ void               P3DCanvas3D::OnChar          (wxKeyEvent         &event)
                         Rotation.q[2],
                         Rotation.q[3]);
    }
-  else if  ((event.GetKeyCode() == WXK_NUMPAD3) ||
-            (event.GetKeyCode() == WXK_NUMPAD_PAGEDOWN))
+  else if (KeyCode == WXK_NUMPAD3 || KeyCode == WXK_NUMPAD_PAGEDOWN)
    {
     P3DQuaternionf           Rotation;
 
@@ -376,36 +390,31 @@ void               P3DCanvas3D::OnChar          (wxKeyEvent         &event)
                         Rotation.q[2],
                         Rotation.q[3]);
    }
-  else if  ((event.GetKeyCode() == WXK_NUMPAD4) ||
-            (event.GetKeyCode() == WXK_NUMPAD_LEFT))
+  else if (KeyCode == WXK_NUMPAD4 || KeyCode == WXK_NUMPAD_LEFT)
    {
     camera.RotateWS(P3DMATH_PI / 12.0f,0.0f,1.0f,0.0f);
    }
-  else if  ((event.GetKeyCode() == WXK_NUMPAD6) ||
-            (event.GetKeyCode() == WXK_NUMPAD_RIGHT))
+  else if (KeyCode == WXK_NUMPAD6 || KeyCode == WXK_NUMPAD_RIGHT)
    {
     camera.RotateWS(P3DMATH_PI / 12.0f,0.0f,-1.0f,0.0f);
    }
-  else if  ((event.GetKeyCode() == WXK_NUMPAD8) ||
-            (event.GetKeyCode() == WXK_NUMPAD_UP))
+  else if (KeyCode == WXK_NUMPAD8 || KeyCode == WXK_NUMPAD_UP)
    {
     camera.RotateCS(P3DMATH_PI / 12.0f,1.0f,0.0f,0.0f);
    }
-  else if  ((event.GetKeyCode() == WXK_NUMPAD2) ||
-            (event.GetKeyCode() == WXK_NUMPAD_DOWN))
+  else if (KeyCode == WXK_NUMPAD2 || KeyCode == WXK_NUMPAD_DOWN)
    {
     camera.RotateCS(P3DMATH_PI / 12.0f,-1.0f,0.0f,0.0f);
    }
-  else if (event.GetKeyCode() == WXK_NUMPAD_ADD)
+  else if (KeyCode == WXK_NUMPAD_ADD || KeyCode == '+' || KeyCode == '=')
    {
     ZoomFactor *= 0.75f;
    }
-  else if (event.GetKeyCode() == WXK_NUMPAD_SUBTRACT)
+  else if (KeyCode == WXK_NUMPAD_SUBTRACT || KeyCode == '-')
    {
     ZoomFactor *= 4.0f / 3.0f;
    }
-  else if ((event.GetKeyCode() == WXK_NUMPAD5) ||
-           (event.GetKeyCode() == WXK_NUMPAD_BEGIN))
+  else if (KeyCode == WXK_NUMPAD5 || KeyCode == WXK_NUMPAD_BEGIN)
    {
     OrthoCamera = !OrthoCamera;
    }

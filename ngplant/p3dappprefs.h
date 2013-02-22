@@ -80,6 +80,8 @@ struct P3DCameraControlPrefs
 
   float            MouseRotYSens;
   float            MouseRotXSens;
+
+  bool             EmulateNumpad;
  };
 
 struct P3D3DViewPrefs
