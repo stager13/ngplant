@@ -645,6 +645,32 @@ end
 FileName = ShowFileSaveDialog("Choose .dae file name")
 
 if FileName then
-  Export(FileName)
+  Params = ShowParameterDialog(
+   {
+    {
+     label   = "Instances transformation",
+     name    = "InstanceTransformMode",
+     type    = "choice",
+     choices = { "None","SketchUp" }
+    },
+    {
+     label   = "Emulate two-sided materials",
+     name    = "EmulateTwoSidedMaterials",
+     type    = "choice",
+     choices = { "No", "Yes" }
+    }
+   })
+
+  if Params then
+    if Params.InstanceTransformMode == "SketchUp" then
+      InstanceTransformMode = InstanceTransformModeSketchUp
+    else
+      InstanceTransformMode = InstanceTransformModeNone
+    end
+
+    EmulateTwoSidedMaterials = Params.EmulateTwoSidedMaterials == "Yes"
+
+    Export(FileName)
+  end
 end
 
