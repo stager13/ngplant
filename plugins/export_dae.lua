@@ -8,7 +8,8 @@ menu-name : COLLADA (.dae) (plug-in)
 local InstanceTransformModeNone     = 0
 local InstanceTransformModeSketchUp = 1
 
-local InstanceTransformMode = InstanceTransformModeSketchUp
+local InstanceTransformMode    = InstanceTransformModeSketchUp
+local EmulateTwoSidedMaterials = false
 
 local MATH_PI = 3.14159265358979
 local XmlNestLevel = 0
@@ -167,26 +168,45 @@ local function GetTexCoordId  (Group)
   return GetMaterialId(Group) .. "-uvs"
 end
 
-local function WriteFloatArray (F,ArrayId,Buffer,AttrSize)
-  local AttrCount = table.getn(Buffer)
-
+local function WriteFloatArrayBegin (F,ArrayId,AttrCount,AttrSize)
   XmlBeginElement(F,"float_array",{ id = ArrayId, count = AttrCount * AttrSize })
+end
 
-  local Indent = string.rep(" ",XmlNestLevel)
+local function WriteFloatArrayData (F,Buffer,MapFn)
+  local AttrCount = table.getn(Buffer)
+  local Indent    = string.rep(" ",XmlNestLevel)
 
-  if AttrSize == 2 then
-    for i,v in ipairs(Buffer) do
-      F:write(Indent)
-      F:write(string.format("%f %f\n",v[1],v[2]))
-    end
-  else
-    for i,v in ipairs(Buffer) do
-      F:write(Indent)
-      F:write(string.format("%f %f %f\n",v[1],v[2],v[3]))
+  if AttrCount > 0 then
+    local AttrSize = table.getn(Buffer[1])
+
+    if AttrSize == 2 then
+      for i,v in ipairs(Buffer) do
+        if MapFn then
+          v = MapFn(v)
+        end
+        F:write(Indent)
+        F:write(string.format("%f %f\n",v[1],v[2]))
+      end
+    else
+      for i,v in ipairs(Buffer) do
+        if MapFn then
+          v = MapFn(v)
+        end
+        F:write(Indent)
+        F:write(string.format("%f %f %f\n",v[1],v[2],v[3]))
+      end
     end
   end
+end
 
+local function WriteFloatArrayEnd (F)
   XmlEndElement(F,"float_array")
+end
+
+local function WriteFloatArray (F,ArrayId,Buffer,AttrSize,MapFn)
+  WriteFloatArrayBegin(F,ArrayId,table.getn(Buffer),AttrSize)
+  WriteFloatArrayData(F,Buffer,MapFn)
+  WriteFloatArrayEnd(F)
 end
 
 local function GetPolyVertexCount (Group,Index)
@@ -197,17 +217,24 @@ local function GetPolyVertexCount (Group,Index)
   end
 end
 
-local function WriteVertexCountArray (F,Group,PrimitiveCount)
+local function WriteVertexCountArray (F,Group,PrimitiveCount,RepeatCount)
   local Indent = string.rep(" ",XmlNestLevel)
-  for PrimitiveIndex = 1,PrimitiveCount do
-    if PrimitiveIndex % 10 == 1 then
-      if PrimitiveIndex > 1 then
-        F:write("\n")
-      end
-     F:write(Indent)
+
+  for RepeatIndex = 1,RepeatCount do
+    if RepeatIndex > 1 then
+      F:write("\n")
     end
 
-    F:write(" " .. GetPolyVertexCount(Group,PrimitiveIndex))
+    for PrimitiveIndex = 1,PrimitiveCount do
+      if PrimitiveIndex % 10 == 1 then
+        if PrimitiveIndex > 1 then
+          F:write("\n")
+        end
+       F:write(Indent)
+      end
+
+      F:write(" " .. GetPolyVertexCount(Group,PrimitiveIndex))
+    end
   end
 
   F:write("\n")
@@ -336,7 +363,9 @@ local function ExportLibraryGeometry(F)
  XmlBeginElement(F,"library_geometries")
 
  for GroupIndex = 1,PlantModel:GetGroupCount() do
-   local Group = PlantModel:GetGroup(GroupIndex)
+   local Group          = PlantModel:GetGroup(GroupIndex)
+   local TwoSided       = Group:GetMaterial().DoubleSided
+   local DuplicateFaces = TwoSided and EmulateTwoSidedMaterials
 
    XmlBeginElement(F,"geometry",{ id   = GetGeometryId(Group),
                                   name = GetGeometryName(Group)} )
@@ -361,8 +390,22 @@ local function ExportLibraryGeometry(F)
 
      XmlBeginElement(F,"source",{ id = GetSourceNormalId(Group) })
       local NormalBuffer = GetVAttrBufferForGroup(Group,NGP_ATTR_NORMAL)
+      local NormalAttrCount = table.getn(NormalBuffer)
 
-      WriteFloatArray(F,GetSourceNormalArrayId(Group),NormalBuffer,3)
+      if DuplicateFaces then
+        WriteFloatArrayBegin(F,GetSourceNormalArrayId(Group),NormalAttrCount * 2,3)
+      else
+        WriteFloatArrayBegin(F,GetSourceNormalArrayId(Group),NormalAttrCount,3)
+      end
+
+      WriteFloatArrayData(F,NormalBuffer)
+
+      if DuplicateFaces then
+        WriteFloatArrayData(F,NormalBuffer,
+                            function(v) return {-v[1],-v[2],-v[3]} end)
+      end
+
+      WriteFloatArrayEnd(F)
 
       XmlBeginElement(F,"technique_common")
        XmlBeginElement(F,"accessor",{ source = "#"..GetSourceNormalArrayId(Group),
@@ -408,7 +451,11 @@ local function ExportLibraryGeometry(F)
       XmlElement(F,"input",{ offset = "1", semantic = "NORMAL",   source = "#"..GetSourceNormalId(Group) })
       XmlElement(F,"input",{ offset = "2", semantic = "TEXCOORD", source = "#"..GetSourceTexCoordId(Group) })
       XmlBeginElement(F,"vcount")
-       WriteVertexCountArray(F,Group,PrimitiveCount)
+       if DuplicateFaces then
+         WriteVertexCountArray(F,Group,PrimitiveCount,2)
+       else
+         WriteVertexCountArray(F,Group,PrimitiveCount,1)
+       end
       XmlEndElement(F,"vcount")
       XmlBeginElement(F,"p")
 
@@ -431,6 +478,26 @@ local function ExportLibraryGeometry(F)
          end
 
          F:write("\n")
+      end
+
+      if DuplicateFaces then
+        for PrimitiveIndex = 1,PrimitiveCount do
+           PosIndex      = VertexIndexBuffer[PrimitiveIndex]
+           NormalIndex   = NormalIndexBuffer[PrimitiveIndex]
+           TexCoordIndex = TexCoordIndexBuffer[PrimitiveIndex]
+
+           F:write(Indent)
+
+           local PolyVertexCount = GetPolyVertexCount(Group,PrimitiveIndex)
+
+           for VertexIndex = PolyVertexCount,1,-1 do
+             F:write(" " .. PosIndex[VertexIndex]-1 .. " " ..
+                     NormalAttrCount + NormalIndex[VertexIndex]-1 .. " " ..
+                     TexCoordIndex[VertexIndex]-1)
+           end
+
+           F:write("\n")
+        end
       end
 
       XmlEndElement(F,"p")
