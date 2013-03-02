@@ -475,7 +475,13 @@ local function ExportLibraryGeometry(F)
 
      local PrimitiveCount = table.getn(VertexIndexBuffer)
 
-     XmlBeginElement(F,"polylist",{ count = PrimitiveCount, material = GetMaterialSymbol(Group) })
+     local ExactPrimitiveCount = PrimitiveCount
+
+     if DuplicateFaces then
+       ExactPrimitiveCount = ExactPrimitiveCount * 2
+     end
+
+     XmlBeginElement(F,"polylist",{ count = ExactPrimitiveCount, material = GetMaterialSymbol(Group) })
       XmlElement(F,"input",{ offset = "0", semantic = "VERTEX",   source = "#"..GetVerticesId(Group) })
       XmlElement(F,"input",{ offset = "1", semantic = "NORMAL",   source = "#"..GetSourceNormalId(Group) })
       XmlElement(F,"input",{ offset = "2", semantic = "TEXCOORD", source = "#"..GetSourceTexCoordId(Group) })
