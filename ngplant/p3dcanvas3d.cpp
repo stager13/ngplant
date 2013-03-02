@@ -258,7 +258,7 @@ void               P3DCanvas3D::OnMouseMotion   (wxMouseEvent       &event)
 
   if ((dx != 0) || (dy != 0))
    {
-    if (event.MiddleIsDown())
+    if (event.MiddleIsDown() || event.AltDown())
      {
       if (event.ShiftDown())
        {
