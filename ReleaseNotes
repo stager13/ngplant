@@ -8,6 +8,8 @@ Changes since 0.9.9:
 - NumPad emulation implemented. If enabled allows to use "Ctrl"+<digit> on PC
   or "Command"+<digit> on Mac instead of NumPad keys.
 - '+' and '-' keys now zoom in/out 3d view.
+- 'Alt' key can be used instead of middle mouse button to move and
+  rotate 3d-view
 
 Changes since 0.9.8:
 - "disable randomness" feature added to ngplant, it allows to disable
