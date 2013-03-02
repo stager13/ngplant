@@ -39,8 +39,10 @@ local InstanceTransformModeSketchUp = 1
 
 local InstanceTransformMode    = InstanceTransformModeSketchUp
 local EmulateTwoSidedMaterials = false
+local AllowInstancesScaling    = false
 
 local MATH_PI = 3.14159265358979
+local EPSILON = 1e-4
 local XmlNestLevel = 0
 
 local function GetISO8601Time ()
@@ -381,7 +383,7 @@ local function ExportLibraryMaterials(F)
 end
 
 local function GetVAttrBufferForGroup(Group,Attr)
-  if Group:IsCloneable() then
+  if Group:IsCloneable(AllowInstancesScaling) then
     return Group:GetCloneVAttrBuffer(Attr)
   else
     return Group:GetVAttrBuffer(Attr)
@@ -468,7 +470,7 @@ local function ExportLibraryGeometry(F)
       XmlElement(F,"input",{ semantic = "POSITION" , source = "#"..GetSourcePosId(Group) })
      XmlEndElement(F,"vertices")
 
-     local IsCloneable         = Group:IsCloneable()
+     local IsCloneable         = Group:IsCloneable(AllowInstancesScaling)
      local VertexIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_VERTEX,not IsCloneable)
      local NormalIndexBuffer   = Group:GetVAttrIndexBuffer(NGP_ATTR_NORMAL,not IsCloneable)
      local TexCoordIndexBuffer = Group:GetVAttrIndexBuffer(NGP_ATTR_TEXCOORD0,not IsCloneable)
@@ -577,8 +579,8 @@ local function ExportVisualScenes(F)
    for GroupIndex = 1,PlantModel:GetGroupCount() do
      local Group = PlantModel:GetGroup(GroupIndex)
 
-     if Group:IsCloneable() then
-       Translations,Orientations = Group:GetCloneTransformBuffer()
+     if Group:IsCloneable(AllowInstancesScaling) then
+       Translations,Orientations,Scales = Group:GetCloneTransformBuffer()
 
        local CloneCount = table.getn(Translations)
 
@@ -587,6 +589,7 @@ local function ExportVisualScenes(F)
                                     name = GetNodeName(Group) .. "-sc" .. string.format("%d",CloneIndex)})
            local T = Translations[CloneIndex]
            local O = Orientations[CloneIndex]
+           local S = Scales[CloneIndex][1]
            local X,Y,Z,A
 
            X,Y,Z,A = QuaternionToAxisAndAngle(O)
@@ -598,6 +601,11 @@ local function ExportVisualScenes(F)
 
            XmlElement(F,"translate",nil,string.format("%f %f %f",T[1],T[2],T[3]))
            XmlElement(F,"rotate",nil,string.format("%f %f %f %f",X,Y,Z,A * 180.0 / MATH_PI))
+
+           if AllowInstancesScaling and math.abs(S - 1.0) > EPSILON then
+             XmlElement(F,"scale",nil,string.format("%f %f %f",S,S,S))
+           end
+
            XmlElement(F,"instance_node",{ url = "#" .. GetNodeId(Group)})
          XmlEndElement(F,"node")
        end
@@ -660,6 +668,12 @@ if FileName then
      choices = { "None","SketchUp" }
     },
     {
+     label   = "Allow instances scaling",
+     name    = "AllowInstancesScaling",
+     type    = "choice",
+     choices = { "No", "Yes" }
+    },
+    {
      label   = "Emulate two-sided materials",
      name    = "EmulateTwoSidedMaterials",
      type    = "choice",
@@ -675,6 +689,7 @@ if FileName then
     end
 
     EmulateTwoSidedMaterials = Params.EmulateTwoSidedMaterials == "Yes"
+    AllowInstancesScaling    = Params.AllowInstancesScaling == "Yes"
 
     Export(FileName)
   end
