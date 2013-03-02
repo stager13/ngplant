@@ -56,7 +56,7 @@ class P3DStemModelQuad : public P3DStemModel
   virtual P3DStemModel
                   *CreateCopy         () const;
 
-  virtual bool     IsCloneable        () const;
+  virtual bool     IsCloneable        (bool AllowScaling) const;
 
   /* Per-attribute information */
 

@@ -369,6 +369,13 @@ float              P3DStemModelTubeInstance::GetMinRadiusAt
   return(MinRadius);
  }
 
+float              P3DStemModelTubeInstance::GetScale
+                                       () const
+ {
+  //NOTE: tube stems does not support scaling
+  return(1.0f);
+ }
+
 void               P3DStemModelTubeInstance::GetWorldTransform
                                        (float              *Transform) const
  {
@@ -749,7 +756,7 @@ void               P3DStemModelTube::ReleaseInstance
  }
 
 bool               P3DStemModelTube::IsCloneable
-                                      () const
+                                      (bool AllowScaling) const
  {
   return(false);
  }

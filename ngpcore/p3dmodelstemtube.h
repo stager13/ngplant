@@ -79,6 +79,7 @@ class P3DStemModelTubeInstance : public P3DStemModelInstance
 
   virtual float    GetLength          () const;
   virtual float    GetMinRadiusAt     (float               Offset) const;
+  virtual float    GetScale           () const;
 
   virtual void     GetWorldTransform  (float              *Transform) const;
   virtual void     GetAxisPointAt     (float              *Pos,
@@ -144,7 +145,7 @@ class P3DStemModelTube : public P3DStemModel
   virtual P3DStemModel
                   *CreateCopy         () const;
 
-  virtual bool     IsCloneable        () const;
+  virtual bool     IsCloneable        (bool AllowScaling) const;
 
   /* Per-attribute information */
 

@@ -111,7 +111,8 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
                                        float              *Height,
                                        unsigned int        GroupIndex) const;
 
-  bool             IsCloneable        (unsigned int        GroupIndex) const;
+  bool             IsCloneable        (unsigned int        GroupIndex,
+                                       bool                AllowScaling) const;
 
   /* LOD-related */
 
@@ -181,9 +182,11 @@ class P3D_DLL_ENTRY P3DHLIPlantInstance
 
   /* size of OffsetBuffer      must be sizeof(float) * GetBranchCount() * 3 */
   /* size of OrientationBuffer must be sizeof(float) * GetBranchCount() * 4 */
+  /* size of ScaleBuffer       must be sizeof(float) * GetBranchCount()     */
   void             FillCloneTransformBuffer
                                       (float              *OffsetBuffer,
                                        float              *OrientationBuffer,
+                                       float              *ScaleBuffer,
                                        unsigned int        GroupIndex) const;
 
   /* Per-attribute mode */
