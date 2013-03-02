@@ -230,6 +230,7 @@ class P3DStemModelInstance
 
   virtual float    GetLength          () const = 0;
   virtual float    GetMinRadiusAt     (float               Offset) const = 0;
+  virtual float    GetScale           () const = 0;
 
   /* fill Transform with 4x4 Stem To World transformation matrix */
   virtual void     GetWorldTransform  (float              *Transform) const = 0;
@@ -264,7 +265,7 @@ class P3DStemModel
   virtual P3DStemModel
                   *CreateCopy         () const = 0;
 
-  virtual bool     IsCloneable        () const = 0;
+  virtual bool     IsCloneable        (bool AllowScaling) const = 0;
 
   /* Per-attribute information */
 

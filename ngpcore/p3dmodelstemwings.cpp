@@ -76,6 +76,7 @@ class P3DStemModelWingsInstance : public P3DStemModelInstance
 
   virtual float    GetLength          () const;
   virtual float    GetMinRadiusAt     (float               Offset) const;
+  virtual float    GetScale           () const;
 
   virtual void     GetWorldTransform  (float              *Transform) const;
   virtual void     GetAxisPointAt     (float              *Pos,
@@ -326,6 +327,13 @@ float              P3DStemModelWingsInstance::GetMinRadiusAt
   return(0.0f);
  }
 
+float              P3DStemModelWingsInstance::GetScale
+                                      () const
+ {
+  //NOTE: wings stems do not support scaling
+  return(1.0f);
+ }
+
 void               P3DStemModelWingsInstance::GetWorldTransform
                                       (float              *Transform) const
  {
@@ -556,7 +564,7 @@ void               P3DStemModelWings::ReleaseInstance
  }
 
 bool               P3DStemModelWings::IsCloneable
-                                      () const
+                                      (bool AllowScaling) const
  {
   return(false);
  }

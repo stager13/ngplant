@@ -499,15 +499,17 @@ static int         BranchGroupIsCloneable
  {
   P3DPlugLUAControl                    Control(State);
   NGPLUABranchGroup                   *BranchGroup;
+  bool                                 AllowScaling;
 
-  BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
+  BranchGroup  = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
+  AllowScaling = Control.GetArgBoolOpt(2,false);
 
   Control.Commit();
 
   try
    {
     Control.PushBool(BranchGroup->Instance->Template->IsCloneable
-                      (BranchGroup->Index));
+                      (BranchGroup->Index,AllowScaling));
    }
   catch (P3DException       &Error)
    {
@@ -677,11 +679,13 @@ static int         BranchGroupGetCloneTransformBuffer
   unsigned int                         BranchCount;
   float                               *TranslationBuffer;
   float                               *OrientationBuffer;
+  float                               *ScaleBuffer;
 
   BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
 
   Control.Commit();
 
+  Control.PushNewTable();
   Control.PushNewTable();
   Control.PushNewTable();
 
@@ -691,17 +695,20 @@ static int         BranchGroupGetCloneTransformBuffer
    {
     TranslationBuffer = (float*)malloc(sizeof(float) * BranchCount * 3);
     OrientationBuffer = (float*)malloc(sizeof(float) * BranchCount * 4);
+    ScaleBuffer       = (float*)malloc(sizeof(float) * BranchCount);
 
-    if (TranslationBuffer != NULL && OrientationBuffer != NULL)
+    if (TranslationBuffer != NULL && OrientationBuffer != NULL && ScaleBuffer != NULL)
      {
       float  *TPtr;
       float  *OPtr;
+      float  *SPtr;
 
       TPtr = TranslationBuffer;
       OPtr = OrientationBuffer;
+      SPtr = ScaleBuffer;
 
       BranchGroup->Instance->Instance->FillCloneTransformBuffer
-       (TranslationBuffer,OrientationBuffer,BranchGroup->Index);
+       (TranslationBuffer,OrientationBuffer,ScaleBuffer,BranchGroup->Index);
 
       for (unsigned int BranchIndex = 0; BranchIndex < BranchCount; BranchIndex++)
        {
@@ -710,7 +717,7 @@ static int         BranchGroupGetCloneTransformBuffer
         Control.SetTableFloat(2,*TPtr); ++TPtr;
         Control.SetTableFloat(3,*TPtr); ++TPtr;
 
-        Control.SetTable(-3,BranchIndex + 1);
+        Control.SetTable(-4,BranchIndex + 1);
 
         Control.PushNewTable();
         Control.SetTableFloat(1,*OPtr); ++OPtr;
@@ -718,16 +725,23 @@ static int         BranchGroupGetCloneTransformBuffer
         Control.SetTableFloat(3,*OPtr); ++OPtr;
         Control.SetTableFloat(4,*OPtr); ++OPtr;
 
+        Control.SetTable(-3,BranchIndex + 1);
+
+        Control.PushNewTable();
+        Control.SetTableFloat(1,*SPtr); ++SPtr;
+
         Control.SetTable(-2,BranchIndex + 1);
        }
 
       free(TranslationBuffer);
       free(OrientationBuffer);
+      free(ScaleBuffer);
      }
     else
      {
       free(TranslationBuffer);
       free(OrientationBuffer);
+      free(ScaleBuffer);
 
       Control.RaiseError(ErrorMessageOutOfMemory);
      }
@@ -735,7 +749,7 @@ static int         BranchGroupGetCloneTransformBuffer
 
   Control.Commit();
 
-  return(2);
+  return(3);
  }
 
 static int         BranchGroupGetVAttrBuffer

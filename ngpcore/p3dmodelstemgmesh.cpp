@@ -64,6 +64,7 @@ class P3DStemModelGMeshInstance : public P3DStemModelInstance
 
   virtual float    GetLength          () const;
   virtual float    GetMinRadiusAt     (float               Offset) const;
+  virtual float    GetScale           () const;
 
   /* fill Transform with 4x4 Stem To World transformation matrix */
   virtual void     GetWorldTransform  (float              *Transform) const;
@@ -288,6 +289,13 @@ float              P3DStemModelGMeshInstance::GetMinRadiusAt
   return(0.0f);
  }
 
+float              P3DStemModelGMeshInstance::GetScale
+                                      () const
+ {
+  //NOTE: gmesh stems do not support scaling
+  return(1.0f);
+ }
+
 void               P3DStemModelGMeshInstance::GetWorldTransform
                                       (float              *Transform) const
  {
@@ -408,7 +416,7 @@ P3DStemModel      *P3DStemModelGMesh::CreateCopy
  }
 
 bool               P3DStemModelGMesh::IsCloneable
-                                      () const
+                                      (bool AllowScaling) const
  {
   return(true);
  }

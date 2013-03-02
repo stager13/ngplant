@@ -38,7 +38,8 @@ class P3DStemModelQuadInstance : public P3DStemModelInstance
   public           :
 
                    P3DStemModelQuadInstance
-                                      (float               Length,
+                                      (float               Scale,
+                                       float               Length,
                                        float               Width,
                                        unsigned int        BillboardMode,
                                        unsigned int        SectionCount,
@@ -70,6 +71,7 @@ class P3DStemModelQuadInstance : public P3DStemModelInstance
 
   virtual float    GetLength          () const;
   virtual float    GetMinRadiusAt     (float               Offset) const;
+  virtual float    GetScale           () const;
 
   /* fill Transform with 4x4 Stem To World transformation matrix */
   virtual void     GetWorldTransform  (float              *Transform) const;
@@ -93,6 +95,7 @@ class P3DStemModelQuadInstance : public P3DStemModelInstance
   void             CalcVertexTangentAt(float              *Tangent,
                                        unsigned int        Index) const;
 
+  float                                Scale;
   float                                Length;
   float                                Width;
   unsigned int                         BillboardMode;
@@ -104,7 +107,8 @@ class P3DStemModelQuadInstance : public P3DStemModelInstance
  };
 
                    P3DStemModelQuadInstance::P3DStemModelQuadInstance
-                                      (float               Length,
+                                      (float               Scale,
+                                       float               Length,
                                        float               Width,
                                        unsigned int        BillboardMode,
                                        unsigned int        SectionCount,
@@ -113,13 +117,14 @@ class P3DStemModelQuadInstance : public P3DStemModelInstance
                                        float               Thickness,
                                        const P3DMatrix4x4f*Transform)
  {
-  this->Length        = Length;
-  this->Width         = Width;
+  this->Scale         = Scale;
+  this->Length        = Length * Scale;
+  this->Width         = Width * Scale;
   this->BillboardMode = BillboardMode;
 
   this->SectionCount = SectionCount;
   this->Curvature    = Curvature;
-  this->Thickness    = Thickness;
+  this->Thickness    = Thickness * Scale;
 
   if (SectionCount > 1)
    {
@@ -411,6 +416,12 @@ float              P3DStemModelQuadInstance::GetMinRadiusAt
                 /*       refactor P3DStemModelInstance                   */
  }
 
+float              P3DStemModelQuadInstance::GetScale
+                                      () const
+ {
+  return(Scale);
+ }
+
 void               P3DStemModelQuadInstance::GetWorldTransform
                                       (float              *Transform) const
  {
@@ -510,23 +521,25 @@ P3DStemModelInstance
       Orientation->ToMatrix(WorldTransform.m);
 
       Instance = new P3DStemModelQuadInstance
-                      ( Length * Scale,
-                        Width * Scale,
+                      ( Scale,
+                        Length,
+                        Width,
                         BillboardMode,
                         SectionCount,
                        &Curvature,
-                        Thickness * Scale,
+                        Thickness,
                        &WorldTransform);
      }
     else
      {
       Instance = new P3DStemModelQuadInstance
-                      ( Length * Scale,
-                        Width * Scale,
+                      ( Scale,
+                        Length,
+                        Width,
                         BillboardMode,
                         SectionCount,
                        &Curvature,
-                        Thickness * Scale,
+                        Thickness,
                         0);
      }
    }
@@ -565,12 +578,13 @@ P3DStemModelInstance
                               TempTransform.m);
 
     Instance = new P3DStemModelQuadInstance
-                    ( Length * Scale,
-                      Width * Scale,
+                    ( Scale,
+                      Length,
+                      Width,
                       BillboardMode,
                       SectionCount,
                      &Curvature,
-                      Thickness * Scale,
+                      Thickness,
                      &WorldTransform);
    }
 
@@ -585,9 +599,9 @@ void               P3DStemModelQuad::ReleaseInstance
  }
 
 bool               P3DStemModelQuad::IsCloneable
-                                      () const
+                                      (bool AllowScaling) const
  {
-  return(ScalingCurve.IsConstant());
+  return(AllowScaling || ScalingCurve.IsConstant());
  }
 
 unsigned int       P3DStemModelQuad::GetVAttrCount
@@ -631,12 +645,13 @@ void               P3DStemModelQuad::FillCloneVAttrBuffer
   float Scale = ScalingCurve.GetValue(0.0f);
 
   P3DStemModelQuadInstance *Instance = new P3DStemModelQuadInstance
-                                            ( Length * Scale,
-                                              Width * Scale,
+                                            ( Scale,
+                                              Length,
+                                              Width,
                                               BillboardMode,
                                               SectionCount,
                                              &Curvature,
-                                              Thickness * Scale,
+                                              Thickness,
                                               0);
 
   for (unsigned int Index = 0; Index < Count; Index++)

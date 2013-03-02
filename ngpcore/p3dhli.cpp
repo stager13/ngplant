@@ -265,7 +265,8 @@ class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
                                        const P3DBranchModel
                                                           *RequiredBranch,
                                        float             **OffsetBuffer,
-                                       float             **OrientationBuffer)
+                                       float             **OrientationBuffer,
+                                       float             **ScaleBuffer)
    {
     this->RNG               = RNG;
     this->BranchModel       = BranchModel;
@@ -273,6 +274,7 @@ class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
     this->RequiredBranch    = RequiredBranch;
     this->OffsetBuffer      = OffsetBuffer;
     this->OrientationBuffer = OrientationBuffer;
+    this->ScaleBuffer       = ScaleBuffer;
    }
 
   virtual void     GenerateBranch     (float               Offset,
@@ -320,6 +322,13 @@ class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
 
         *OffsetBuffer += 3;
        }
+
+      if (ScaleBuffer != 0)
+       {
+        (**ScaleBuffer) = Instance->GetScale();
+
+        (*ScaleBuffer)++;
+       }
      }
 
     unsigned int                     SubBranchIndex;
@@ -334,7 +343,8 @@ class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
                                             Instance,
                                             RequiredBranch,
                                             OffsetBuffer,
-                                            OrientationBuffer);
+                                            OrientationBuffer,
+                                            ScaleBuffer);
 
       const_cast<P3DBranchingAlg*>(BranchModel->GetSubBranchModel(SubBranchIndex)->GetBranchingAlg())
        ->CreateBranches(&Helper,Instance,RNG);
@@ -354,6 +364,7 @@ class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
   const P3DBranchModel                *RequiredBranch;
   float                              **OffsetBuffer;
   float                              **OrientationBuffer;
+  float                              **ScaleBuffer;
  };
 
 class P3DHLIFillVAttrBufferHelper : public P3DBranchingFactory
@@ -1110,9 +1121,10 @@ void               P3DHLIPlantTemplate::GetBillboardSize
  }
 
 bool               P3DHLIPlantTemplate::IsCloneable
-                                      (unsigned int        GroupIndex) const
+                                      (unsigned int        GroupIndex,
+                                       bool                AllowScaling) const
  {
-  return GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->IsCloneable();
+  return GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->IsCloneable(AllowScaling);
  }
 
 bool               P3DHLIPlantTemplate::IsLODVisRangeEnabled
@@ -1398,6 +1410,7 @@ void               P3DHLIPlantInstance::GetBoundingBox
 void               P3DHLIPlantInstance::FillCloneTransformBuffer
                                       (float              *OffsetBuffer,
                                        float              *OrientationBuffer,
+                                       float              *ScaleBuffer,
                                        unsigned int        GroupIndex) const
  {
   const P3DBranchModel                *BranchModel;
@@ -1411,7 +1424,8 @@ void               P3DHLIPlantInstance::FillCloneTransformBuffer
                                               0,
                                               BranchModel,
                                               OffsetBuffer != 0 ? &OffsetBuffer : 0,
-                                              OrientationBuffer != 0 ? &OrientationBuffer : 0);
+                                              OrientationBuffer != 0 ? &OrientationBuffer : 0,
+                                              ScaleBuffer != 0 ? &ScaleBuffer : 0);
 
   Helper.GenerateBranch(0.0f,0);
  }
