@@ -170,15 +170,26 @@ wxWindow          *P3DPlugParamChoiceCtrl::CreateControl
                                        wxWindowID          Id,
                                        lua_State          *State)
  {
+  int DefaultChoice = 0;
+
   ChoiceCtrl = new wxChoice(Parent,Id);
+
+  lua_getfield(State,-1,"default");
+
+  if (lua_isnumber(State,-1))
+   {
+    DefaultChoice = (int)lua_tonumber(State,-1);
+   }
+
+  lua_pop(State,1);
 
   lua_pushstring(State,"choices");
   lua_gettable(State,-2);
 
   if (lua_istable(State,-1))
    {
-    bool          Done  = false;
-    unsigned int  Index = 1;
+    bool          Done    = false;
+    unsigned int  Index   = 1;
 
     while (!Done)
      {
@@ -201,7 +212,7 @@ wxWindow          *P3DPlugParamChoiceCtrl::CreateControl
 
   lua_pop(State,1);
 
-  ChoiceCtrl->SetSelection(0);
+  ChoiceCtrl->SetSelection(DefaultChoice);
 
   return(ChoiceCtrl);
  }

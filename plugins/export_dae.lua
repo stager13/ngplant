@@ -665,19 +665,22 @@ if FileName then
      label   = "Instances transformation",
      name    = "InstanceTransformMode",
      type    = "choice",
-     choices = { "None","SketchUp" }
+     choices = { "None","SketchUp" },
+     default = 0
     },
     {
      label   = "Allow instances scaling",
      name    = "AllowInstancesScaling",
      type    = "choice",
-     choices = { "No", "Yes" }
+     choices = { "No", "Yes" },
+     default = 0
     },
     {
      label   = "Emulate two-sided materials",
      name    = "EmulateTwoSidedMaterials",
      type    = "choice",
-     choices = { "No", "Yes" }
+     choices = { "No", "Yes" },
+     default = 0
     }
    })
 
