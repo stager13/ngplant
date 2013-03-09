@@ -73,6 +73,45 @@ const char        *P3DPlugLUAControl::GetArgString
    }
  }
 
+const char        *P3DPlugLUAControl::GetArgStringOpt
+                                      (unsigned int        ArgIndex,
+                                       const char         *DefValue)
+ {
+  const char                          *Result;
+
+  if (!Ok)
+   {
+    return("");
+   }
+
+  if ((unsigned int)lua_gettop(State) < ArgIndex)
+   {
+    return(DefValue);
+   }
+
+  if (lua_isstring(State,ArgIndex))
+   {
+    Result = lua_tostring(State,ArgIndex);
+   }
+  else
+   {
+    Result = NULL;
+   }
+
+  if (Result == NULL)
+   {
+    Ok = false;
+
+    PushErrorString("%d argument must be a string",ArgIndex);
+
+    return("");
+   }
+  else
+   {
+    return(Result);
+   }
+ }
+
 unsigned int       P3DPlugLUAControl::GetArgUInt
                                       (unsigned int        ArgIndex)
  {

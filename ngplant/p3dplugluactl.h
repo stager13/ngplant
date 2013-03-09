@@ -35,6 +35,8 @@ class P3DPlugLUAControl
   bool             IsOk               () const;
 
   const char      *GetArgString       (unsigned int        ArgIndex);
+  const char      *GetArgStringOpt    (unsigned int        ArgIndex,
+                                       const char         *DefValue);
   unsigned int     GetArgUInt         (unsigned int        ArgIndex);
 
   unsigned int     GetArgUIntOpt      (unsigned int        ArgIndex,
