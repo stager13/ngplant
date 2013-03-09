@@ -40,6 +40,7 @@ local InstanceTransformModeSketchUp = 1
 local InstanceTransformMode    = InstanceTransformModeSketchUp
 local EmulateTwoSidedMaterials = false
 local AllowInstancesScaling    = false
+local CreateSelfContainedDir   = true
 
 local MATH_PI = 3.14159265358979
 local EPSILON = 1e-4
@@ -271,8 +272,9 @@ local function WriteVertexCountArray (F,Group,PrimitiveCount,RepeatCount)
   F:write("\n")
 end
 
-local function ExportLibraryImages(F)
+local function ExportLibraryImages(F,ExportDir)
   local HasImages = false
+  local TexFileList = {}
 
   for GroupIndex = 1,PlantModel:GetGroupCount() do
     local Group = PlantModel:GetGroup(GroupIndex)
@@ -283,6 +285,35 @@ local function ExportLibraryImages(F)
       if not HasImages then
         HasImages = true
         XmlBeginElement(F,"library_images")
+      end
+
+      if ExportDir then
+        local NeedCopy = true
+        local SrcFileName = Material.TexFileNames[NGP_TEX_DIFFUSE]
+
+        Texture = OSPathBaseName(Texture)
+
+        if TexFileList[Texture] then
+          if TexFileList[Texture] ~= SrcFileName then
+            error("Several textures with the same basename (" .. Texture .. " are not allowed")
+          end
+
+          NeedCopy = false
+        end
+
+        if NeedCopy then
+          local DestFileName = OSPathJoin(ExportDir,Texture)
+
+          if OSFileExists(DestFileName) then
+            NeedCopy = ShowYesNoMessageBox("File " .. DestFileName .. " already exists. Overwrite it?","Confirmation")
+          end
+
+          if NeedCopy then
+            OSFileCopy(SrcFileName,DestFileName)
+          end
+
+          TexFileList[Texture] = SrcFileName
+        end
       end
 
       XmlBeginElement(F,"image",{ id = GetDiffImageId(Group) })
@@ -621,7 +652,7 @@ local function ExportVisualScenes(F)
  XmlEndElement(F,"library_visual_scenes")
 end
 
-local function Export(FileName)
+local function Export(FileName,DirName)
  local F = io.open(FileName,"w")
 
  F:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
@@ -639,7 +670,7 @@ local function Export(FileName)
   XmlEndElement(F,"asset")
 
   if PlantModel:GetGroupCount() > 0 then
-    ExportLibraryImages(F)
+    ExportLibraryImages(F,DirName)
     ExportLibraryEffects(F)
     ExportLibraryMaterials(F)
     ExportLibraryGeometry(F)
@@ -656,45 +687,68 @@ local function Export(FileName)
  F:close()
 end
 
-FileName = ShowFileSaveDialog("Choose .dae file name")
+Params = ShowParameterDialog(
+ {
+  {
+   label   = "Create self-contained dir",
+   name    = "CreateSelfContainedDir",
+   type    = "choice",
+   choices = { "Yes","No" },
+   default = 0
+  },
+  {
+   label   = "Instances transformation",
+   name    = "InstanceTransformMode",
+   type    = "choice",
+   choices = { "None","SketchUp" },
+   default = 0
+  },
+  {
+   label   = "Allow instances scaling",
+   name    = "AllowInstancesScaling",
+   type    = "choice",
+   choices = { "No", "Yes" },
+   default = 0
+  },
+  {
+   label   = "Emulate two-sided materials",
+   name    = "EmulateTwoSidedMaterials",
+   type    = "choice",
+   choices = { "No", "Yes" },
+   default = 0
+  }
+ })
 
-if FileName then
-  Params = ShowParameterDialog(
-   {
-    {
-     label   = "Instances transformation",
-     name    = "InstanceTransformMode",
-     type    = "choice",
-     choices = { "None","SketchUp" },
-     default = 0
-    },
-    {
-     label   = "Allow instances scaling",
-     name    = "AllowInstancesScaling",
-     type    = "choice",
-     choices = { "No", "Yes" },
-     default = 0
-    },
-    {
-     label   = "Emulate two-sided materials",
-     name    = "EmulateTwoSidedMaterials",
-     type    = "choice",
-     choices = { "No", "Yes" },
-     default = 0
-    }
-   })
-
-  if Params then
-    if Params.InstanceTransformMode == "SketchUp" then
-      InstanceTransformMode = InstanceTransformModeSketchUp
-    else
-      InstanceTransformMode = InstanceTransformModeNone
-    end
-
-    EmulateTwoSidedMaterials = Params.EmulateTwoSidedMaterials == "Yes"
-    AllowInstancesScaling    = Params.AllowInstancesScaling == "Yes"
-
-    Export(FileName)
+if Params then
+  if Params.InstanceTransformMode == "SketchUp" then
+    InstanceTransformMode = InstanceTransformModeSketchUp
+  else
+    InstanceTransformMode = InstanceTransformModeNone
   end
+
+  EmulateTwoSidedMaterials = Params.EmulateTwoSidedMaterials == "Yes"
+  AllowInstancesScaling    = Params.AllowInstancesScaling == "Yes"
+  CreateSelfContainedDir   = Params.CreateSelfContainedDir == "Yes"
+
+  if CreateSelfContainedDir then
+    DirName = ShowDirSelectDialog("Choose directory")
+
+    if DirName then
+      FileName = ShowGetStringDialog("Choose .dae file name","")
+
+      if FileName then
+        FileName = OSPathJoin(DirName,FileName)
+
+        Export(FileName,DirName)
+      end
+    end
+  else
+    FileName = ShowFileSaveDialog("Choose .dae file name")
+
+    if FileName then
+      Export(FileName)
+    end
+  end
+
 end
 
