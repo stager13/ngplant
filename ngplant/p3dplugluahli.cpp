@@ -27,9 +27,12 @@ extern "C"
   #include <lauxlib.h>
  }
 
+#include <string>
+
 #include <ngpcore/p3dhli.h>
 #include <ngpcore/p3diostreamadd.h>
 
+#include <p3dapp.h>
 #include <p3dmaterialstd.h>
 
 #include <p3dplugluactl.h>
@@ -371,6 +374,31 @@ static int         BranchGroupGetMaterial
     if (MaterialDef->GetTexName(TexLayer) != NULL)
      {
       Control.SetTableString(TexLayer,MaterialDef->GetTexName(TexLayer));
+     }
+    else
+     {
+      Control.SetTableNil(TexLayer);
+     }
+   }
+
+  Control.SetTable(-3);
+
+  Control.PushString("TexFileNames");
+  Control.PushNewTable();
+
+  for (int TexLayer = 0; TexLayer < P3D_MAX_TEX_LAYERS; TexLayer++)
+   {
+    const char *TexName = MaterialDef->GetTexName(TexLayer);
+    std::string TexFileName;
+
+    if (TexName != NULL)
+     {
+      TexFileName = P3DApp::GetApp()->GetTexFS()->Generic2System(TexName);
+     }
+
+    if (TexFileName.length() > 0)
+     {
+      Control.SetTableString(TexLayer,TexFileName.c_str());
      }
     else
      {
