@@ -478,6 +478,33 @@ static int         ShowFileSaveDialog (lua_State          *State)
   return(1);
  }
 
+static int         ShowDirSelectDialog
+                                      (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  const char                          *Message;
+  wxString                             DirName;
+
+  Message = Control.GetArgString(1);
+
+  Control.Commit();
+
+  DirName = wxDirSelector(wxString(Message,wxConvUTF8),wxEmptyString);
+
+  if (!DirName.empty())
+   {
+    Control.PushString(DirName.mb_str());
+   }
+  else
+   {
+    Control.PushNil();
+   }
+
+  Control.Commit();
+
+  return(1);
+ }
+
 static int         ShowMessageBox     (lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
@@ -551,6 +578,7 @@ extern void        P3DPlugLuaRegisterUI
  {
   lua_register(State,"ShowFileOpenDialog",ShowFileOpenDialog);
   lua_register(State,"ShowFileSaveDialog",ShowFileSaveDialog);
+  lua_register(State,"ShowDirSelectDialog",ShowDirSelectDialog);
   lua_register(State,"ShowMessageBox",ShowMessageBox);
   lua_register(State,"ShowYesNoMessageBox",ShowYesNoMessageBox);
   lua_register(State,"ShowParameterDialog",ShowParameterDialog);
