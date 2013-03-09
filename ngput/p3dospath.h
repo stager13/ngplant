@@ -34,6 +34,12 @@
 
 #include <string>
 
+#ifdef _WIN32
+ #define P3DPathDirSeparator ('\\')
+#else
+ #define P3DPathDirSeparator ('/')
+#endif
+
 class P3DPathName
  {
   public           :
@@ -60,6 +66,13 @@ class P3DPathName
   bool             ToUNIX             ();
 
   std::string      GetExtension       () const;
+
+  static
+  std::string      JoinPaths          (const char         *Path1,
+                                       const char         *Path2);
+
+  static
+  std::string      BaseName           (const char         *Path);
 
   private          :
 

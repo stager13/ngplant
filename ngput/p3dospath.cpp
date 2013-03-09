@@ -339,3 +339,41 @@ std::string        P3DPathName::GetExtension
   return(std::string(""));
  }
 
+std::string        P3DPathName::JoinPaths
+                                      (const char         *Path1,
+                                       const char         *Path2)
+ {
+  if (Path1[0] == '\0')
+   {
+    return std::string(Path2);
+   }
+
+  std::string Path(Path1);
+
+  Path += P3DPathDirSeparator;
+  Path += Path2;
+
+  return Path;
+ }
+
+std::string        P3DPathName::BaseName
+                                      (const char         *Path)
+ {
+  int Len;
+  int Index;
+
+  Len = strlen(Path);
+
+  for (Index = Len - 1; Index >= 0; Index--)
+   {
+    char Ch = Path[Index];
+
+    if (Ch == '\\' || Ch == '/' || Ch == ':')
+     {
+      return std::string(&Path[Index + 1]);
+     }
+   }
+
+  return std::string(Path);
+ }
+
