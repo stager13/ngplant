@@ -34,6 +34,7 @@ extern "C"
 #include <p3dplugluactl.h>
 #include <p3dplugluahli.h>
 #include <p3dplugluaui.h>
+#include <p3dplugluafs.h>
 #include <p3dplugluaprefs.h>
 #include <p3dpluglua.h>
 
@@ -125,6 +126,7 @@ bool               P3DPlugLuaRunScript(const char         *FileName,
 
     P3DPlugLuaRegisterHLI(State);
     P3DPlugLuaRegisterUI(State);
+    P3DPlugLuaRegisterFS(State);
     P3DPlugLuaRegisterExportPrefs(State,P3DApp::GetApp()->GetExport3DPrefs());
     P3DPlugLuaRegisterModel(State,"PlantModel",PlantModel);
 
