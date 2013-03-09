@@ -43,6 +43,7 @@ if LuaEnabled:
     NGPLANT_SRC.append("p3dplugluactl.cpp")
     NGPLANT_SRC.append("p3dplugluahli.cpp")
     NGPLANT_SRC.append("p3dplugluaui.cpp")
+    NGPLANT_SRC.append("p3dplugluafs.cpp")
     NGPLANT_SRC.append("p3dplugluaprefs.cpp")
     NGPLANT_SRC.append("p3dpluglua.cpp")
 
