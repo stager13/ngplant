@@ -547,6 +547,36 @@ static int         ShowYesNoMessageBox(lua_State          *State)
   return(1);
  }
 
+static int         ShowGetStringDialog(lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  const char                          *Message;
+  const char                          *Caption;
+  const char                          *DefaultValue;
+  wxString                             Result;
+
+  Message      = Control.GetArgString(1);
+  Caption      = Control.GetArgString(2);
+  DefaultValue = Control.GetArgStringOpt(3,"");
+
+  Control.Commit();
+
+  Result = wxGetTextFromUser(wxString(Message,wxConvUTF8),
+                             wxString(Caption,wxConvUTF8),
+                             wxString(DefaultValue,wxConvUTF8));
+
+  if (!Result.IsEmpty())
+   {
+    Control.PushString(Result.mb_str());
+   }
+  else
+   {
+    Control.PushNil();
+   }
+
+  return(1);
+ }
+
 static int         ShowParameterDialog(lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
@@ -582,5 +612,6 @@ extern void        P3DPlugLuaRegisterUI
   lua_register(State,"ShowMessageBox",ShowMessageBox);
   lua_register(State,"ShowYesNoMessageBox",ShowYesNoMessageBox);
   lua_register(State,"ShowParameterDialog",ShowParameterDialog);
+  lua_register(State,"ShowGetStringDialog",ShowGetStringDialog);
  }
 
