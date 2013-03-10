@@ -699,6 +699,83 @@ static int         BranchGroupGetCloneVAttrBuffer
   return(1);
  }
 
+static int         BranchGroupGetCloneVAttrBufferI
+                                      (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  NGPLUABranchGroup                   *BranchGroup;
+  unsigned int                         Attr;
+  unsigned int                         AttrItemCount;
+  unsigned int                         TotalAttrCount;
+  float                               *AttrBuffer;
+
+  BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
+  Attr        = Control.GetArgUInt(2);
+
+  Control.Commit();
+
+  if (Attr > P3D_ATTR_BINORMAL)
+   {
+    Control.RaiseError(ErrorMessageInvalidVAttrType);
+    Control.Commit();
+   }
+
+  Control.PushNewTable();
+
+  if (Attr == P3D_ATTR_TEXCOORD0)
+   {
+    AttrItemCount = 2;
+   }
+  else
+   {
+    AttrItemCount = 3;
+   }
+
+  TotalAttrCount = BranchGroup->Instance->Template->GetVAttrCountI(BranchGroup->Index);
+
+  if (TotalAttrCount > 0)
+   {
+    AttrBuffer = (float*)malloc(sizeof(float) * TotalAttrCount * AttrItemCount);
+
+    if (AttrBuffer != NULL)
+     {
+      float                           *Ptr;
+      P3DHLIVAttrBuffers               BuffersInfo;
+
+      BuffersInfo.AddAttr(Attr,AttrBuffer,0,0);
+
+      Ptr = AttrBuffer;
+
+      BranchGroup->Instance->Template->FillCloneVAttrBuffersI
+       (&BuffersInfo,BranchGroup->Index);
+
+      for (unsigned int AttrIndex = 0; AttrIndex < TotalAttrCount; AttrIndex++)
+       {
+        Control.PushNewTable();
+        Control.SetTableFloat(1,*Ptr); ++Ptr;
+        Control.SetTableFloat(2,*Ptr); ++Ptr;
+
+        if (AttrItemCount == 3)
+         {
+          Control.SetTableFloat(3,*Ptr); ++Ptr;
+         }
+
+        Control.SetTable(-2,AttrIndex + 1);
+       }
+
+      free(AttrBuffer);
+     }
+    else
+     {
+      Control.RaiseError(ErrorMessageOutOfMemory);
+     }
+   }
+
+  Control.Commit();
+
+  return(1);
+ }
+
 static int         BranchGroupGetCloneTransformBuffer
                                       (lua_State          *State)
  {
@@ -1304,6 +1381,7 @@ static luaL_reg   BranchGroupMethods[] =
   { "GetBillboardSize"    , BranchGroupGetBillboardSize     },
   { "IsCloneable"         , BranchGroupIsCloneable          },
   { "GetCloneVAttrBuffer" , BranchGroupGetCloneVAttrBuffer  },
+  { "GetCloneVAttrBufferI", BranchGroupGetCloneVAttrBufferI },
   { "GetCloneTransformBuffer", BranchGroupGetCloneTransformBuffer },
   { "IsLODVisRangeEnabled", BranchGroupIsLODVisRangeEnabled },
   { "GetLODVisRange"      , BranchGroupGetLODVisRange       },
