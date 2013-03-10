@@ -550,6 +550,28 @@ unsigned int       P3DStemModelGMesh::GetVAttrCountI
    }
  }
 
+void               P3DStemModelGMesh::FillCloneVAttrBufferI
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr,
+                                       unsigned int        Stride) const
+ {
+  unsigned int Count         = GetVAttrCountI();
+  unsigned int AttrItemCount = Attr == P3D_ATTR_TEXCOORD0 ? 2 : 3;
+  P3DStemModelGMeshInstance *Instance = new P3DStemModelGMeshInstance(MeshData,0);
+
+  if (Stride == 0)
+   {
+    Stride = AttrItemCount * sizeof(float);
+   }
+
+  for (unsigned int Index = 0; Index < Count; Index++)
+   {
+    Instance->GetVAttrValueI((float*)&(((char*)VAttrBuffer)[Index * Stride]),Attr,Index);
+   }
+
+  delete Instance;
+ }
+
 unsigned int       P3DStemModelGMesh::GetIndexCount
                                       (unsigned int        PrimitiveType) const
  {

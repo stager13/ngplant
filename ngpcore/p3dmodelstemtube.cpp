@@ -893,6 +893,14 @@ unsigned int       P3DStemModelTube::GetVAttrCountI
   return((ProfileResolution + 1) * (AxisResolution + 1));
  }
 
+void               P3DStemModelTube::FillCloneVAttrBufferI
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr,
+                                       unsigned int        Stride) const
+ {
+  //NOTE: tube cannot be cloned, so call is ignored
+ }
+
 unsigned int       P3DStemModelTube::GetIndexCount
                                       (unsigned int        PrimitiveType) const
  {

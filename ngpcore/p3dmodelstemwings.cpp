@@ -703,6 +703,14 @@ unsigned int       P3DStemModelWings::GetVAttrCountI
   return(GetVAttrCount(P3D_ATTR_NORMAL));
  }
 
+void               P3DStemModelWings::FillCloneVAttrBufferI
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr,
+                                       unsigned int        Stride) const
+ {
+  //NOTE: wings model cannot be cloned, so call is ignored
+ }
+
 unsigned int       P3DStemModelWings::GetIndexCount
                                       (unsigned int        PrimitiveType) const
  {

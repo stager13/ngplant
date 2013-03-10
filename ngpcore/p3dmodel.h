@@ -292,6 +292,11 @@ class P3DStemModel
   virtual
   unsigned int     GetVAttrCountI     () const = 0;
 
+  virtual void     FillCloneVAttrBufferI
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr,
+                                       unsigned int        Stride) const = 0;
+
   virtual
   unsigned int     GetIndexCount      (unsigned int        PrimitiveType) const = 0;
 
