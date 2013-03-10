@@ -783,6 +783,39 @@ unsigned int       P3DStemModelQuad::GetVAttrCountI
   return(2 + SectionCount * 2);
  }
 
+void               P3DStemModelQuad::FillCloneVAttrBufferI
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr,
+                                       unsigned int        Stride) const
+ {
+  unsigned int Count         = GetVAttrCountI();
+  unsigned int AttrItemCount = Attr == P3D_ATTR_TEXCOORD0 ? 2 : 3;
+
+  float Scale = ScalingCurve.GetValue(0.0f);
+
+  P3DStemModelQuadInstance *Instance = new P3DStemModelQuadInstance
+                                            ( Scale,
+                                              Length,
+                                              Width,
+                                              BillboardMode,
+                                              SectionCount,
+                                             &Curvature,
+                                              Thickness,
+                                              0);
+
+  if (Stride == 0)
+   {
+    Stride = AttrItemCount * sizeof(float);
+   }
+
+  for (unsigned int Index = 0; Index < Count; Index++)
+   {
+    Instance->GetVAttrValueI((float*)&(((char*)VAttrBuffer)[Index * Stride]),Attr,Index);
+   }
+
+  delete Instance;
+ }
+
 unsigned int       P3DStemModelQuad::GetIndexCount
                                       (unsigned int        PrimitiveType) const
  {

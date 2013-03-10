@@ -172,6 +172,11 @@ class P3DStemModelTube : public P3DStemModel
   virtual
   unsigned int     GetVAttrCountI     () const;
 
+  virtual void     FillCloneVAttrBufferI
+                                      (void               *VAttrBuffer,
+                                       unsigned int        Attr,
+                                       unsigned int        Stride) const;
+
   virtual
   unsigned int     GetIndexCount      (unsigned int        PrimitiveType) const;
 

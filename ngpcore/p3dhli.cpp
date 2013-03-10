@@ -1193,6 +1193,28 @@ unsigned int       P3DHLIPlantTemplate::GetVAttrCountI
           GetStemModel()->GetVAttrCountI());
  }
 
+void               P3DHLIPlantTemplate::FillCloneVAttrBuffersI
+                                      (const P3DHLIVAttrBuffers
+                                                          *VAttrBuffers,
+                                       unsigned int        GroupIndex) const
+ {
+  const P3DStemModel                  *StemModel;
+  unsigned int                         AttrIndex;
+
+  StemModel = GetBranchModelByIndex(Model,GroupIndex)->GetStemModel();
+
+  for (AttrIndex = 0; AttrIndex < P3D_MAX_ATTRS; AttrIndex++)
+   {
+    if (VAttrBuffers->HasAttr(AttrIndex))
+     {
+      StemModel->FillCloneVAttrBufferI
+       (&((char*)(VAttrBuffers->GetAttrBuffer(AttrIndex)))[VAttrBuffers->GetAttrOffset(AttrIndex)],
+        AttrIndex,
+        VAttrBuffers->GetAttrStride(AttrIndex));
+     }
+   }
+ }
+
 unsigned int       P3DHLIPlantTemplate::GetIndexCount
                                       (unsigned int        GroupIndex,
                                        unsigned int        PrimitiveType) const

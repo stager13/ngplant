@@ -148,6 +148,11 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
 
   unsigned int     GetVAttrCountI     (unsigned int        GroupIndex) const;
 
+  void             FillCloneVAttrBuffersI
+                                      (const P3DHLIVAttrBuffers
+                                                          *VAttrBuffers,
+                                       unsigned int        GroupIndex) const;
+
   unsigned int     GetIndexCount      (unsigned int        GroupIndex,
                                        unsigned int        PrimitiveType) const;
 
