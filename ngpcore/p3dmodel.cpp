@@ -1144,7 +1144,7 @@ void               P3DPlantModel::Load(P3DInputStringStream
   if ((Version.Major != P3D_VERSION_MAJOR) ||
       (Version.Minor  > P3D_VERSION_MINOR))
    {
-    throw P3DExceptionGeneric("invalid file format version");
+    throw P3DExceptionGeneric("unsupported file format version");
    }
 
   if (Version.Minor < 7)
