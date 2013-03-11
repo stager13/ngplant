@@ -45,6 +45,54 @@ typedef struct
   char            *Old;
  } P3DLocaleInfo;
 
+static char        GetHexDigitChar    (char                Value)
+ {
+  return Value + (Value < 10 ? '0' : 'A' - 10);
+ }
+
+static bool        GetHexValue        (char               *Value,
+                                       char                DigitChar)
+ {
+  bool Ok = true;
+
+  if (DigitChar >= '0' && DigitChar <= '9')
+   {
+    *Value = DigitChar - '0';
+   }
+  else if (DigitChar >= 'a' && DigitChar <= 'f')
+   {
+    *Value = DigitChar - 'a' + 10;
+   }
+  else if (DigitChar >= 'A' && DigitChar <= 'F')
+   {
+    *Value = DigitChar - 'A' + 10;
+   }
+  else
+   {
+    Ok = false;
+   }
+
+  return Ok;
+ }
+
+static bool        GetCharByHexCode   (char               *Ch,
+                                       char                HexHi,
+                                       char                HexLo)
+ {
+  bool Ok;
+  char Hi;
+  char Lo;
+
+  Ok = GetHexValue(&Hi,HexHi) && GetHexValue(&Lo,HexLo);
+
+  if (Ok)
+   {
+    *Ch = (char)(((unsigned char)Hi << 4) | (unsigned char)Lo);
+   }
+
+  return Ok;
+ }
+
 static void        SetLocaleNumericStd(P3DLocaleInfo      *OldLocale)
  {
   char *Old = setlocale(LC_NUMERIC,NULL);
@@ -75,7 +123,14 @@ const char        *P3DExceptionIO::GetMessage
                                       (P3DInputStringStream
                                                           *SourceStream)
  {
-  this->SourceStream = SourceStream;
+  this->SourceStream         = SourceStream;
+  this->HandleEscapedStrings = true;
+ }
+
+void               P3DInputStringFmtStream::EnableEscapeChars
+                                      (bool                Enable)
+ {
+  this->HandleEscapedStrings = Enable;
  }
 
 typedef struct
@@ -119,6 +174,70 @@ static bool        GetWordInfoFirst   (P3DWordInfo        *WordInfo,
   WordInfo->Length = 0;
 
   return(GetWordInfoNext(WordInfo,Str));
+ }
+
+void               P3DInputStringFmtStream::ScanStringSafe
+                                      (char               *DestBuffer,
+                                       unsigned int        DestSize,
+                                       const char         *SrcBuffer,
+                                       unsigned int        SrcOffset,
+                                       unsigned int        SrcLength)
+ {
+  if (!HandleEscapedStrings  ||
+      SrcOffset >= SrcLength ||
+      SrcBuffer[SrcOffset] != '\"')
+   {
+    if (SrcLength >= DestSize)
+     {
+      throw P3DExceptionGeneric("string value is too large");
+     }
+
+    memcpy(DestBuffer,&SrcBuffer[SrcOffset],SrcLength);
+    DestBuffer[SrcLength] = '\0';
+
+    return;
+   }
+
+  unsigned int SrcEnd    = SrcOffset + SrcLength;
+  unsigned int DestOffset = 0;
+
+  for (SrcOffset = SrcOffset + 1; // skip leading quote
+       SrcOffset < SrcEnd && SrcBuffer[SrcOffset] != '\"';
+       SrcOffset++)
+   {
+    if (DestOffset >= DestSize)
+     {
+      throw P3DExceptionGeneric("string too long in data file");
+     }
+
+    char Ch = SrcBuffer[SrcOffset];
+
+    if (Ch == '\\')
+     {
+      if (SrcOffset + 2 >= SrcEnd)
+       {
+        throw P3DExceptionGeneric("unterminated escape sequence in data file");
+       }
+
+      if (!GetCharByHexCode(&Ch,SrcBuffer[SrcOffset + 1],SrcBuffer[SrcOffset + 2]))
+       {
+        throw P3DExceptionGeneric("invalid escape sequence in data file");
+       }
+
+      SrcOffset += 2;
+     }
+
+    DestBuffer[DestOffset++] = Ch;
+   }
+
+  if (DestOffset < DestSize)
+   {
+    DestBuffer[DestOffset] = '\0';
+   }
+  else
+   {
+    throw P3DExceptionGeneric("string too long in data file");
+   }
  }
 
 void               P3DInputStringFmtStream::ReadFmtStringTagged
@@ -176,13 +295,7 @@ void               P3DInputStringFmtStream::ReadFmtStringTagged
           Value = va_arg(FieldValues,char*);
           Size  = va_arg(FieldValues,unsigned int);
 
-          if (WordInfo.Length >= Size)
-           {
-            throw P3DExceptionGeneric("string value is too large");
-           }
-
-          memcpy(Value,&Buffer[WordInfo.Start],WordInfo.Length);
-          Value[WordInfo.Length] = '\0';
+          ScanStringSafe(Value,Size,Buffer,WordInfo.Start,WordInfo.Length);
          } break;
 
         case ('u') :
@@ -295,6 +408,63 @@ void               P3DOutputStringFmtStream::WriteString
   Target->WriteString(Buffer);
  }
 
+void               P3DOutputStringFmtStream::WriteStringSafe
+                                      (const char         *Str)
+ {
+  const char *SrcPtr;
+  char       *DstPtr;
+  char       *Buffer;
+  char        Ch;
+
+  for (SrcPtr = Str; *SrcPtr > 0x20; SrcPtr++) ;
+
+  if (*SrcPtr == '\0')
+   {
+    Target->WriteString(Str); // no need to escape since no special chars found
+
+    return;
+   }
+
+  // each char can be represented with 3 chars in escaped form,
+  // also 2 chars needed for quotes and 1 for zero
+  Buffer = (char*)malloc(strlen(Str) * 3 + 2 + 1);
+
+  DstPtr    = Buffer;
+  *DstPtr++ = '\"';
+
+  for (SrcPtr = Str; *SrcPtr != '\0'; SrcPtr++, DstPtr++)
+   {
+    Ch = *SrcPtr;
+
+    if (Ch <= 0x20 || Ch == '\"' || Ch == '\\')
+     {
+      *DstPtr++ = '\\';
+      *DstPtr++ = GetHexDigitChar(Ch >> 4);
+      *DstPtr   = GetHexDigitChar(Ch & 0x0F);
+     }
+    else
+     {
+      *DstPtr = *SrcPtr;
+     }
+   }
+
+  *DstPtr++ = '\"';
+  *DstPtr   = '\0';
+
+  try
+   {
+    Target->WriteString(Buffer);
+   }
+  catch (...)
+   {
+    free(Buffer);
+
+    throw;
+   }
+
+  free(Buffer);
+ }
+
 void               P3DOutputStringFmtStream::WriteString
                                       (const char         *Format,
                                        ...)
@@ -329,8 +499,7 @@ void               P3DOutputStringFmtStream::WriteString
        {
         case ('s') :
          {
-          /*FIXME: escape \" chars and append \" at start and end of line */
-          Target->WriteString(va_arg(FieldValues,char*));
+          WriteStringSafe(va_arg(FieldValues,char*));
          } break;
 
         case ('u') :

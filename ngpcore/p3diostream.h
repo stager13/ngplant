@@ -95,12 +95,21 @@ class P3DInputStringFmtStream
                                        const char         *Format,
                                        ...);
 
+  void             EnableEscapeChars  (bool                Enable);
+
   private          :
 
   void             ReadDataString     (char               *Buffer,
                                        unsigned int        BufferSize);
 
+  void             ScanStringSafe     (char               *DestBuffer,
+                                       unsigned            DestSize,
+                                       const char         *SrcBuffer,
+                                       unsigned int        SrcOffset,
+                                       unsigned int        SrcLength);
+
   P3DInputStringStream                *SourceStream;
+  bool                                 HandleEscapedStrings;
  };
 
 class P3DOutputStringStream
@@ -139,6 +148,8 @@ class P3DOutputStringFmtStream
                                        ...);
 
   private          :
+
+  void             WriteStringSafe    (const char         *Str);
 
   P3DOutputStringStream               *Target;
  };
