@@ -455,7 +455,7 @@ static PyObject    *BranchGroupGetVAttrBufferImpl
   if (CloneMode && !BranchGroup->PlantInstance->Template->IsCloneable
                      (BranchGroup->GroupIndex,true))
    {
-    PyErr_SetString(PyExc_RuntimeError,"trying to get clone attributest for non-cloneable group");
+    PyErr_SetString(PyExc_RuntimeError,"trying to get clone attributes for non-cloneable group");
 
     return(NULL);
    }
@@ -848,9 +848,10 @@ static PyObject    *BranchGroupGetVAttrCountI
   return(Result);
  }
 
-static PyObject    *BranchGroupGetVAttrBufferI
+static PyObject    *BranchGroupGetVAttrBufferIImpl
                                       (PyObject           *self,
-                                       PyObject           *args)
+                                       PyObject           *args,
+                                       bool                CloneMode)
  {
   BranchGroupObject                   *BranchGroup;
   unsigned int                         Attr;
@@ -869,6 +870,14 @@ static PyObject    *BranchGroupGetVAttrBufferI
 
   if (!PyArg_ParseTuple(args,"I",&Attr))
    {
+    return(NULL);
+   }
+
+  if (CloneMode && !BranchGroup->PlantInstance->Template->IsCloneable
+                     (BranchGroup->GroupIndex,true))
+   {
+    PyErr_SetString(PyExc_RuntimeError,"trying to get clone attributes for non-cloneable group");
+
     return(NULL);
    }
 
@@ -900,8 +909,16 @@ static PyObject    *BranchGroupGetVAttrBufferI
    {
     unsigned int                       TotalAttrCount;
 
-    TotalAttrCount = BranchGroup->PlantInstance->Instance->
-                      GetVAttrCountI(BranchGroup->GroupIndex);
+    if (CloneMode)
+     {
+      TotalAttrCount = BranchGroup->PlantInstance->Template->
+                         GetVAttrCountI(BranchGroup->GroupIndex);
+     }
+    else
+     {
+      TotalAttrCount = BranchGroup->PlantInstance->Instance->
+                         GetVAttrCountI(BranchGroup->GroupIndex);
+     }
 
     Buffer = PyMem_New(float,AttrItemCount * TotalAttrCount);
 
@@ -912,7 +929,16 @@ static PyObject    *BranchGroupGetVAttrBufferI
 
     VAttrBuffers.AddAttr(Attr,Buffer,0,sizeof(float) * AttrItemCount);
 
-    BranchGroup->PlantInstance->Instance->FillVAttrBuffersI(&VAttrBuffers,BranchGroup->GroupIndex);
+    if (CloneMode)
+     {
+      BranchGroup->PlantInstance->Template->FillCloneVAttrBuffersI
+       (&VAttrBuffers,BranchGroup->GroupIndex);
+     }
+    else
+     {
+      BranchGroup->PlantInstance->Instance->FillVAttrBuffersI
+       (&VAttrBuffers,BranchGroup->GroupIndex);
+     }
 
     Result = CreateListFromFloatBuffer(Buffer,AttrItemCount,TotalAttrCount);
 
@@ -931,6 +957,20 @@ static PyObject    *BranchGroupGetVAttrBufferI
    }
 
   return(Result);
+ }
+
+static PyObject    *BranchGroupGetVAttrBufferI
+                                      (PyObject           *self,
+                                       PyObject           *args)
+ {
+  return BranchGroupGetVAttrBufferIImpl(self,args,false);
+ }
+
+static PyObject    *BranchGroupGetCloneVAttrBufferI
+                                      (PyObject           *self,
+                                       PyObject           *args)
+ {
+  return BranchGroupGetVAttrBufferIImpl(self,args,true);
  }
 
 static PyObject    *BranchGroupGetIndexCount
@@ -1219,6 +1259,13 @@ static PyMethodDef BranchGroupMethods[] =
    METH_VARARGS,
    "Return array of attributes (indexed mode)"
   },
+  {
+   "GetCloneVAttrBufferI",
+   (PyCFunction)BranchGroupGetCloneVAttrBufferI,
+   METH_VARARGS,
+   "Return array of attributes for cloneable group (indexed mode)"
+  },
+
   {
    "GetIndexCount",
    (PyCFunction)BranchGroupGetIndexCount,
