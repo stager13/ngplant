@@ -973,6 +973,116 @@ static PyObject    *BranchGroupGetCloneVAttrBufferI
   return BranchGroupGetVAttrBufferIImpl(self,args,true);
  }
 
+static PyObject    *BranchGroupGetCloneTransformBuffer
+                                      (PyObject           *self,
+                                       PyObject           *args)
+ {
+  BranchGroupObject                   *BranchGroup;
+  PyObject                            *Result;
+  PyObject                            *OffsetList;
+  PyObject                            *OrientationList;
+  PyObject                            *ScaleList;
+  float                               *OffsetBuffer;
+  float                               *OrientationBuffer;
+  float                               *ScaleBuffer;
+
+  Result      = NULL;
+  BranchGroup = (BranchGroupObject*)self;
+
+  if (!PlantInstanceCheck(BranchGroup->PlantInstance))
+   {
+    return(NULL);
+   }
+
+  if (!BranchGroup->PlantInstance->Template->IsCloneable
+        (BranchGroup->GroupIndex,true))
+   {
+    PyErr_SetString(PyExc_RuntimeError,"trying to get clone transformations for non-cloneable group");
+
+    return(NULL);
+   }
+
+  OffsetBuffer      = NULL;
+  OrientationBuffer = NULL;
+  ScaleBuffer       = NULL;
+
+  try
+   {
+    unsigned int                       BranchCount;
+
+    BranchCount = BranchGroup->PlantInstance->Instance->
+                   GetBranchCount(BranchGroup->GroupIndex);
+
+    OffsetBuffer      = PyMem_New(float,3 * BranchCount);
+    OrientationBuffer = PyMem_New(float,4 * BranchCount);
+    ScaleBuffer       = PyMem_New(float,1 * BranchCount);
+
+    if (OffsetBuffer == NULL || OrientationBuffer == NULL || ScaleBuffer == NULL)
+     {
+      PyMem_Del(OffsetBuffer);
+      PyMem_Del(OrientationBuffer);
+      PyMem_Del(ScaleBuffer);
+
+      return(PyErr_NoMemory());
+     }
+
+    BranchGroup->PlantInstance->Instance->FillCloneTransformBuffer
+     (OffsetBuffer,OrientationBuffer,ScaleBuffer,BranchGroup->GroupIndex);
+
+    OffsetList      = CreateListFromFloatBuffer(OffsetBuffer,3,BranchCount);
+    OrientationList = CreateListFromFloatBuffer(OrientationBuffer,4,BranchCount);
+    ScaleList       = CreateListFromFloatBuffer(ScaleBuffer,1,BranchCount);
+
+    if (OffsetList != NULL && OrientationList != NULL && ScaleList != NULL)
+     {
+      Result = PyTuple_New(3);
+
+      if (Result != NULL)
+       {
+        bool Ok = PyTuple_SetItem(Result,0,OffsetList) == 0 &&
+                  PyTuple_SetItem(Result,1,OrientationList) == 0 &&
+                  PyTuple_SetItem(Result,2,ScaleList) == 0;
+
+        OffsetList      = NULL;
+        OrientationList = NULL;
+        ScaleList       = NULL;
+
+        if (!Ok)
+         {
+          Py_DECREF(Result);
+
+          Result = NULL;
+         }
+       }
+     }
+
+    if (OffsetList != NULL)
+     {
+      Py_DECREF(OffsetList);
+     }
+
+    if (OrientationList != NULL)
+     {
+      Py_DECREF(OrientationList);
+     }
+
+    if (ScaleList != NULL)
+     {
+      Py_DECREF(ScaleList);
+     }
+   }
+  catch (P3DException       &Error)
+   {
+    PyErr_SetString(PyExc_RuntimeError,Error.GetMessage());
+   }
+
+  PyMem_Del(OffsetBuffer);
+  PyMem_Del(OrientationBuffer);
+  PyMem_Del(ScaleBuffer);
+
+  return(Result);
+ }
+
 static PyObject    *BranchGroupGetIndexCount
                                       (PyObject           *self,
                                        PyObject           *args)
@@ -1265,7 +1375,12 @@ static PyMethodDef BranchGroupMethods[] =
    METH_VARARGS,
    "Return array of attributes for cloneable group (indexed mode)"
   },
-
+  {
+   "GetCloneTransformBuffer",
+   (PyCFunction)BranchGroupGetCloneTransformBuffer,
+   METH_VARARGS,
+   "Return offset,orientation and scale transformations of clone instances"
+  },
   {
    "GetIndexCount",
    (PyCFunction)BranchGroupGetIndexCount,
