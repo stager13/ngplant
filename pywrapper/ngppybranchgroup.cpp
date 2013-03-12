@@ -262,6 +262,48 @@ static PyObject    *BranchGroupGetBillboardSize
   return(Result);
  }
 
+static PyObject    *BranchGroupIsCloneable
+                                      (PyObject           *self,
+                                       PyObject           *args)
+ {
+  PyObject                            *Result;
+  BranchGroupObject                   *BranchGroup;
+  int                                  AllowScaling;
+
+  Result      = NULL;
+  BranchGroup = (BranchGroupObject*)self;
+
+  if (!PlantInstanceCheck(BranchGroup->PlantInstance))
+   {
+    return(NULL);
+   }
+
+  AllowScaling = 0;
+
+  if (!PyArg_ParseTuple(args,"|i",&AllowScaling))
+   {
+    return(NULL);
+   }
+
+  try
+   {
+    bool IsCloneable;
+
+    IsCloneable = BranchGroup->PlantInstance->Template->IsCloneable
+                   (BranchGroup->GroupIndex,(bool)AllowScaling);
+
+    Result = Py_BuildValue("i",(int)IsCloneable);
+   }
+  catch (P3DException       &Error)
+   {
+    PyErr_SetString(PyExc_RuntimeError,Error.GetMessage());
+
+    return(NULL);
+   }
+
+  return(Result);
+ }
+
 static PyObject    *BranchGroupGetVAttrCount
                                       (PyObject           *self,
                                        PyObject           *args)
@@ -1066,6 +1108,12 @@ static PyMethodDef BranchGroupMethods[] =
    (PyCFunction)BranchGroupGetBillboardSize,
    METH_NOARGS,
    "Return branch group billboards size"
+  },
+  {
+   "IsCloneable",
+   (PyCFunction)BranchGroupIsCloneable,
+   METH_VARARGS,
+   "Return boolean indicating if branch group is cloneable"
   },
   {
    "GetBranchCount",
