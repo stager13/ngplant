@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleExecutable</key>
 	<string>ngplant</string>
+	<key>CFBundleIdentifier</key>
+	<string>ua.in.stager.NgPlant</string>
 	<key>CFBundleName</key>
 	<string>ngplant</string>
 	<key>CFBundlePackageType</key>
