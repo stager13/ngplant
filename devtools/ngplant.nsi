@@ -54,6 +54,7 @@ Section "Base"
  File "shaders\ngpshot_nor_vs.glsl"
 
  SetOutPath $INSTDIR\plugins
+ File "plugins\export_dae.lua"
  File "plugins\export_obj.lua"
  File "plugins\gmesh_import_obj.lua"
  File "plugins\gmesh_rhomb.lua"
