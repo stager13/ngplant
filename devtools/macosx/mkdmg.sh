@@ -23,5 +23,5 @@ pushd $IMAGE_DIR
 ln -s /Applications Applications
 popd
 
-hdiutil create -srcfolder image ngPlant-0.9.10.dmg
+hdiutil create -srcfolder image ngPlant-0.9.10a.dmg
 
