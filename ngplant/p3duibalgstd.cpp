@@ -107,6 +107,46 @@ class P3DBAlgStdMinMaxNumberEditCmd : public P3DEditCommand
   bool                      OldMaxLimitEnabled;
  };
 
+class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
+ {
+  public           :
+
+  P3DBAlgStdMinMaxOffsetEditCmd (P3DBranchingAlgStd *Alg,
+                                 float               NewMinOffset,
+                                 float               NewMaxOffset,
+                                 float               OldMinOffset,
+                                 float               OldMaxOffset)
+   {
+    this->Alg          = Alg;
+    this->NewMinOffset = NewMinOffset;
+    this->NewMaxOffset = NewMaxOffset;
+    this->OldMinOffset = OldMinOffset;
+    this->OldMaxOffset = OldMaxOffset;
+   }
+
+  virtual void Exec ()
+   {
+    Alg->SetMinOffset(NewMinOffset);
+    Alg->SetMaxOffset(NewMaxOffset);
+    wxGetApp().InvalidatePlant();
+   }
+
+  virtual void Undo ()
+   {
+    Alg->SetMinOffset(OldMinOffset);
+    Alg->SetMaxOffset(OldMaxOffset);
+    wxGetApp().InvalidatePlant();
+   }
+
+  private          :
+
+  P3DBranchingAlgStd *Alg;
+  float               NewMinOffset;
+  float               NewMaxOffset;
+  float               OldMinOffset;
+  float               OldMaxOffset;
+ };
+
                    P3DBranchingAlgStdPanel::P3DBranchingAlgStdPanel
                                       (wxWindow           *Parent,
                                        P3DBranchingAlgStd *Alg)
@@ -447,23 +487,59 @@ void               P3DBranchingAlgStdPanel::OnRotAngleChanged
 void               P3DBranchingAlgStdPanel::OnMinOffsetChanged
                                       (wxSpinSliderEvent  &event)
  {
+  float OldMinOffset = Alg->GetMinOffset();
+  float OldMaxOffset = Alg->GetMaxOffset();
+  float NewMinOffset = event.GetFloatValue();
+  float NewMaxOffset;
+
+  if (OldMaxOffset < NewMinOffset)
+   {
+    NewMaxOffset = NewMinOffset;
+
+    wxSpinSliderCtrl *SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_MAX_OFFSET_CTRL);
+
+    if (SpinSlider != NULL)
+     {
+      SpinSlider->SetValue(NewMaxOffset);
+     }
+   }
+  else
+   {
+    NewMaxOffset = OldMaxOffset;
+   }
+
   P3DApp::GetApp()->ExecEditCmd
-   (new P3DBAlgStdFloatParamEditCmd
-         (Alg,
-          event.GetFloatValue(),
-          Alg->GetMinOffset(),
-          &P3DBranchingAlgStd::SetMinOffset));
+   (new P3DBAlgStdMinMaxOffsetEditCmd
+         (Alg,NewMinOffset,NewMaxOffset,OldMinOffset,OldMaxOffset));
  }
 
 void               P3DBranchingAlgStdPanel::OnMaxOffsetChanged
                                       (wxSpinSliderEvent  &event)
  {
+  float OldMinOffset = Alg->GetMinOffset();
+  float OldMaxOffset = Alg->GetMaxOffset();
+  float NewMaxOffset = event.GetFloatValue();
+  float NewMinOffset;
+
+  if (OldMinOffset > NewMaxOffset)
+   {
+    NewMinOffset = NewMaxOffset;
+
+    wxSpinSliderCtrl *SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_MIN_OFFSET_CTRL);
+
+    if (SpinSlider != NULL)
+     {
+      SpinSlider->SetValue(NewMinOffset);
+     }
+   }
+  else
+   {
+    NewMinOffset = OldMinOffset;
+   }
+
   P3DApp::GetApp()->ExecEditCmd
-   (new P3DBAlgStdFloatParamEditCmd
-         (Alg,
-          event.GetFloatValue(),
-          Alg->GetMaxOffset(),
-          &P3DBranchingAlgStd::SetMaxOffset));
+   (new P3DBAlgStdMinMaxOffsetEditCmd
+         (Alg,NewMinOffset,NewMaxOffset,OldMinOffset,OldMaxOffset));
  }
 
 void               P3DBranchingAlgStdPanel::OnDeclinationCurveChanged
