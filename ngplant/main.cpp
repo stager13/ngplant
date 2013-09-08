@@ -656,6 +656,8 @@ void               P3DApp::SetModel   (P3DPlantModel      *Model)
     PlantModel = Model;
 
     InvalidatePlant();
+
+    UnsavedChanges = false;
    }
  }
 
@@ -673,6 +675,8 @@ void               P3DApp::SaveModel  (const char         *FileName)
     TargetStream.Close();
 
     SetFileName(FileName);
+
+    UnsavedChanges = false;
    }
   catch (...)
    {
@@ -763,6 +767,8 @@ void               P3DApp::InvalidatePlant
     PlantObjectDirty = true;
     MainFrame->InvalidatePlant();
    }
+
+  UnsavedChanges = true;
  }
 
 void               P3DApp::InvalidateCamera
@@ -798,6 +804,12 @@ bool               P3DApp::IsPlantObjectDirty
                                       () const
  {
   return(PlantObjectDirty);
+ }
+
+bool               P3DApp::HasUnsavedChanges
+                                      () const
+ {
+  return UnsavedChanges;
  }
 
 wxString           P3DApp::GetFileName() const
@@ -1009,6 +1021,7 @@ bool               P3DApp::OnInit     ()
   UseShaders = true;
 
   SelfPtr = this;
+  UnsavedChanges = false;
 
   if (!wxApp::OnInit())
    {

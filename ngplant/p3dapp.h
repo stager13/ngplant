@@ -116,6 +116,7 @@ class P3DApp : public wxApp
   void             InvalidateCamera   ();
   void             ForceUpdate        ();
   bool             IsPlantObjectDirty () const;
+  bool             HasUnsavedChanges  () const;
 
   wxString         GetFileName        () const;
   void             SetFileName        (const char         *FileName);
@@ -202,6 +203,7 @@ class P3DApp : public wxApp
   P3DPlantObject  *PlantObject;
   mutable bool     PlantObjectDirty;
   bool             PlantObjectAutoUpdate;
+  bool             UnsavedChanges;
 
   P3DTexManagerGL  TexManager;
   P3DShaderManager ShaderManager;
