@@ -91,6 +91,7 @@ BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_EDIT_PREFERENCES,P3DMainFrame::OnEditPreferences)
  EVT_MENU(wxID_UNDO,P3DMainFrame::OnUndo)
  EVT_MENU(wxID_REDO,P3DMainFrame::OnRedo)
+ EVT_CLOSE(P3DMainFrame::OnFrameClose)
 END_EVENT_TABLE()
 
 class P3DUndoRedoMenuStateUpdater
@@ -207,7 +208,24 @@ class P3DUndoRedoMenuStateUpdater
 
 void               P3DMainFrame::OnQuit   (wxCommandEvent     &event)
  {
-  Close();
+  if (ApproveDataLoss())
+   {
+    // We're about to generate an OnFrameClose event, and don't want to be asked again.
+    // So this call simply sets UnsavedChanges to 'false' by using the fact
+    // that setting model to the same value doesn't do anything except for
+    // reseting UnsavedChanges value.
+    P3DApp::GetApp()->SetModel(P3DApp::GetApp()->GetModel());
+
+    Close();
+   }
+ }
+
+void               P3DMainFrame::OnFrameClose   (wxCloseEvent     &event)
+ {
+  if (ApproveDataLoss())
+   {
+    Destroy();
+   }
  }
 
 void               P3DMainFrame::OnAbout  (wxCommandEvent     &event)
@@ -502,9 +520,7 @@ void               P3DMainFrame::OnRunScript
 
 void               P3DMainFrame::OnNew(wxCommandEvent     &event)
  {
-  if (::wxMessageBox(wxT("Your current model will be discarded. Are you sure?"),
-                     wxT("Confirmation"),
-                     wxOK | wxCANCEL) == wxOK)
+  if (ApproveDataLoss())
    {
     P3DPlantModel                     *NewModel;
 
@@ -520,11 +536,31 @@ void               P3DMainFrame::OnNew(wxCommandEvent     &event)
    }
  }
 
+bool               P3DMainFrame::ApproveDataLoss()
+ {
+  // If there's no unsaved work, there's nothing to worry about.
+  if (!P3DApp::GetApp()->HasUnsavedChanges()) return true;
+
+  // Otherwise ask the user if the loss of data is OK?
+  if (::wxMessageBox(wxT("Your unsaved changes will be discarded. Are you sure?"),
+                     wxT("Confirmation"),
+                     wxOK | wxCANCEL) == wxOK)
+   {
+    return true;
+   }
+  else
+   {
+    return false;
+   }
+ }
+
 void               P3DMainFrame::OnOpen
                                       (wxCommandEvent     &event)
  {
   wxString                             FileName;
   P3DPlantModel                       *NewModel;
+
+  if (!ApproveDataLoss()) return;
 
   FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
@@ -656,9 +692,9 @@ void               P3DApp::SetModel   (P3DPlantModel      *Model)
     PlantModel = Model;
 
     InvalidatePlant();
-
-    UnsavedChanges = false;
    }
+
+  UnsavedChanges = false;
  }
 
 void               P3DApp::SaveModel  (const char         *FileName)
