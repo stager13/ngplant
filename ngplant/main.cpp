@@ -226,7 +226,7 @@ void               P3DMainFrame::OnSave   (wxCommandEvent     &event)
    }
   else
    {
-    Save(P3DApp::GetApp()->GetFileName().mb_str());
+    P3DApp::GetApp()->SaveModel(P3DApp::GetApp()->GetFileName().mb_str());
    }
  }
 
@@ -238,7 +238,7 @@ void               P3DMainFrame::OnSaveAs (wxCommandEvent     &event)
 
   if (!FileName.empty())
    {
-    Save(FileName.mb_str());
+    P3DApp::GetApp()->SaveModel(FileName.mb_str());
    }
  }
 
@@ -500,27 +500,6 @@ void               P3DMainFrame::OnRunScript
    }
  }
 
-void               P3DMainFrame::Save  (const char         *FileName)
- {
-  try
-   {
-    P3DOutputStringStreamFile           TargetStream;
-    P3DIDEMaterialSaver                 MaterialSaver;
-
-    TargetStream.Open(FileName);
-
-    P3DApp::GetApp()->GetModel()->Save(&TargetStream,&MaterialSaver);
-
-    TargetStream.Close();
-
-    P3DApp::GetApp()->SetFileName(FileName);
-   }
-  catch (...)
-   {
-    ::wxMessageBox(wxT("Error while saving model"),wxT("Error"),wxOK | wxICON_ERROR);
-   }
- }
-
 void               P3DMainFrame::OnNew(wxCommandEvent     &event)
  {
   if (::wxMessageBox(wxT("Your current model will be discarded. Are you sure?"),
@@ -677,6 +656,27 @@ void               P3DApp::SetModel   (P3DPlantModel      *Model)
     PlantModel = Model;
 
     InvalidatePlant();
+   }
+ }
+
+void               P3DApp::SaveModel  (const char         *FileName)
+ {
+  try
+   {
+    P3DOutputStringStreamFile          TargetStream;
+    P3DIDEMaterialSaver                MaterialSaver;
+
+    TargetStream.Open(FileName);
+
+    PlantModel->Save(&TargetStream,&MaterialSaver);
+
+    TargetStream.Close();
+
+    SetFileName(FileName);
+   }
+  catch (...)
+   {
+    ::wxMessageBox(wxT("Error while saving model"),wxT("Error"),wxOK | wxICON_ERROR);
    }
  }
 
