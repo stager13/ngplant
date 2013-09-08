@@ -1110,7 +1110,7 @@ void               P3DApp::SetGroundColor
   View3DPrefs.GroundColor.G = G;
   View3DPrefs.GroundColor.B = B;
 
-  InvalidatePlant();
+  MainFrame->InvalidatePlant();
  }
 
 bool               P3DApp::IsGroundVisible
@@ -1126,7 +1126,7 @@ void               P3DApp::SetGroundVisibility
    {
     View3DPrefs.GroundVisible = Visible;
 
-    InvalidatePlant();
+    MainFrame->InvalidatePlant();
    }
  }
 
@@ -1149,7 +1149,7 @@ void               P3DApp::SetBackgroundColor
   View3DPrefs.BackgroundColor.G = G;
   View3DPrefs.BackgroundColor.B = B;
 
-  InvalidatePlant();
+  MainFrame->InvalidatePlant();
  }
 
 P3DExport3DPrefs  *P3DApp::GetExport3DPrefs
