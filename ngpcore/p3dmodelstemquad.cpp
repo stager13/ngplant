@@ -642,7 +642,7 @@ void               P3DStemModelQuad::FillCloneVAttrBuffer
   unsigned int Count         = GetVAttrCount(Attr);
   unsigned int AttrItemCount = Attr == P3D_ATTR_TEXCOORD0 ? 2 : 3;
 
-  float Scale = ScalingCurve.GetValue(0.0f);
+  float Scale = 1.0f;
 
   P3DStemModelQuadInstance *Instance = new P3DStemModelQuadInstance
                                             ( Scale,
@@ -791,7 +791,7 @@ void               P3DStemModelQuad::FillCloneVAttrBufferI
   unsigned int Count         = GetVAttrCountI();
   unsigned int AttrItemCount = Attr == P3D_ATTR_TEXCOORD0 ? 2 : 3;
 
-  float Scale = ScalingCurve.GetValue(0.0f);
+  float Scale = 1.0f;
 
   P3DStemModelQuadInstance *Instance = new P3DStemModelQuadInstance
                                             ( Scale,
