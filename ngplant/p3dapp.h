@@ -54,12 +54,14 @@ class P3DMainFrame : public wxFrame
   void             OnExportObjPlugin  (wxCommandEvent     &event);
   void             OnRunScript        (wxCommandEvent     &event);
   void             OnQuit             (wxCommandEvent     &event);
+  void             OnFrameClose       (wxCloseEvent       &event);
   void             OnAbout            (wxCommandEvent     &event);
   void             OnEditPreferences  (wxCommandEvent     &event);
 
   void             OnUndo             (wxCommandEvent     &event);
   void             OnRedo             (wxCommandEvent     &event);
   void             UpdateControls     ();
+  bool             ApproveDataLoss    ();
 
   void             InvalidatePlant    ();
 
