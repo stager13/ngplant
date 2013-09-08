@@ -608,7 +608,7 @@ void               P3DMainFrame::UpdateControls
 void               P3DMainFrame::InvalidatePlant
                                       ()
  {
-  Canvas3D->Refresh();
+  Canvas3D->ForceRefresh();
   EditPanel->PlantInvalidated();
  }
 

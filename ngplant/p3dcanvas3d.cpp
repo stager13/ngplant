@@ -90,7 +90,25 @@ static GLfloat     P3DLight0Specular[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 static GLfloat     P3DLight0Position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
 static GLfloat     P3DGlobalAmbient[]  = { 0.4f, 0.4f, 0.4f, 1.0f };
 
+void               P3DCanvas3D::ForceRefresh       ()
+ {
+  #if defined(__WXGTK__)
+   {
+    Render();
+   }
+  #else
+   {
+    Refresh();
+   }
+  #endif
+ }
+
 void               P3DCanvas3D::OnPaint            (wxPaintEvent       &event)
+ {
+  Render();
+ }
+
+void               P3DCanvas3D::Render             ()
  {
   wxPaintDC                                         dc(this);
   float                                             camera_matrix[16];
