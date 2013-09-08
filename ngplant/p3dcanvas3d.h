@@ -38,6 +38,8 @@ class P3DCanvas3D : public wxGLCanvas
                    P3DCanvas3D        (wxWindow           *parent);
   virtual         ~P3DCanvas3D        ();
 
+  void             ForceRefresh       ();
+
   void             OnPaint            (wxPaintEvent       &event);
   void             OnEraseBackground  (wxEraseEvent       &event);
   void             OnSize             (wxSizeEvent        &event);
@@ -53,6 +55,8 @@ class P3DCanvas3D : public wxGLCanvas
    }
 
   private          :
+
+  void             Render             ();
 
   P3DViewport                          viewport;
   P3DCameraTrackBall                   camera;
