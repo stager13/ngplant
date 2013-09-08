@@ -72,8 +72,6 @@ class P3DMainFrame : public wxFrame
 
   private          :
 
-  void             Save               (const char         *FileName);
-
   P3DCanvas3D                         *Canvas3D;
 
   DECLARE_EVENT_TABLE()
@@ -97,6 +95,8 @@ class P3DApp : public wxApp
 
   P3DPlantModel   *GetModel           ();
   void             SetModel           (P3DPlantModel      *Model);
+  void             SaveModel          (const char         *FileName);
+
   const P3DPlantObject
                   *GetPlantObject     () const;
   P3DTexManagerGL *GetTexManager      ();
