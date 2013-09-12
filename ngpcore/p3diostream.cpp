@@ -183,9 +183,7 @@ void               P3DInputStringFmtStream::ScanStringSafe
                                        unsigned int        SrcOffset,
                                        unsigned int        SrcLength)
  {
-  if (!HandleEscapedStrings  ||
-      SrcOffset >= SrcLength ||
-      SrcBuffer[SrcOffset] != '\"')
+  if (!HandleEscapedStrings || SrcBuffer[SrcOffset] != '\"')
    {
     if (SrcLength >= DestSize)
      {
