@@ -60,6 +60,7 @@ class P3DMainFrame : public wxFrame
 
   void             OnUndo             (wxCommandEvent     &event);
   void             OnRedo             (wxCommandEvent     &event);
+  bool             OpenModelFile      (const wxString     &FileName);
   void             UpdateControls     ();
   bool             ApproveDataLoss    ();
 

@@ -558,11 +558,21 @@ void               P3DMainFrame::OnOpen
                                       (wxCommandEvent     &event)
  {
   wxString                             FileName;
-  P3DPlantModel                       *NewModel;
 
   if (!ApproveDataLoss()) return;
 
   FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+  OpenModelFile(FileName);
+ }
+
+bool               P3DMainFrame::OpenModelFile
+                                      (const wxString     &FileName)
+ {
+  bool                                 Ok;
+  P3DPlantModel                       *NewModel;
+
+  Ok = false;
 
   if (!FileName.empty())
    {
@@ -592,6 +602,8 @@ void               P3DMainFrame::OnOpen
       NewModel = 0;
 
       EditPanel->RestoreAll();
+
+      Ok = true;
      }
     catch (...)
      {
@@ -600,6 +612,8 @@ void               P3DMainFrame::OnOpen
 
     delete NewModel;
    }
+
+  return Ok;
  }
 
 void               P3DMainFrame::OnUndo
@@ -976,6 +990,7 @@ void               P3DApp::OnInitCmdLine
  {
   Parser.AddSwitch(wxT("ns"),wxT("no-shaders"),wxT("disable shaders"));
   Parser.AddSwitch(wxT("es"),wxT("enable-stderr"),wxT("route log messages to stderr"));
+  Parser.AddParam(wxT("model file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 
   wxApp::OnInitCmdLine(Parser);
  }
@@ -998,6 +1013,11 @@ bool               P3DApp::OnCmdLineParsed
     if (Parser.Found(wxT("es")))
      {
       P3DLogEnableStdErr();
+     }
+
+    if (Parser.GetParamCount() >= 1)
+     {
+      PlantFileName = Parser.GetParam(0);
      }
 
     return(true);
@@ -1134,6 +1154,14 @@ bool               P3DApp::OnInit     ()
   MainFrame = new P3DMainFrame(wxT("ngPlant designer"));
 
   MainFrame->Show(TRUE);
+
+  if (!PlantFileName.empty())
+   {
+    if (!MainFrame->OpenModelFile(PlantFileName))
+     {
+      PlantFileName.Clear();
+     }
+   }
 
   ForceUpdate();
 
