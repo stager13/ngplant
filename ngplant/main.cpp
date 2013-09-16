@@ -70,9 +70,8 @@ enum
   wxID_EXPORT      = wxID_HIGHEST + 1200,
   wxID_EXPORT_OBJ,
   wxID_RUN_SCRIPT,
-  wxID_EDIT_PREFERENCES,
 
-  wxID_EXPORT_PLUGIN_FIRST = wxID_EDIT_PREFERENCES + 10000,
+  wxID_EXPORT_PLUGIN_FIRST = wxID_RUN_SCRIPT + 10000,
   wxID_EXPORT_PLUGIN_LAST  = wxID_EXPORT_PLUGIN_FIRST + 250
  };
 
@@ -88,7 +87,7 @@ BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_RUN_SCRIPT,P3DMainFrame::OnRunScript)
  EVT_MENU(wxID_EXIT,P3DMainFrame::OnQuit)
  EVT_MENU(wxID_ABOUT,P3DMainFrame::OnAbout)
- EVT_MENU(wxID_EDIT_PREFERENCES,P3DMainFrame::OnEditPreferences)
+ EVT_MENU(wxID_PREFERENCES,P3DMainFrame::OnEditPreferences)
  EVT_MENU(wxID_UNDO,P3DMainFrame::OnUndo)
  EVT_MENU(wxID_REDO,P3DMainFrame::OnRedo)
  EVT_CLOSE(P3DMainFrame::OnFrameClose)
@@ -171,7 +170,7 @@ class P3DUndoRedoMenuStateUpdater
   FileMenu->Append(wxID_SAVE,wxT("&Save\tCtrl-S"));
   FileMenu->Append(wxID_SAVEAS,wxT("Save as..."));
   FileMenu->Append(wxID_EXPORT,wxT("Export to"),ExportMenu);
-  FileMenu->Append(wxID_EDIT_PREFERENCES,wxT("Preferences..."));
+  FileMenu->Append(wxID_PREFERENCES,wxT("Preferences..."));
   FileMenu->Append(wxID_EXIT,wxT("E&xit\tAlt-X"));
 
   wxMenuItem *Item;
