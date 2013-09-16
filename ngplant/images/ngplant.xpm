@@ -1,5 +1,5 @@
 /* XPM */
-static char * ngplant_xpm[] = {
+static const char * ngplant_xpm[] = {
 "48 48 152 2",
 "  	c None",
 ". 	c #095D07",
