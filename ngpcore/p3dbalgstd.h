@@ -62,6 +62,9 @@ class P3DBranchingAlgStd : public P3DBranchingAlg
   unsigned int     GetMultiplicity    () const;
   void             SetMultiplicity    (unsigned int                  Multiplicity);
 
+  float            GetStartRevAngle   () const;
+  void             SetStartRevAngle   (float                         StartRevAngle);
+
   float            GetRevAngle        () const;
   void             SetRevAngle        (float                         RevAngle);
 
@@ -110,6 +113,7 @@ class P3DBranchingAlgStd : public P3DBranchingAlg
   bool                                 MaxLimitEnabled; /* if false, MaxNumber is not used */
   unsigned int                         MaxNumber; /* max. number of branches */
   unsigned int                         Multiplicity;
+  float                                StartRevAngle; /* initial rotation around stem */
   float                                RevAngle; /* rotation around stem step */
   float                                RevAngleV;
 

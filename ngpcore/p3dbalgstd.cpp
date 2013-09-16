@@ -41,6 +41,7 @@
   MaxLimitEnabled = false;
   MaxNumber    = 0;
   Multiplicity = 1;
+  StartRevAngle = 0.0f;
   RevAngle     = 0.0f;
   RevAngleV    = 0.0f;
   MinOffset    = 0.0f;
@@ -73,6 +74,7 @@ P3DBranchingAlg   *P3DBranchingAlgStd::CreateCopy
   Result->MaxLimitEnabled = MaxLimitEnabled;
   Result->MaxNumber    = MaxNumber;
   Result->Multiplicity = Multiplicity;
+  Result->StartRevAngle = StartRevAngle;
   Result->RevAngle     = RevAngle;
   Result->RevAngleV    = RevAngleV;
   Result->MinOffset    = MinOffset;
@@ -194,6 +196,18 @@ void               P3DBranchingAlgStd::SetRevAngle
   this->RevAngle = RevAngle;
  }
 
+float              P3DBranchingAlgStd::GetStartRevAngle
+                                      () const
+ {
+  return(StartRevAngle);
+ }
+
+void               P3DBranchingAlgStd::SetStartRevAngle
+                                      (float                         StartRevAngle)
+ {
+  this->StartRevAngle = StartRevAngle;
+ }
+
 float              P3DBranchingAlgStd::GetRevAngleV
                                       () const
  {
@@ -279,7 +293,7 @@ void               P3DBranchingAlgStd::CreateBranches
   float                                CurrRevAngle;
   float                                BranchRegionLength;
 
-  CurrRevAngle = 0.0f;
+  CurrRevAngle = StartRevAngle;
 
   BranchRegionLength = Parent->GetLength() * (MaxOffset - MinOffset);
 
@@ -378,6 +392,7 @@ void               P3DBranchingAlgStd::Save
 
   FmtStream.WriteString("su","Multiplicity",Multiplicity);
 
+  FmtStream.WriteString("sf","StartRevAngle",StartRevAngle);
   FmtStream.WriteString("sf","RevAngle",RevAngle);
   FmtStream.WriteString("sf","RevAngleV",RevAngleV);
 
@@ -395,7 +410,7 @@ void               P3DBranchingAlgStd::Load
                                       (P3DInputStringFmtStream
                                                           *SourceStream,
                                        const P3DFileVersion
-                                                          *Version P3D_UNUSED_ATTR)
+                                                          *Version)
  {
   char                                 StrValue[255 + 1];
   float                                FloatValue;
@@ -431,6 +446,16 @@ void               P3DBranchingAlgStd::Load
   else
    {
     Multiplicity = 1;
+   }
+
+  if (Version->Minor > 7)
+   {
+    SourceStream->ReadFmtStringTagged("StartRevAngle","f",&FloatValue);
+    SetStartRevAngle(FloatValue);
+   }
+  else
+   {
+    StartRevAngle = 0.0f;
    }
 
   SourceStream->ReadFmtStringTagged("RevAngle","f",&FloatValue);

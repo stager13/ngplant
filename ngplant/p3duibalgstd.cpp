@@ -36,6 +36,7 @@ enum
   wxID_MULTIPLICITY_CTRL,
   wxID_MIN_OFFSET_CTRL,
   wxID_MAX_OFFSET_CTRL,
+  wxID_START_REVANGLE_CTRL,
   wxID_REVANGLE_CTRL,
   wxID_REVANGLEV_CTRL,
   wxID_ROTANGLE_CTRL,
@@ -52,6 +53,7 @@ BEGIN_EVENT_TABLE(P3DBranchingAlgStdPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_MULTIPLICITY_CTRL,P3DBranchingAlgStdPanel::OnMultiplicityChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_MIN_OFFSET_CTRL,P3DBranchingAlgStdPanel::OnMinOffsetChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_MAX_OFFSET_CTRL,P3DBranchingAlgStdPanel::OnMaxOffsetChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_START_REVANGLE_CTRL,P3DBranchingAlgStdPanel::OnStartRevAngleChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_REVANGLE_CTRL,P3DBranchingAlgStdPanel::OnRevAngleChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_REVANGLEV_CTRL,P3DBranchingAlgStdPanel::OnRevAngleVChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_ROTANGLE_CTRL,P3DBranchingAlgStdPanel::OnRotAngleChanged)
@@ -158,7 +160,7 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
 
   wxBoxSizer           *TopSizer        = new wxBoxSizer(wxVERTICAL);
   wxStaticBoxSizer     *ParametersSizer = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Parameters")),wxVERTICAL);
-  wxFlexGridSizer      *GridSizer       = new wxFlexGridSizer(13,2,2,2);
+  wxFlexGridSizer      *GridSizer       = new wxFlexGridSizer(14,2,2,2);
 
   GridSizer->AddGrowableCol(1);
 
@@ -259,6 +261,19 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
   spin_slider->SetLargeMove(0.2);
   spin_slider->SetStdMove(0.1);
   spin_slider->SetSmallMove(0.01);
+
+  GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
+
+  /* Start rev. angle */
+
+  GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Start RevAngle")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  spin_slider = new wxSpinSliderCtrl(this,wxID_START_REVANGLE_CTRL,wxSPINSLIDER_MODE_INTEGER,(int)P3DMath::Roundf((P3DMATH_RAD2DEG(Alg->GetStartRevAngle()))),0,359);
+  spin_slider->SetStdStep(1);
+  spin_slider->SetSmallStep(1);
+  spin_slider->SetLargeMove(2);
+  spin_slider->SetStdMove(1);
+  spin_slider->SetSmallMove(1);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -449,6 +464,17 @@ void               P3DBranchingAlgStdPanel::OnMultiplicityChanged
           event.GetIntValue(),
           Alg->GetMultiplicity(),
           &P3DBranchingAlgStd::SetMultiplicity));
+ }
+
+void               P3DBranchingAlgStdPanel::OnStartRevAngleChanged
+                                      (wxSpinSliderEvent  &event)
+ {
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBAlgStdFloatParamEditCmd
+         (Alg,
+          P3DMATH_DEG2RAD((float)(event.GetIntValue())),
+          Alg->GetStartRevAngle(),
+          &P3DBranchingAlgStd::SetStartRevAngle));
  }
 
 void               P3DBranchingAlgStdPanel::OnRevAngleChanged
