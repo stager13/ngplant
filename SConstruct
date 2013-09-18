@@ -274,6 +274,9 @@ if ProfilingEnabled:
 
 if BaseEnv['PLATFORM'] == 'darwin':
     BaseEnv.Append(CPPPATH=['/usr/X11/include'])
+    BaseEnv.Append(CFLAGS=['-mmacosx-version-min=10.5'])
+    BaseEnv.Append(CXXFLAGS=['-mmacosx-version-min=10.5'])
+    BaseEnv.Append(LINKFLAGS=['-mmacosx-version-min=10.5'])
 
 Export('BaseEnv',
        'CC_WARN_FLAGS',
