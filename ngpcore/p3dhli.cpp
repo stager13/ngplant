@@ -1112,6 +1112,8 @@ const P3DBranchModel
  {
   const P3DBranchModel                *BranchModel;
 
+  Index += 2; /* skip plant base group */
+
   BranchModel = GetBranchModelByIndex(Model->GetPlantBase(),DummiesEnabled,&Index);
 
   if (BranchModel == 0)
