@@ -220,6 +220,10 @@ class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
 
         Counters[GroupIndex]++;
        }
+      else
+       {
+        SubGroupIndex = GroupIndex;
+       }
      }
     else
      {
