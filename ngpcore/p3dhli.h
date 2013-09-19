@@ -162,6 +162,9 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
                                        unsigned int        ElementType,
                                        unsigned int        IndexBase = 0) const;
 
+  void             SetDummiesEnabled  (bool                Enabled);
+  bool             IsDummiesEnabled   () const;
+
   P3DHLIPlantInstance
                   *CreateInstance     (unsigned int        BaseSeed = 0) const;
 
@@ -169,6 +172,7 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
 
   const P3DPlantModel                 *Model;
   P3DPlantModel                        OwnedModel;
+  bool                                 DummiesEnabled;
  };
 
 class P3D_DLL_ENTRY P3DHLIPlantInstance
@@ -176,7 +180,8 @@ class P3D_DLL_ENTRY P3DHLIPlantInstance
   public           :
 
                    P3DHLIPlantInstance(const P3DPlantModel*Model,
-                                       unsigned int        BaseSeed);
+                                       unsigned int        BaseSeed,
+                                       bool                DummiesEnabled);
 
   unsigned int     GetBranchCount     (unsigned int        GroupIndex) const;
   void             GetBranchCountMulti(unsigned int       *BranchCounts) const;
@@ -226,6 +231,7 @@ class P3D_DLL_ENTRY P3DHLIPlantInstance
 
   const P3DPlantModel                 *Model;
   unsigned int                         BaseSeed;
+  bool                                 DummiesEnabled;
  };
 
 #endif
