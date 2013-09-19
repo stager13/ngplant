@@ -76,6 +76,9 @@ class P3DPlantModelTreeCtrl : public wxTreeCtrl
   void             OnSetStemModelGMeshClick
                                       (wxCommandEvent     &event);
 
+  void             OnSetStemDummyModeClick
+                                      (wxCommandEvent     &event);
+
   void             PlantInvalidated   ();
 
   bool             FindItemByModel    (wxTreeItemId       *FoundItemId,

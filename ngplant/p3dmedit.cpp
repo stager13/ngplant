@@ -37,6 +37,7 @@
 #include <p3dwxlistdlg.h>
 
 #include <p3dapp.h>
+#include <p3dcmdhelpers.h>
 #include <p3dmaterialstd.h>
 
 #include <p3duimodelstemtube.h>
@@ -68,6 +69,7 @@ enum
   P3D_SET_STEM_MODEL_QUAD_ID,
   P3D_SET_STEM_MODEL_WINGS_ID,
   P3D_SET_STEM_MODEL_GMESH_ID,
+  P3D_SET_STEM_DUMMY_MODE,
 
   P3D_AUTO_UPDATE_ID,
   P3D_UPDATE_ID,
@@ -358,6 +360,8 @@ class P3DPlantModelTreeCtrlItemData : public wxTreeItemData
   P3DBranchModel                      *BranchModel;
  };
 
+typedef P3DParamEditCmdTemplate<P3DBranchModel,bool> P3DBranchModelBoolParamEditCmd;
+
 BEGIN_EVENT_TABLE(P3DPlantModelTreeCtrl,wxTreeCtrl)
  EVT_TREE_SEL_CHANGED(PLANT_TREE_CTRL_ID,P3DPlantModelTreeCtrl::OnSelectionChanged)
  EVT_TREE_ITEM_RIGHT_CLICK(PLANT_TREE_CTRL_ID,P3DPlantModelTreeCtrl::OnItemRightClick)
@@ -369,6 +373,7 @@ BEGIN_EVENT_TABLE(P3DPlantModelTreeCtrl,wxTreeCtrl)
  EVT_MENU(P3D_SET_STEM_MODEL_TUBE_ID,P3DPlantModelTreeCtrl::OnSetStemModelTubeClick)
  EVT_MENU(P3D_SET_STEM_MODEL_QUAD_ID,P3DPlantModelTreeCtrl::OnSetStemModelQuadClick)
  EVT_MENU(P3D_SET_STEM_MODEL_WINGS_ID,P3DPlantModelTreeCtrl::OnSetStemModelWingsClick)
+ EVT_MENU(P3D_SET_STEM_DUMMY_MODE,P3DPlantModelTreeCtrl::OnSetStemDummyModeClick)
  EVT_MENU_RANGE(wxID_GMESH_PLUGIN_FIRST,wxID_GMESH_PLUGIN_LAST,P3DPlantModelTreeCtrl::OnSetStemModelGMeshClick)
 END_EVENT_TABLE()
 
@@ -1229,6 +1234,24 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelGMeshClick
           BranchPanel));
  }
 
+void               P3DPlantModelTreeCtrl::OnSetStemDummyModeClick
+                                      (wxCommandEvent     &event)
+ {
+  wxTreeItemId                         ItemId;
+  P3DBranchModel                      *BranchModel;
+
+  ItemId = GetSelection();
+
+  BranchModel = ((P3DPlantModelTreeCtrlItemData*)(GetItemData(ItemId)))->GetBranchModel();
+
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBranchModelBoolParamEditCmd
+         (BranchModel,
+          event.IsChecked(),
+          BranchModel->IsDummy(),
+          &P3DBranchModel::SetDummy));
+ }
+
 namespace {
 
 class HideShowEditCommand : public P3DEditCommand
@@ -1359,6 +1382,10 @@ void               P3DPlantModelTreeCtrl::OnItemRightClick
    {
     PopupMenu.AppendSeparator();
     PopupMenu.Append(P3D_SET_STEM_MODEL_ID,wxT("Stem model"),StemModelMenu);
+
+    wxMenuItem *DummyModeMenuItem = PopupMenu.AppendCheckItem(P3D_SET_STEM_DUMMY_MODE,wxT("Dummy"));
+
+    DummyModeMenuItem->Check(BranchModel->IsDummy());
 
     PopupMenu.AppendSeparator();
 
