@@ -559,6 +559,7 @@ void               P3DStemModelInstance::GetBoundBox
   MaterialInstance = 0;
   SubBranchCount   = 0;
   Name             = 0;
+  Dummy            = false;
  }
 
                    P3DBranchModel::~P3DBranchModel
@@ -608,6 +609,18 @@ void               P3DBranchModel::SetName
       throw P3DExceptionGeneric("out of memory");
      }
    }
+ }
+
+bool               P3DBranchModel::IsDummy
+                                      () const
+ {
+  return Dummy;
+ }
+
+void               P3DBranchModel::SetDummy
+                                      (bool                Dummy)
+ {
+  this->Dummy = Dummy;
  }
 
 P3DStemModel      *P3DBranchModel::GetStemModel

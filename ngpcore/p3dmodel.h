@@ -359,6 +359,9 @@ class P3DBranchModel
   const char      *GetName            () const;
   void             SetName            (const char         *Name);
 
+  bool             IsDummy            () const;
+  void             SetDummy           (bool                Dummy);
+
   P3DStemModel    *GetStemModel       ();
   const
   P3DStemModel    *GetStemModel       () const;
@@ -405,6 +408,7 @@ class P3DBranchModel
   private          :
 
   char                                *Name;
+  bool                                 Dummy;
   P3DStemModel                        *StemModel;
   P3DBranchingAlg                     *BranchingAlg;
   P3DMaterialInstance                 *MaterialInstance;
