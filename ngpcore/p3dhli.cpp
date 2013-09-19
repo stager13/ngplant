@@ -39,19 +39,20 @@
 static
 unsigned int       CalcInternalGroupCount
                                       (const P3DBranchModel
-                                                          *BranchModel)
+                                                          *BranchModel,
+                                       bool                DummiesEnabled)
  {
   unsigned int                         GroupCount;
   unsigned int                         SubBranchIndex;
   unsigned int                         SubBranchCount;
 
-  GroupCount = 1;
+  GroupCount = DummiesEnabled ? 1 : (BranchModel->IsDummy() ? 0 : 1);
 
   SubBranchCount = BranchModel->GetSubBranchCount();
 
   for (SubBranchIndex = 0; SubBranchIndex < SubBranchCount; SubBranchIndex++)
    {
-    GroupCount += CalcInternalGroupCount(BranchModel->GetSubBranchModel(SubBranchIndex));
+    GroupCount += CalcInternalGroupCount(BranchModel->GetSubBranchModel(SubBranchIndex),DummiesEnabled);
    }
 
   return(GroupCount);
@@ -186,13 +187,15 @@ class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
                                        const P3DStemModelInstance
                                                           *Parent,
                                        unsigned int        GroupIndex,
+                                       bool                DummiesEnabled,
                                        unsigned int       *Counters)
    {
-    this->RNG           = RNG;
-    this->BranchModel   = BranchModel;
-    this->Parent        = Parent;
-    this->GroupIndex    = GroupIndex;
-    this->Counters      = Counters;
+    this->RNG            = RNG;
+    this->BranchModel    = BranchModel;
+    this->Parent         = Parent;
+    this->GroupIndex     = GroupIndex;
+    this->DummiesEnabled = DummiesEnabled;
+    this->Counters       = Counters;
    }
 
   virtual void     GenerateBranch     (float               Offset,
@@ -209,10 +212,14 @@ class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
 
     if (StemModel != 0)
      {
-      Instance      = StemModel->CreateInstance(RNG,Parent,Offset,Orientation);
-      SubGroupIndex = GroupIndex + 1;
+      Instance = StemModel->CreateInstance(RNG,Parent,Offset,Orientation);
 
-      Counters[GroupIndex]++;
+      if (DummiesEnabled || !BranchModel->IsDummy())
+       {
+        SubGroupIndex = GroupIndex + 1;
+
+        Counters[GroupIndex]++;
+       }
      }
     else
      {
@@ -228,13 +235,14 @@ class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
                                              BranchModel->GetSubBranchModel(SubBranchIndex),
                                              Instance,
                                              SubGroupIndex,
+                                             DummiesEnabled,
                                              Counters);
 
       const_cast<P3DBranchingAlg*>(BranchModel->GetSubBranchModel(SubBranchIndex)->GetBranchingAlg())
        ->CreateBranches(&Calculator,Instance,RNG);
 
       SubGroupIndex += CalcInternalGroupCount
-                        (BranchModel->GetSubBranchModel(SubBranchIndex));
+                        (BranchModel->GetSubBranchModel(SubBranchIndex),DummiesEnabled);
      }
 
     if (Instance != 0)
@@ -249,6 +257,7 @@ class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
   const P3DBranchModel                *BranchModel;
   const P3DStemModelInstance          *Parent;
   unsigned int                         GroupIndex;
+  bool                                 DummiesEnabled;
   unsigned int                        *Counters;
  };
 
@@ -773,6 +782,7 @@ class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
                                        const P3DStemModelInstance
                                                           *Parent,
                                        unsigned int        GroupIndex,
+                                       bool                DummiesEnabled,
                                        P3DHLIVAttrBufferSet
                                                           *VAttrBufferSetArray)
    {
@@ -780,6 +790,7 @@ class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
     this->BranchModel         = BranchModel;
     this->Parent              = Parent;
     this->GroupIndex          = GroupIndex;
+    this->DummiesEnabled      = DummiesEnabled;
     this->VAttrBufferSetArray = VAttrBufferSetArray;
    }
 
@@ -801,7 +812,7 @@ class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
       Instance = 0;
      }
 
-    if (Instance != 0)
+    if (Instance != 0 && (DummiesEnabled || !BranchModel->IsDummy()))
      {
       unsigned int                     VAttrIndex;
       unsigned int                     VAttrCount;
@@ -878,7 +889,14 @@ class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
 
     if (StemModel != 0)
      {
-      SubGroupIndex = GroupIndex + 1;
+      if (DummiesEnabled || !BranchModel->IsDummy())
+       {
+        SubGroupIndex = GroupIndex + 1;
+       }
+      else
+       {
+        SubGroupIndex = GroupIndex;
+       }
      }
     else
      {
@@ -894,13 +912,14 @@ class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
                                               BranchModel->GetSubBranchModel(SubBranchIndex),
                                               Instance,
                                               SubGroupIndex,
+                                              DummiesEnabled,
                                               VAttrBufferSetArray);
 
       const_cast<P3DBranchingAlg*>(BranchModel->GetSubBranchModel(SubBranchIndex)->GetBranchingAlg())
        ->CreateBranches(&Helper,Instance,RNG);
 
       SubGroupIndex += CalcInternalGroupCount
-                        (BranchModel->GetSubBranchModel(SubBranchIndex));
+                        (BranchModel->GetSubBranchModel(SubBranchIndex),DummiesEnabled);
      }
 
     if (Instance != 0)
@@ -915,6 +934,7 @@ class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
   const P3DBranchModel                *BranchModel;
   const P3DStemModelInstance          *Parent;
   unsigned int                         GroupIndex;
+  bool                                 DummiesEnabled;
   P3DHLIVAttrBufferSet                *VAttrBufferSetArray;
  };
 
@@ -1044,12 +1064,51 @@ unsigned int       P3DHLIVAttrBuffers::GetAttrStride
 static
 const P3DBranchModel
                   *GetBranchModelByIndex
+                                      (const P3DBranchModel
+                                                          *Model,
+                                       bool                DummiesEnabled,
+                                       unsigned int       *Index)
+ {
+  unsigned int                         SubBranchIndex;
+  unsigned int                         SubBranchCount;
+  const P3DBranchModel                *Result;
+
+  if (DummiesEnabled || !Model->IsDummy())
+   {
+    (*Index)--;
+   }
+
+  if ((*Index) == 0)
+   {
+    return(const_cast<P3DBranchModel*>(Model));
+   }
+
+  Result         = 0;
+  SubBranchIndex = 0;
+  SubBranchCount = Model->GetSubBranchCount();
+
+  while ((Result == 0) && (SubBranchIndex < SubBranchCount))
+   {
+    Result = GetBranchModelByIndex(Model->GetSubBranchModel(SubBranchIndex),
+                                   DummiesEnabled,
+                                   Index);
+
+    SubBranchIndex++;
+   }
+
+  return(const_cast<P3DBranchModel*>(Result));
+ }
+
+static
+const P3DBranchModel
+                  *GetBranchModelByIndex
                                       (const P3DPlantModel*Model,
+                                       bool                DummiesEnabled,
                                        unsigned int        Index)
  {
   const P3DBranchModel                *BranchModel;
 
-  BranchModel = P3DPlantModel::GetBranchModelByIndex(Model,Index);
+  BranchModel = GetBranchModelByIndex(Model->GetPlantBase(),DummiesEnabled,&Index);
 
   if (BranchModel == 0)
    {
@@ -1067,31 +1126,33 @@ const P3DBranchModel
 
   OwnedModel.Load(SourceStream,&MaterialFactory);
   Model = &OwnedModel;
+  DummiesEnabled = false;
  }
 
                    P3DHLIPlantTemplate::P3DHLIPlantTemplate
                                       (const P3DPlantModel*SourceModel)
  {
   Model = SourceModel;
+  DummiesEnabled = false;
  }
 
 unsigned int       P3DHLIPlantTemplate::GetGroupCount
                                       () const
  {
-  return(CalcInternalGroupCount(Model->GetPlantBase()) - 1);
+  return(CalcInternalGroupCount(Model->GetPlantBase(),DummiesEnabled) - 1);
  }
 
 const char        *P3DHLIPlantTemplate::GetGroupName
                                       (unsigned int        GroupIndex) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->GetName());
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->GetName());
  }
 
 const
 P3DMaterialDef    *P3DHLIPlantTemplate::GetMaterial
                                       (unsigned int        GroupIndex) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
           GetMaterialInstance()->GetMaterialDef());
  }
 
@@ -1102,7 +1163,7 @@ void               P3DHLIPlantTemplate::GetBillboardSize
  {
   const P3DBranchModel                *BranchModel;
 
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   const P3DStemModelQuad *QuadModel = dynamic_cast<const P3DStemModelQuad*>(BranchModel->GetStemModel());
 
@@ -1124,13 +1185,14 @@ bool               P3DHLIPlantTemplate::IsCloneable
                                       (unsigned int        GroupIndex,
                                        bool                AllowScaling) const
  {
-  return GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->IsCloneable(AllowScaling);
+  return GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
+          GetStemModel()->IsCloneable(AllowScaling);
  }
 
 bool               P3DHLIPlantTemplate::IsLODVisRangeEnabled
                                       (unsigned int        GroupIndex) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
           GetVisRangeState()->IsEnabled());
  }
 
@@ -1139,7 +1201,7 @@ void               P3DHLIPlantTemplate::GetLODVisRange
                                        float              *MaxLOD,
                                        unsigned int        GroupIndex) const
  {
-  GetBranchModelByIndex(Model,GroupIndex)->
+  GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
    GetVisRangeState()->GetRange(MinLOD,MaxLOD);
  }
 
@@ -1147,7 +1209,7 @@ unsigned int       P3DHLIPlantTemplate::GetVAttrCount
                                       (unsigned int        GroupIndex,
                                        unsigned int        Attr) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
           GetStemModel()->GetVAttrCount(Attr));
  }
 
@@ -1156,14 +1218,14 @@ void               P3DHLIPlantTemplate::FillCloneVAttrBuffer
                                        unsigned int        GroupIndex,
                                        unsigned int        Attr) const
  {
-  GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->
+  GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->GetStemModel()->
    FillCloneVAttrBuffer(VAttrBuffer,Attr);
  }
 
 unsigned int       P3DHLIPlantTemplate::GetPrimitiveCount
                                       (unsigned int        GroupIndex) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
           GetStemModel()->GetPrimitiveCount());
  }
 
@@ -1171,7 +1233,7 @@ unsigned int       P3DHLIPlantTemplate::GetPrimitiveType
                                       (unsigned int        GroupIndex,
                                        unsigned int        PrimitiveIndex) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
           GetStemModel()->GetPrimitiveType(PrimitiveIndex));
  }
 
@@ -1182,14 +1244,14 @@ void               P3DHLIPlantTemplate::FillVAttrIndexBuffer
                                        unsigned int        ElementType,
                                        unsigned int        IndexBase) const
  {
-  GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->
+  GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->GetStemModel()->
    FillVAttrIndexBuffer(IndexBuffer,Attr,ElementType,IndexBase);
  }
 
 unsigned int       P3DHLIPlantTemplate::GetVAttrCountI
                                       (unsigned int        GroupIndex) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
           GetStemModel()->GetVAttrCountI());
  }
 
@@ -1201,7 +1263,8 @@ void               P3DHLIPlantTemplate::FillCloneVAttrBuffersI
   const P3DStemModel                  *StemModel;
   unsigned int                         AttrIndex;
 
-  StemModel = GetBranchModelByIndex(Model,GroupIndex)->GetStemModel();
+  StemModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
+               GetStemModel();
 
   for (AttrIndex = 0; AttrIndex < P3D_MAX_ATTRS; AttrIndex++)
    {
@@ -1219,7 +1282,7 @@ unsigned int       P3DHLIPlantTemplate::GetIndexCount
                                       (unsigned int        GroupIndex,
                                        unsigned int        PrimitiveType) const
  {
-  return(GetBranchModelByIndex(Model,GroupIndex)->
+  return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->
           GetStemModel()->GetIndexCount(PrimitiveType));
  }
 
@@ -1230,7 +1293,7 @@ void               P3DHLIPlantTemplate::FillIndexBuffer
                                        unsigned int        ElementType,
                                        unsigned int        IndexBase) const
  {
-  GetBranchModelByIndex(Model,GroupIndex)->GetStemModel()->
+  GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->GetStemModel()->
    FillIndexBuffer(IndexBuffer,PrimitiveType,ElementType,IndexBase);
  }
 
@@ -1240,20 +1303,22 @@ P3DHLIPlantInstance
  {
   if (BaseSeed == 0)
    {
-    return(new P3DHLIPlantInstance(Model,Model->GetBaseSeed()));
+    return(new P3DHLIPlantInstance(Model,Model->GetBaseSeed(),DummiesEnabled));
    }
   else
    {
-    return(new P3DHLIPlantInstance(Model,BaseSeed));
+    return(new P3DHLIPlantInstance(Model,BaseSeed,DummiesEnabled));
    }
  }
 
                    P3DHLIPlantInstance::P3DHLIPlantInstance
                                       (const P3DPlantModel*Model,
-                                       unsigned int        BaseSeed)
+                                       unsigned int        BaseSeed,
+                                       bool                DummiesEnabled)
  {
-  this->Model    = Model;
-  this->BaseSeed = BaseSeed;
+  this->Model          = Model;
+  this->BaseSeed       = BaseSeed;
+  this->DummiesEnabled = DummiesEnabled;
  }
 
 unsigned int       P3DHLIPlantInstance::GetBranchCount
@@ -1262,7 +1327,7 @@ unsigned int       P3DHLIPlantInstance::GetBranchCount
   const P3DBranchModel                *BranchModel;
   unsigned int                         Counter;
 
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   Counter = 0;
 
@@ -1285,7 +1350,7 @@ void               P3DHLIPlantInstance::GetBranchCountMulti
   unsigned int                         GroupIndex;
   unsigned int                         GroupCount;
 
-  GroupCount = CalcInternalGroupCount(Model->GetPlantBase()) - 1;
+  GroupCount = CalcInternalGroupCount(Model->GetPlantBase(),DummiesEnabled) - 1;
 
   for (GroupIndex = 0; GroupIndex < GroupCount; GroupIndex++)
    {
@@ -1298,6 +1363,7 @@ void               P3DHLIPlantInstance::GetBranchCountMulti
                                           Model->GetPlantBase(),
                                           0,
                                           0,
+                                          DummiesEnabled,
                                           BranchCounts);
 
   Calculator.GenerateBranch(0.0f,0);
@@ -1311,6 +1377,7 @@ class P3DBranchingFactoryBoundCalc : public P3DBranchingFactory
                                                     P3DStemModelInstance
                                                                     *ParentStem,
                                                     P3DMathRNG      *RNG,
+                                                    bool             DummiesEnabled,
                                                     float           *Min,
                                                     float           *Max);
 
@@ -1323,6 +1390,7 @@ class P3DBranchingFactoryBoundCalc : public P3DBranchingFactory
   P3DBranchModel                      *BranchModel;
   P3DStemModelInstance                *ParentStem;
   P3DMathRNG                          *RNG;
+  bool                                 DummiesEnabled;
   float                               *Min;
   float                               *Max;
  };
@@ -1332,14 +1400,16 @@ class P3DBranchingFactoryBoundCalc : public P3DBranchingFactory
                                                     P3DStemModelInstance
                                                                     *ParentStem,
                                                     P3DMathRNG      *RNG,
+                                                    bool             DummiesEnabled,
                                                     float           *Min,
                                                     float           *Max)
  {
-  this->BranchModel = BranchModel;
-  this->ParentStem  = ParentStem;
-  this->RNG         = RNG;
-  this->Min         = Min;
-  this->Max         = Max;
+  this->BranchModel    = BranchModel;
+  this->ParentStem     = ParentStem;
+  this->RNG            = RNG;
+  this->DummiesEnabled = DummiesEnabled;
+  this->Min            = Min;
+  this->Max            = Max;
  }
 
 void               P3DBranchingFactoryBoundCalc::GenerateBranch
@@ -1364,18 +1434,21 @@ void               P3DBranchingFactoryBoundCalc::GenerateBranch
     StemInstance = StemModel->CreateInstance
                     (RNG,ParentStem,offset,orientation);
 
-    StemInstance->GetBoundBox(InstMin,InstMax);
-
-    for (unsigned int Axis = 0; Axis < 3; Axis++)
+    if (DummiesEnabled || !BranchModel->IsDummy())
      {
-      if      (InstMin[Axis] < Min[Axis])
-       {
-        Min[Axis] = InstMin[Axis];
-       }
+      StemInstance->GetBoundBox(InstMin,InstMax);
 
-      if (InstMax[Axis] > Max[Axis])
+      for (unsigned int Axis = 0; Axis < 3; Axis++)
        {
-        Max[Axis] = InstMax[Axis];
+        if      (InstMin[Axis] < Min[Axis])
+         {
+          Min[Axis] = InstMin[Axis];
+         }
+
+        if (InstMax[Axis] > Max[Axis])
+         {
+          Max[Axis] = InstMax[Axis];
+         }
        }
      }
    }
@@ -1391,7 +1464,7 @@ void               P3DBranchingFactoryBoundCalc::GenerateBranch
     SubBranchModel = BranchModel->GetSubBranchModel(SubBranchIndex);
     BranchingAlg   = SubBranchModel->GetBranchingAlg();
 
-    P3DBranchingFactoryBoundCalc         BranchingFactory(SubBranchModel,StemInstance,RNG,Min,Max);
+    P3DBranchingFactoryBoundCalc         BranchingFactory(SubBranchModel,StemInstance,RNG,DummiesEnabled,Min,Max);
 
     BranchingAlg->CreateBranches(&BranchingFactory,StemInstance,RNG);
    }
@@ -1405,7 +1478,8 @@ void               P3DBranchingFactoryBoundCalc::GenerateBranch
 static void        P3DHLICalcBBox     (float              *Min,
                                        float              *Max,
                                        const P3DPlantModel*Model,
-                                       unsigned int        BaseSeed)
+                                       unsigned int        BaseSeed,
+                                       bool                DummiesEnabled)
  {
   P3DMathRNGSimple                     RNG(BaseSeed);
 
@@ -1416,6 +1490,7 @@ static void        P3DHLICalcBBox     (float              *Min,
    BranchingFactory ((const_cast<P3DPlantModel*>(Model))->GetPlantBase(),
                      0,
                      (Model->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) ? 0 : &RNG,
+                     DummiesEnabled,
                      Min,
                      Max);
 
@@ -1426,7 +1501,7 @@ void               P3DHLIPlantInstance::GetBoundingBox
                                       (float              *Min,
                                        float              *Max) const
  {
-  P3DHLICalcBBox(Min,Max,Model,BaseSeed);
+  P3DHLICalcBBox(Min,Max,Model,BaseSeed,DummiesEnabled);
  }
 
 void               P3DHLIPlantInstance::FillCloneTransformBuffer
@@ -1437,7 +1512,7 @@ void               P3DHLIPlantInstance::FillCloneTransformBuffer
  {
   const P3DBranchModel                *BranchModel;
 
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   P3DMathRNGSimple RNG(BaseSeed);
 
@@ -1460,7 +1535,7 @@ unsigned int       P3DHLIPlantInstance::GetVAttrCount
   const P3DBranchModel                *BranchModel;
 
   BranchCount = GetBranchCount(GroupIndex);
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   return(BranchCount * BranchModel->GetStemModel()->GetVAttrCount(Attr));
  }
@@ -1472,7 +1547,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffer
  {
   const P3DBranchModel                *BranchModel;
 
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   P3DMathRNGSimple                     RNG(BaseSeed);
   unsigned char                       *Buffer;
@@ -1496,7 +1571,7 @@ unsigned int       P3DHLIPlantInstance::GetVAttrCountI
   const P3DBranchModel                *BranchModel;
 
   BranchCount = GetBranchCount(GroupIndex);
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   return(BranchCount * BranchModel->GetStemModel()->GetVAttrCountI());
  }
@@ -1509,7 +1584,7 @@ void               P3DHLIPlantInstance::FillVAttrBufferI
  {
   const P3DBranchModel                *BranchModel;
 
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   P3DMathRNGSimple                     RNG(BaseSeed);
   unsigned char                       *Buffer;
@@ -1533,7 +1608,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffersI
  {
   const P3DBranchModel                *BranchModel;
 
-  BranchModel = GetBranchModelByIndex(Model,GroupIndex);
+  BranchModel = GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex);
 
   P3DMathRNGSimple                     RNG(BaseSeed);
   void                                *DataBuffers[P3D_MAX_ATTRS];
@@ -1560,7 +1635,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffersIMulti
   unsigned int                         GroupIndex;
   unsigned int                         GroupCount;
 
-  GroupCount = CalcInternalGroupCount(Model->GetPlantBase()) - 1;
+  GroupCount = CalcInternalGroupCount(Model->GetPlantBase(),DummiesEnabled) - 1;
 
   if (GroupCount > 0)
    {
@@ -1582,6 +1657,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffersIMulti
                                                  Model->GetPlantBase(),
                                                  0,
                                                  0,
+                                                 DummiesEnabled,
                                                  TempVAttrBufferSet);
 
     Helper.GenerateBranch(0.0f,0);
