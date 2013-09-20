@@ -1303,6 +1303,18 @@ void               P3DHLIPlantTemplate::FillIndexBuffer
    FillIndexBuffer(IndexBuffer,PrimitiveType,ElementType,IndexBase);
  }
 
+void               P3DHLIPlantTemplate::SetDummiesEnabled
+                                      (bool                Enabled)
+ {
+  DummiesEnabled = Enabled;
+ }
+
+bool               P3DHLIPlantTemplate::IsDummiesEnabled
+                                      () const
+ {
+  return DummiesEnabled;
+ }
+
 P3DHLIPlantInstance
                   *P3DHLIPlantTemplate::CreateInstance
                                       (unsigned int        BaseSeed) const
