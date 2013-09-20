@@ -1389,13 +1389,16 @@ void               P3DPlantModelTreeCtrl::OnItemRightClick
 
     PopupMenu.AppendSeparator();
 
-    if (MaterialSimple->IsHidden())
+    if (!BranchModel->IsDummy())
      {
-      PopupMenu.Append(PLANT_TREE_HIDESHOW_STEM_ID,wxT("Show"));
-     }
-    else
-     {
-      PopupMenu.Append(PLANT_TREE_HIDESHOW_STEM_ID,wxT("Hide"));
+      if (MaterialSimple->IsHidden())
+       {
+        PopupMenu.Append(PLANT_TREE_HIDESHOW_STEM_ID,wxT("Show"));
+       }
+      else
+       {
+        PopupMenu.Append(PLANT_TREE_HIDESHOW_STEM_ID,wxT("Hide"));
+       }
      }
    }
 
@@ -1480,12 +1483,16 @@ wxString           P3DPlantModelTreeCtrl::MakeTreeItemLabel
       const P3DPlantModel             *Model;
       const P3DBranchModel            *TempBranchModel;
       unsigned int                     GroupIndex;
+      unsigned int                     DummyCounter;
       P3DMaterialInstanceSimple       *SimpleMaterial;
       wxString                         StatStr;
+      bool                             DummiesVisible;
 
       Model = P3DApp::GetApp()->GetModel();
+      DummiesVisible = P3DApp::GetApp()->IsDummyVisible();
 
       GroupIndex      = 0;
+      DummyCounter    = 0;
       TempBranchModel = P3DPlantModel::GetBranchModelByIndex(Model,GroupIndex);
 
       while (TempBranchModel != 0)
@@ -1494,25 +1501,44 @@ wxString           P3DPlantModelTreeCtrl::MakeTreeItemLabel
 
         GroupIndex++;
 
+        if (!DummiesVisible && TempBranchModel->IsDummy())
+         {
+          DummyCounter++;
+         }
+
         TempBranchModel = P3DPlantModel::GetBranchModelByIndex(Model,GroupIndex);
        }
 
       if (TempBranchModel != 0)
        {
-        StatStr = wxString::Format(wxT("[%d/%d]"),
-                                   PlantObject->GetGroupVertexCount(GroupIndex),
-                                   PlantObject->GetGroupTriangleCount(GroupIndex));
+        if (DummiesVisible || !TempBranchModel->IsDummy())
+         {
+          StatStr = wxString::Format(wxT("[%d/%d]"),
+                                     PlantObject->GetGroupVertexCount(GroupIndex - DummyCounter),
+                                     PlantObject->GetGroupTriangleCount(GroupIndex - DummyCounter));
+         }
+        else
+         {
+          StatStr = wxT("[-/-]");
+         }
        }
       else
        {
         StatStr = wxT("[?/?]");
        }
 
-      SimpleMaterial = dynamic_cast<P3DMaterialInstanceSimple*>(BranchModel->GetMaterialInstance());
-
-      if (SimpleMaterial->IsHidden())
+      if (BranchModel->IsDummy())
        {
-        StatStr = wxT("[H]") + StatStr;
+        StatStr = wxT("[D]") + StatStr;
+       }
+      else
+       {
+        SimpleMaterial = dynamic_cast<P3DMaterialInstanceSimple*>(BranchModel->GetMaterialInstance());
+
+        if (SimpleMaterial->IsHidden())
+         {
+          StatStr = wxT("[H]") + StatStr;
+         }
        }
 
       Result = wxString(Prefix,wxConvUTF8) + wxT(" ") + StatStr;
