@@ -70,6 +70,7 @@ enum
   wxID_EXPORT      = wxID_HIGHEST + 1200,
   wxID_EXPORT_OBJ,
   wxID_RUN_SCRIPT,
+  wxID_SHOW_DUMMIES,
 
   wxID_EXPORT_PLUGIN_FIRST = wxID_RUN_SCRIPT + 10000,
   wxID_EXPORT_PLUGIN_LAST  = wxID_EXPORT_PLUGIN_FIRST + 250
@@ -85,6 +86,7 @@ BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_EXPORT_OBJ,P3DMainFrame::OnExportObj)
  EVT_MENU_RANGE(wxID_EXPORT_PLUGIN_FIRST,wxID_EXPORT_PLUGIN_LAST,P3DMainFrame::OnExportObjPlugin)
  EVT_MENU(wxID_RUN_SCRIPT,P3DMainFrame::OnRunScript)
+ EVT_MENU(wxID_SHOW_DUMMIES,P3DMainFrame::OnShowDummy)
  EVT_MENU(wxID_EXIT,P3DMainFrame::OnQuit)
  EVT_MENU(wxID_ABOUT,P3DMainFrame::OnAbout)
  EVT_MENU(wxID_PREFERENCES,P3DMainFrame::OnEditPreferences)
@@ -148,6 +150,7 @@ class P3DUndoRedoMenuStateUpdater
  {
   wxMenu          *FileMenu = new wxMenu();
   wxMenu          *EditMenu = new wxMenu();
+  wxMenu          *ViewMenu = new wxMenu();
   wxMenu          *HelpMenu = new wxMenu();
   wxMenu          *ExportMenu = new wxMenu();
   const P3DPluginInfoVector
@@ -181,11 +184,15 @@ class P3DUndoRedoMenuStateUpdater
   Item = EditMenu->Append(wxID_REDO,wxT("&Redo\tCtrl-R"));
   Item->Enable(false);
 
+  Item = ViewMenu->AppendCheckItem(wxID_SHOW_DUMMIES,wxT("Show &dummies\tCtrl-H"));
+  Item->Check(P3DApp::GetApp()->IsDummyVisible());
+
   HelpMenu->Append(wxID_ABOUT,wxT("About..."));
 
   wxMenuBar       *MenuBar = new wxMenuBar();
   MenuBar->Append(FileMenu,wxT("&File"));
   MenuBar->Append(EditMenu,wxT("&Edit"));
+  MenuBar->Append(ViewMenu,wxT("&View"));
   MenuBar->Append(HelpMenu,wxT("&Help"));
 
   Canvas3D = new P3DCanvas3D(this);
@@ -625,6 +632,12 @@ void               P3DMainFrame::OnRedo
                                       (wxCommandEvent     &event)
  {
   P3DApp::GetApp()->Redo();
+ }
+
+void               P3DMainFrame::OnShowDummy
+                                      (wxCommandEvent     &event)
+ {
+  P3DApp::GetApp()->SetDummyVisible(event.IsChecked());
  }
 
 void               P3DMainFrame::UpdateControls
@@ -1077,6 +1090,7 @@ bool               P3DApp::OnInit     ()
 
   SelfPtr = this;
   UnsavedChanges = false;
+  DummyVisible   = false;
 
   if (!wxApp::OnInit())
    {
@@ -1294,6 +1308,23 @@ void               P3DApp::SetAutoUpdateMode
                                       (bool                Enable)
  {
   PlantObjectAutoUpdate = Enable;
+ }
+
+bool               P3DApp::IsDummyVisible
+                                      () const
+ {
+  return DummyVisible;
+ }
+
+void               P3DApp::SetDummyVisible
+                                      (bool                Visible)
+ {
+  if (DummyVisible != Visible)
+   {
+    DummyVisible = Visible;
+
+    ForceUpdate();
+   }
  }
 
 bool               P3DApp::IsShadersEnabled

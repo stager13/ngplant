@@ -561,6 +561,8 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
   TotalVertexCount   = 0;
   TotalTriangleCount = 0;
 
+  Template.SetDummiesEnabled(P3DApp::GetApp()->IsDummyVisible());
+
   GroupCount = Template.GetGroupCount();
 
   if (GroupCount == 0)

@@ -60,6 +60,7 @@ class P3DMainFrame : public wxFrame
 
   void             OnUndo             (wxCommandEvent     &event);
   void             OnRedo             (wxCommandEvent     &event);
+  void             OnShowDummy        (wxCommandEvent     &event);
   bool             OpenModelFile      (const wxString     &FileName);
   void             UpdateControls     ();
   bool             ApproveDataLoss    ();
@@ -189,6 +190,9 @@ class P3DApp : public wxApp
   bool             IsAutoUpdateMode   () const;
   void             SetAutoUpdateMode  (bool                Enable);
 
+  bool             IsDummyVisible     () const;
+  void             SetDummyVisible    (bool                Visible);
+
   bool             IsShadersEnabled   () const;
   void             DisableShaders     ();
 
@@ -231,6 +235,7 @@ class P3DApp : public wxApp
   float            LODLevel;
 
   bool             UseShaders;
+  bool             DummyVisible;
 
   P3DEditCommandQueue                 *CommandQueue;
 
