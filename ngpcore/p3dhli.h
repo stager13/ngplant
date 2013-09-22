@@ -104,6 +104,8 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
 
   const char      *GetGroupName       (unsigned int        GroupIndex) const;
 
+  bool             IsDummy            (unsigned int        GroupIndex) const;
+
   const
   P3DMaterialDef  *GetMaterial        (unsigned int        GroupIndex) const;
 
