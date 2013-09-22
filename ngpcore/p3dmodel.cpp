@@ -836,6 +836,8 @@ void               P3DBranchModel::Save
 
   FmtStream.WriteString("ss","BranchGroupName",GetName());
 
+  FmtStream.WriteString("sb","IsDummy",IsDummy());
+
   if (BranchingAlg != 0)
    {
     BranchingAlg->Save(TargetStream);
@@ -904,6 +906,11 @@ void               P3DBranchModel::Load
     SourceStream->ReadFmtStringTagged("BranchGroupName","s",NameBuffer,sizeof(NameBuffer));
 
     SetName(NameBuffer);
+   }
+
+  if ((Version->Major == 0) && (Version->Minor > 8))
+   {
+    SourceStream->ReadFmtStringTagged("IsDummy","b",&Dummy);
    }
 
   SourceStream->ReadFmtStringTagged("BranchingAlg","s",NameBuffer,sizeof(NameBuffer));
@@ -1099,7 +1106,7 @@ void               P3DPlantModel::SetFlags
   this->Flags = Flags;
  }
 
-#define P3D_VERSION_MINOR (8)
+#define P3D_VERSION_MINOR (9)
 #define P3D_VERSION_MAJOR (0)
 
 void               P3DPlantModel::Save(P3DOutputStringStream
