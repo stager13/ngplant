@@ -210,7 +210,6 @@ void               P3DStemModelTubeInstance::CalcVertexBiNormal
                                        unsigned int        VertexIndex) const
  {
   unsigned int                         SegIndex;
-  float                                HeightFraction;
   P3DQuaternionf                       SegOrient;
   P3DVector3f                          VertexBiNormal(0.0f,1.0f,0.0f);
   P3DMatrix4x4f                        Rotation;
@@ -221,8 +220,6 @@ void               P3DStemModelTubeInstance::CalcVertexBiNormal
 
   if (SegIndex <= Axis.GetResolution())
    {
-    HeightFraction = ((float)(Axis.GetResolution() - SegIndex)) / Axis.GetResolution();
-
     Axis.GetOrientationAt(SegOrient.q,Axis.GetResolution() - SegIndex);
 
     P3DQuaternionf::RotateVector(VertexBiNormal.v,SegOrient.q);
