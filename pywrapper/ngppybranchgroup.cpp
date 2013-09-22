@@ -109,6 +109,21 @@ static PyObject    *BranchGroupGetName(PyObject           *self,
                             GetGroupName(BranchGroup->GroupIndex)));
  }
 
+static PyObject    *BranchGroupIsDummy(PyObject           *self,
+                                       PyObject           *args)
+ {
+  BranchGroupObject                   *BranchGroup;
+
+  BranchGroup = (BranchGroupObject*)self;
+
+  if (!PlantInstanceCheck(BranchGroup->PlantInstance))
+   {
+    return(NULL);
+   }
+
+  return(Py_BuildValue("i",BranchGroup->PlantInstance->Template->
+                            IsDummy(BranchGroup->GroupIndex)));
+ }
 
 static PyObject    *BranchGroupGetMaterial
                                       (PyObject           *self,
@@ -1284,6 +1299,12 @@ static PyMethodDef BranchGroupMethods[] =
    (PyCFunction)BranchGroupGetName,
    METH_NOARGS,
    "Return branch group name"
+  },
+  {
+   "IsDummy",
+   (PyCFunction)BranchGroupIsDummy,
+   METH_NOARGS,
+   "Return boolean indicating if branch group is dummy"
   },
   {
    "GetMaterial",
