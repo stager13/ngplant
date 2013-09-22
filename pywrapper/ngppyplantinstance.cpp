@@ -64,10 +64,12 @@ static int         PlantInstanceInit  (PlantInstanceObject*self,
  {
   char                                *FileName;
   unsigned int                         Seed;
+  int                                  EnableDummies;
 
-  Seed = 0;
+  Seed          = 0;
+  EnableDummies = 0;
 
-  if (!PyArg_ParseTuple(args,"s|I",&FileName,&Seed))
+  if (!PyArg_ParseTuple(args,"s|Ii",&FileName,&Seed,&EnableDummies))
    {
     return(-1);
    }
@@ -79,6 +81,12 @@ static int         PlantInstanceInit  (PlantInstanceObject*self,
     SourceStream.Open(FileName);
 
     self->Template = new P3DHLIPlantTemplate(&SourceStream);
+
+    if (EnableDummies)
+     {
+      self->Template->SetDummiesEnabled(true);
+     }
+
     self->Instance = self->Template->CreateInstance(Seed);
 
     SourceStream.Close();
