@@ -442,27 +442,12 @@ static int         BranchGroupIsDummy (lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
   NGPLUABranchGroup                   *BranchGroup;
-  bool                                 Dummy;
 
   BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
 
   Control.Commit();
 
-  Dummy = true;
-
-  if (BranchGroup->Instance->Model != 0)
-   {
-    const P3DBranchModel              *BranchModel;
-
-    BranchModel = P3DPlantModel::GetBranchModelByIndex(BranchGroup->Instance->Model,BranchGroup->Index);
-
-    if (BranchModel != 0)
-     {
-      Dummy = BranchModel->IsDummy();
-     }
-   }
-
-  Control.PushBool(Dummy);
+  Control.PushBool(BranchGroup->Instance->Template->IsDummy(BranchGroup->Index));
 
   Control.Commit();
 
