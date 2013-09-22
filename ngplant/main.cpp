@@ -943,7 +943,7 @@ P3DPlantModel     *P3DApp::CreateNewPlantModel
 
   TrunkStemModel->SetProfileScaleCurve(&TempCurve);
 
-  TrunkModel->SetName("Branch1");
+  TrunkModel->SetName("Branch-1");
   TrunkModel->SetStemModel(TrunkStemModel);
   TrunkModel->SetMaterialInstance(CreateMatInstanceStd());
   TrunkModel->SetBranchingAlg(BranchingAlg);

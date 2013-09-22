@@ -455,10 +455,6 @@ class P3D_DLL_ENTRY P3DPlantModel
                                       (P3DPlantModel      *Model,
                                        const char         *BranchName);
 
-  static void      BranchModelSetUniqueName
-                                      (P3DPlantModel      *PlantModel,
-                                       P3DBranchModel     *BranchModel);
-
   private          :
 
   P3DBranchModel                      *PlantBase;

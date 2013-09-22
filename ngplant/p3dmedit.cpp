@@ -18,6 +18,9 @@
 
 ***************************************************************************/
 
+#include <string>
+#include <sstream>
+
 #include <wx/wx.h>
 #include <wx/treectrl.h>
 #include <wx/notebook.h>
@@ -98,6 +101,38 @@ static void        ExpandTreeCtrlRecursive
    }
  }
 
+static std::string  GenerateClonedBranchName
+                                      (const P3DPlantModel     *PlantModel,
+                                       const P3DBranchModel    *SourceBranchModel)
+ {
+  std::string Prefix = SourceBranchModel == PlantModel->GetPlantBase() ?
+                        "Branch" : SourceBranchModel->GetName();
+  std::string Result;
+
+  Prefix += '-';
+
+  bool         Done  = false;
+  unsigned int Index = 0;
+
+  while (!Done && ++Index < 1000)
+   {
+    std::ostringstream ResultStream;
+
+    ResultStream << Prefix << Index;
+
+    Result = ResultStream.str();
+
+    Done = P3DPlantModel::GetBranchModelByName
+            ((P3DPlantModel*)PlantModel,Result.c_str()) == 0;
+   }
+
+  if (!Done)
+   {
+    Result = Prefix + "?";
+   }
+
+  return Result;
+ }
 
                     P3DBranchPanel::P3DBranchPanel
                                       (wxWindow           *parent,
@@ -492,7 +527,9 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchNewClick
 
   ChildBranchModel = new P3DBranchModel();
 
-  P3DPlantModel::BranchModelSetUniqueName(P3DApp::GetApp()->GetModel(),ChildBranchModel);
+  ChildBranchModel->SetName
+   (GenerateClonedBranchName
+     (P3DApp::GetApp()->GetModel(),ParentBranchModel).c_str());
 
   P3DStemModelTube *StemModel = P3DApp::GetApp()->CreateStemModelTube();
   unsigned int      Level     = 0;
@@ -592,7 +629,9 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchCopyClick
 
       ChildBranchModel = new P3DBranchModel();
 
-      P3DPlantModel::BranchModelSetUniqueName(PlantModel,ChildBranchModel);
+      ChildBranchModel->SetName
+       (GenerateClonedBranchName
+         (P3DApp::GetApp()->GetModel(),SourceBranchModel).c_str());
 
       NewStemModel = SourceBranchModel->GetStemModel()->CreateCopy();
 

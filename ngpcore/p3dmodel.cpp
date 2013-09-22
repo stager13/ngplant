@@ -1115,7 +1115,7 @@ static void        AutoGenerateBGroupNames
 
   while (BranchModel != 0)
    {
-    snprintf(NameBuffer,sizeof(NameBuffer),"Branch%u",BranchGroupIndex + 1);
+    snprintf(NameBuffer,sizeof(NameBuffer),"Branch-%u",BranchGroupIndex + 1);
 
     NameBuffer[sizeof(NameBuffer) - 1] = 0;
 
@@ -1177,39 +1177,6 @@ void               P3DPlantModel::Load(P3DInputStringStream
      {
       AutoGenerateBGroupNames(this);
      }
-   }
- }
-
-void               P3DPlantModel::BranchModelSetUniqueName
-                                      (P3DPlantModel      *PlantModel,
-                                       P3DBranchModel     *BranchModel)
- {
-  bool                                 Done;
-  unsigned int                         Index;
-  char                                 NameBuffer[128];
-
-  Done  = false;
-  Index = 1;
-
-  while ((!Done) && (Index < 1000))
-   {
-    snprintf(NameBuffer,sizeof(NameBuffer),"Branch%u",Index);
-
-    NameBuffer[sizeof(NameBuffer) - 1] = 0;
-
-    if (P3DPlantModel::GetBranchModelByName(PlantModel,NameBuffer) == 0)
-     {
-      BranchModel->SetName(NameBuffer);
-
-      Done = true;
-     }
-
-    Index++;
-   }
-
-  if (!Done)
-   {
-    BranchModel->SetName("Branch?");
    }
  }
 
