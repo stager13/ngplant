@@ -1154,6 +1154,19 @@ const char        *P3DHLIPlantTemplate::GetGroupName
   return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->GetName());
  }
 
+bool               P3DHLIPlantTemplate::IsDummy
+                                      (unsigned int        GroupIndex) const
+ {
+  if (DummiesEnabled)
+   {
+    return(GetBranchModelByIndex(Model,DummiesEnabled,GroupIndex)->IsDummy());
+   }
+  else
+   {
+    return false;
+   }
+ }
+
 const
 P3DMaterialDef    *P3DHLIPlantTemplate::GetMaterial
                                       (unsigned int        GroupIndex) const
