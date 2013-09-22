@@ -438,6 +438,37 @@ static int         BranchGroupGetName (lua_State          *State)
   return(1);
  }
 
+static int         BranchGroupIsDummy (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  NGPLUABranchGroup                   *BranchGroup;
+  bool                                 Dummy;
+
+  BranchGroup = (NGPLUABranchGroup*)Control.GetArgUserData(1,BranchGroupMetaTableName);
+
+  Control.Commit();
+
+  Dummy = true;
+
+  if (BranchGroup->Instance->Model != 0)
+   {
+    const P3DBranchModel              *BranchModel;
+
+    BranchModel = P3DPlantModel::GetBranchModelByIndex(BranchGroup->Instance->Model,BranchGroup->Index);
+
+    if (BranchModel != 0)
+     {
+      Dummy = BranchModel->IsDummy();
+     }
+   }
+
+  Control.PushBool(Dummy);
+
+  Control.Commit();
+
+  return(1);
+ }
+
 static int         BranchGroupIsHidden(lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
@@ -1376,6 +1407,7 @@ static luaL_reg   BranchGroupMethods[] =
  {
   { "GetName"             , BranchGroupGetName              },
   { "GetMaterial"         , BranchGroupGetMaterial          },
+  { "IsDummy"             , BranchGroupIsDummy              },
   { "IsHidden"            , BranchGroupIsHidden             },
   { "GetBranchCount"      , BranchGroupGetBranchCount       },
   { "GetBillboardSize"    , BranchGroupGetBillboardSize     },
