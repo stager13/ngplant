@@ -256,13 +256,20 @@ void               P3DMainFrame::OnSave   (wxCommandEvent     &event)
 
 void               P3DMainFrame::OnSaveAs (wxCommandEvent     &event)
  {
-  wxString                                 FileName;
+  wxString                                 FileNameStr;
 
-  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  FileNameStr = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngp"),wxT("*.ngp"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-  if (!FileName.empty())
+  if (!FileNameStr.empty())
    {
-    P3DApp::GetApp()->SaveModel(FileName.mb_str());
+    wxFileName FileName(FileNameStr);
+
+    if (!FileName.HasExt())
+     {
+      FileName.SetExt(wxT("ngp"));
+     }
+
+    P3DApp::GetApp()->SaveModel(FileName.GetFullPath().mb_str());
    }
  }
 
