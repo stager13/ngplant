@@ -734,16 +734,18 @@ if Params then
     DirName = ShowDirSelectDialog("Choose directory")
 
     if DirName then
-      FileName = ShowGetStringDialog("Choose .dae file name","")
+      FileName = ShowGetStringDialog("Choose .dae file name","",GetDerivedFileName("dae"))
 
       if FileName then
         FileName = OSPathJoin(DirName,FileName)
+
+        ShowMessageBox(FileName,"Hehe...")
 
         Export(FileName,DirName)
       end
     end
   else
-    FileName = ShowFileSaveDialog("Choose .dae file name")
+    FileName = ShowFileSaveDialog("Choose .dae file name",GetDerivedFileName("dae"))
 
     if FileName then
       Export(FileName)
