@@ -196,10 +196,11 @@ local function ExportMTLFile(MTLFileName,MaterialsMapping)
  MTLFile:close()
 end
 
-OBJFileName = ShowFileSaveDialog("Choose .OBJ file name")
+OBJFileName = ShowFileSaveDialog("Choose .OBJ file name",GetDerivedFileName("obj"))
 
 if OBJFileName then
- MTLFileName = ShowFileSaveDialog("Choose .MTL file name")
+ MTLFileName = string.gsub(OBJFileName,".[oO][bB][jJ]$",".mtl")
+ MTLFileName = ShowFileSaveDialog("Choose .MTL file name",MTLFileName)
 
  if MTLFileName then
 
