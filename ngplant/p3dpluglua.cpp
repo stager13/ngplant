@@ -87,6 +87,27 @@ static int         GetTextureFileName (lua_State          *State)
   return(1);
  }
 
+static int         GetDerivedFileName (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  const char                          *FileNameExtension;
+
+  FileNameExtension = Control.GetArgString(1);
+
+  Control.Commit();
+
+   {
+    wxString DerivedFileName = P3DApp::GetApp()->GetDerivedFileName
+                                (wxString(FileNameExtension,wxConvUTF8));
+
+    Control.PushString(DerivedFileName.mb_str());
+   }
+
+  Control.Commit();
+
+  return(1);
+ }
+
 static int         GetCurrentLOD      (lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
@@ -132,6 +153,7 @@ bool               P3DPlugLuaRunScript(const char         *FileName,
 
     lua_register(State,"GetTextureFileName",GetTextureFileName);
     lua_register(State,"GetCurrentLOD",GetCurrentLOD);
+    lua_register(State,"GetDerivedFileName",GetDerivedFileName);
 
     if (luaL_loadfile(State,FileName) || lua_pcall(State,0,0,0))
      {
