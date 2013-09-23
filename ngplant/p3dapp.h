@@ -124,6 +124,7 @@ class P3DApp : public wxApp
 
   wxString         GetFileName        () const;
   void             SetFileName        (const char         *FileName);
+  wxString         GetDerivedFileName (const wxString     &FileNameExtension);
 
   P3DIDEVFS       *GetTexFS           ();
 

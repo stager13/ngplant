@@ -429,7 +429,12 @@ void               P3DMainFrame::OnExportObj
  {
   wxString                                 FileName;
 
-  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".obj"),wxT("*.obj"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  FileName = ::wxFileSelector(wxT("File name"),
+                              wxT(""),
+                              P3DApp::GetApp()->GetDerivedFileName(wxT("obj")),
+                              wxT(".obj"),
+                              wxT("*.obj"),
+                              wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
   if (!FileName.empty())
    {
@@ -897,6 +902,27 @@ void               P3DApp::SetFileName(const char         *FileName)
 
     MainFrame->SetTitle(wxString(wxT("ngPlant designer [")) + ShortName + wxT("]"));
    }
+ }
+
+wxString           P3DApp::GetDerivedFileName
+                                      (const wxString     &FileNameExtension)
+ {
+  wxFileName DerivedFileName;
+
+  if (PlantFileName.IsEmpty())
+   {
+    wxString BaseName = wxString(PlantModel->GetPlantBase()->GetName(),wxConvUTF8);
+
+    DerivedFileName = wxFileName(BaseName);
+   }
+  else
+   {
+    DerivedFileName = PlantFileName;
+   }
+
+  DerivedFileName.SetExt(FileNameExtension);
+
+  return DerivedFileName.GetFullName();
  }
 
 void               P3DApp::InitTexFS  ()
