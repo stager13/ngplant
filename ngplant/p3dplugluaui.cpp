@@ -451,15 +451,17 @@ static int         ShowFileSaveDialog (lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
   const char                          *Message;
+  wxString                             DefaultFileName;
   wxString                             FileName;
 
-  Message = Control.GetArgString(1);
+  Message         = Control.GetArgString(1);
+  DefaultFileName = wxString(Control.GetArgStringOpt(2,""),wxConvUTF8);
 
   Control.Commit();
 
   FileName = wxFileSelector(wxString(Message,wxConvUTF8),
                             wxEmptyString,
-                            wxEmptyString,
+                            DefaultFileName,
                             wxEmptyString,
                             wxT("*.*"),
                             wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
