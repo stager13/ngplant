@@ -1039,6 +1039,8 @@ void               P3DStemModelQuad::Save
 
   FmtStream.WriteString("sf","Length",Length);
   FmtStream.WriteString("sf","Width",Width);
+  FmtStream.WriteString("sf","OriginOffsetX",OriginOffsetX);
+  FmtStream.WriteString("sf","OriginOffsetY",OriginOffsetY);
   FmtStream.WriteString("ss","Scaling","CubicSpline");
   P3DSaveSplineCurve(&FmtStream,&ScalingCurve);
   FmtStream.WriteString("su","SectionCount",SectionCount);
@@ -1061,6 +1063,19 @@ void               P3DStemModelQuad::Load
   SetLength(FloatValue);
   SourceStream->ReadFmtStringTagged("Width","f",&FloatValue);
   SetWidth(FloatValue);
+
+  if (Version->Minor >= 10)
+   {
+    SourceStream->ReadFmtStringTagged("OriginOffsetX","f",&FloatValue);
+    SetOriginOffsetX(FloatValue);
+    SourceStream->ReadFmtStringTagged("OriginOffsetY","f",&FloatValue);
+    SetOriginOffsetY(FloatValue);
+   }
+  else
+   {
+    SetOriginOffsetX(0.0f);
+    SetOriginOffsetY(0.0f);
+   }
 
   if (Version->Minor > 1)
    {
