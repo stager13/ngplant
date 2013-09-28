@@ -109,6 +109,12 @@ class P3DStemModelQuad : public P3DStemModel
   void             SetWidth           (float               Width);
   float            GetWidth           () const;
 
+  void             SetOriginOffsetX   (float               OffsetX);
+  float            GetOriginOffsetX   () const;
+
+  void             SetOriginOffsetY   (float               OffsetY);
+  float            GetOriginOffsetY   () const;
+
   bool             IsBillboard        () const;
   unsigned int     GetBillboardMode   () const;
   void             SetBillboardMode   (unsigned int        Mode);
@@ -142,6 +148,9 @@ class P3DStemModelQuad : public P3DStemModel
 
   float                                Length;
   float                                Width;
+
+  float                                OriginOffsetX;
+  float                                OriginOffsetY;
 
   unsigned int                         BillboardMode;
 

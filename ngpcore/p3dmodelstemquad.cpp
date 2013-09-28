@@ -454,6 +454,9 @@ void               P3DStemModelQuadInstance::GetAxisOrientationAt
   Length = 0.05;
   Width  = 0.05;
 
+  OriginOffsetX = 0.0f;
+  OriginOffsetY = 0.0f;
+
   BillboardMode = P3D_BILLBOARD_MODE_NONE;
 
   MakeDefaultScalingCurve(ScalingCurve);
@@ -487,6 +490,9 @@ P3DStemModel      *P3DStemModelQuad::CreateCopy
   Result->Length = Length;
   Result->Width  = Width;
 
+  Result->OriginOffsetX = OriginOffsetX;
+  Result->OriginOffsetY = OriginOffsetY;
+
   Result->BillboardMode = BillboardMode;
 
   Result->ScalingCurve.CopyFrom(ScalingCurve);
@@ -509,16 +515,27 @@ P3DStemModelInstance
  {
   P3DStemModelQuadInstance            *Instance;
   float                                Scale;
+  P3DMatrix4x4f                        OriginOffsetTransform;
 
   Scale = ScalingCurve.GetValue(Offset);
+
+  float Width  = this->Width  * Scale;
+  float Length = this->Length * Scale;
+
+  P3DMatrix4x4f::MakeTranslation(OriginOffsetTransform.m,-OriginOffsetX * Width,-OriginOffsetY * Length,0.0f);
 
   if (Parent == 0)
    {
     if (Orientation != 0)
      {
+      P3DMatrix4x4f                    TempTransform;
       P3DMatrix4x4f                    WorldTransform;
 
-      Orientation->ToMatrix(WorldTransform.m);
+      Orientation->ToMatrix(TempTransform.m);
+
+      P3DMatrix4x4f::MultMatrix(WorldTransform.m,
+                                TempTransform.m,
+                                OriginOffsetTransform.m);
 
       Instance = new P3DStemModelQuadInstance
                       ( Scale,
@@ -540,7 +557,7 @@ P3DStemModelInstance
                         SectionCount,
                        &Curvature,
                         Thickness,
-                        0);
+                       &OriginOffsetTransform);
      }
    }
   else
@@ -573,9 +590,13 @@ P3DStemModelInstance
                               TranslateTransform.m,
                               TempTransform2.m);
 
-    P3DMatrix4x4f::MultMatrix(WorldTransform.m,
+    P3DMatrix4x4f::MultMatrix(TempTransform2.m,
                               ParentTransform.m,
                               TempTransform.m);
+
+    P3DMatrix4x4f::MultMatrix(WorldTransform.m,
+                              TempTransform2.m,
+                              OriginOffsetTransform.m);
 
     Instance = new P3DStemModelQuadInstance
                     ( Scale,
@@ -898,6 +919,30 @@ float              P3DStemModelQuad::GetWidth
                                       () const
  {
   return(Width);
+ }
+
+void               P3DStemModelQuad::SetOriginOffsetX
+                                      (float               OffsetX)
+ {
+  this->OriginOffsetX = P3DMath::Clampf(-0.5f,0.5f,OffsetX);
+ }
+
+float              P3DStemModelQuad::GetOriginOffsetX
+                                      () const
+ {
+  return OriginOffsetX;
+ }
+
+void               P3DStemModelQuad::SetOriginOffsetY
+                                      (float               OffsetY)
+ {
+  this->OriginOffsetY = P3DMath::Clampf(0.0f,1.0f,OffsetY);
+ }
+
+float              P3DStemModelQuad::GetOriginOffsetY
+                                      () const
+ {
+  return OriginOffsetY;
  }
 
 unsigned int       P3DStemModelQuad::GetBillboardMode
