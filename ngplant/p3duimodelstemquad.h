@@ -40,6 +40,11 @@ class P3DStemQuadPanel : public P3DUIParamPanel
   void             OnStemLengthChanged(wxSpinSliderEvent  &event);
   void             OnStemWidthChanged (wxSpinSliderEvent  &event);
 
+  void             OnOriginOffsetXChanged
+                                      (wxSpinSliderEvent  &event);
+  void             OnOriginOffsetYChanged
+                                      (wxSpinSliderEvent  &event);
+
   void             OnScalingChanged   (P3DCurveCtrlEvent  &event);
 
   void             OnSectionCountChanged
