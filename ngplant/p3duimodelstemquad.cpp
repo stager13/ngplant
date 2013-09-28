@@ -31,6 +31,8 @@ enum
  {
   wxID_STEM_LENGTH_CTRL = wxID_HIGHEST + 1,
   wxID_STEM_WIDTH_CTRL                    ,
+  wxID_ORIGIN_OFFSET_X_CTRL               ,
+  wxID_ORIGIN_OFFSET_Y_CTRL               ,
   wxID_STEM_SCALING_CTRL                  ,
   wxID_SECTION_COUNT_CTRL                 ,
   wxID_CURVATURE_CTRL                     ,
@@ -40,6 +42,8 @@ enum
 BEGIN_EVENT_TABLE(P3DStemQuadPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_STEM_LENGTH_CTRL,P3DStemQuadPanel::OnStemLengthChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_STEM_WIDTH_CTRL,P3DStemQuadPanel::OnStemWidthChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_ORIGIN_OFFSET_X_CTRL,P3DStemQuadPanel::OnOriginOffsetXChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_ORIGIN_OFFSET_Y_CTRL,P3DStemQuadPanel::OnOriginOffsetYChanged)
  EVT_P3DCURVECTRL_VALUE_CHANGED(wxID_STEM_SCALING_CTRL,P3DStemQuadPanel::OnScalingChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_SECTION_COUNT_CTRL,P3DStemQuadPanel::OnSectionCountChanged)
  EVT_P3DCURVECTRL_VALUE_CHANGED(wxID_CURVATURE_CTRL,P3DStemQuadPanel::OnCurvatureChanged)
@@ -59,7 +63,7 @@ END_EVENT_TABLE()
   wxBoxSizer *TopSizer = new wxBoxSizer(wxVERTICAL);
 
   wxStaticBoxSizer *QuadParamsTopSizer  = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Quad parameters")),wxVERTICAL);
-  wxFlexGridSizer  *QuadParamsGridSizer = new wxFlexGridSizer(6,2,3,3);
+  wxFlexGridSizer  *QuadParamsGridSizer = new wxFlexGridSizer(8,2,3,3);
 
   QuadParamsGridSizer->AddGrowableCol(1);
 
@@ -85,6 +89,32 @@ END_EVENT_TABLE()
   spin_slider->SetSmallStep(0.1);
   spin_slider->SetLargeMove(10.0);
   spin_slider->SetStdMove(1.0);
+  spin_slider->SetSmallMove(0.01);
+
+  QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
+
+  /* Origin offset X */
+
+  QuadParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Origin offset X")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  spin_slider = new wxSpinSliderCtrl(this,wxID_ORIGIN_OFFSET_X_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetOriginOffsetX(),-0.5,0.5);
+  spin_slider->SetStdStep(0.1);
+  spin_slider->SetSmallStep(0.01);
+  spin_slider->SetLargeMove(0.2);
+  spin_slider->SetStdMove(0.1);
+  spin_slider->SetSmallMove(0.01);
+
+  QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
+
+  /* Origin offset Y */
+
+  QuadParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Origin offset Y")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  spin_slider = new wxSpinSliderCtrl(this,wxID_ORIGIN_OFFSET_Y_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetOriginOffsetY(),0.0,1.0);
+  spin_slider->SetStdStep(0.1);
+  spin_slider->SetSmallStep(0.01);
+  spin_slider->SetLargeMove(0.2);
+  spin_slider->SetStdMove(0.1);
   spin_slider->SetSmallMove(0.01);
 
   QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
@@ -175,6 +205,28 @@ void               P3DStemQuadPanel::OnStemWidthChanged
           event.GetFloatValue(),
           model->GetWidth(),
           &P3DStemModelQuad::SetWidth));
+ }
+
+void               P3DStemQuadPanel::OnOriginOffsetXChanged
+                                      (wxSpinSliderEvent  &event)
+ {
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DStemQuadFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetOriginOffsetX(),
+          &P3DStemModelQuad::SetOriginOffsetX));
+ }
+
+void               P3DStemQuadPanel::OnOriginOffsetYChanged
+                                      (wxSpinSliderEvent  &event)
+ {
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DStemQuadFloatParamEditCmd
+         (model,
+          event.GetFloatValue(),
+          model->GetOriginOffsetY(),
+          &P3DStemModelQuad::SetOriginOffsetY));
  }
 
 void               P3DStemQuadPanel::OnScalingChanged
