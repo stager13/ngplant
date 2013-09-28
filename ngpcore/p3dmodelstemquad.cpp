@@ -519,10 +519,10 @@ P3DStemModelInstance
 
   Scale = ScalingCurve.GetValue(Offset);
 
-  float Width  = this->Width  * Scale;
-  float Length = this->Length * Scale;
+  float ScaledWidth  = Width  * Scale;
+  float ScaledLength = Length * Scale;
 
-  P3DMatrix4x4f::MakeTranslation(OriginOffsetTransform.m,-OriginOffsetX * Width,-OriginOffsetY * Length,0.0f);
+  P3DMatrix4x4f::MakeTranslation(OriginOffsetTransform.m,-OriginOffsetX * ScaledWidth,-OriginOffsetY * ScaledLength,0.0f);
 
   if (Parent == 0)
    {
