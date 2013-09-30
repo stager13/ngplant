@@ -564,7 +564,7 @@ void               P3DStemModelWings::ReleaseInstance
  }
 
 bool               P3DStemModelWings::IsCloneable
-                                      (bool AllowScaling) const
+                                      (bool AllowScaling P3D_UNUSED_ATTR) const
  {
   return(false);
  }
@@ -585,8 +585,8 @@ unsigned int       P3DStemModelWings::GetVAttrCount
  }
 
 void               P3DStemModelWings::FillCloneVAttrBuffer
-                                      (void               *VAttrBuffer,
-                                       unsigned int        Attr) const
+                                      (void               *VAttrBuffer P3D_UNUSED_ATTR,
+                                       unsigned int        Attr P3D_UNUSED_ATTR) const
  {
   //NOTE: wings model cannot be cloned, so call is ignored
  }
@@ -704,9 +704,9 @@ unsigned int       P3DStemModelWings::GetVAttrCountI
  }
 
 void               P3DStemModelWings::FillCloneVAttrBufferI
-                                      (void               *VAttrBuffer,
-                                       unsigned int        Attr,
-                                       unsigned int        Stride) const
+                                      (void               *VAttrBuffer P3D_UNUSED_ATTR,
+                                       unsigned int        Attr P3D_UNUSED_ATTR,
+                                       unsigned int        Stride P3D_UNUSED_ATTR) const
  {
   //NOTE: wings model cannot be cloned, so call is ignored
  }

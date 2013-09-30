@@ -753,7 +753,7 @@ void               P3DStemModelTube::ReleaseInstance
  }
 
 bool               P3DStemModelTube::IsCloneable
-                                      (bool AllowScaling) const
+                                      (bool AllowScaling P3D_UNUSED_ATTR) const
  {
   return(false);
  }
@@ -772,8 +772,8 @@ unsigned int       P3DStemModelTube::GetVAttrCount
  }
 
 void               P3DStemModelTube::FillCloneVAttrBuffer
-                                      (void               *VAttrBuffer,
-                                       unsigned int        Attr) const
+                                      (void               *VAttrBuffer P3D_UNUSED_ATTR,
+                                       unsigned int        Attr P3D_UNUSED_ATTR) const
  {
   //NOTE: tube cannot be cloned, so call is ignored
  }
@@ -891,9 +891,9 @@ unsigned int       P3DStemModelTube::GetVAttrCountI
  }
 
 void               P3DStemModelTube::FillCloneVAttrBufferI
-                                      (void               *VAttrBuffer,
-                                       unsigned int        Attr,
-                                       unsigned int        Stride) const
+                                      (void               *VAttrBuffer P3D_UNUSED_ATTR,
+                                       unsigned int        Attr P3D_UNUSED_ATTR,
+                                       unsigned int        Stride P3D_UNUSED_ATTR) const
  {
   //NOTE: tube cannot be cloned, so call is ignored
  }

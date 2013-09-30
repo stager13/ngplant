@@ -416,7 +416,7 @@ P3DStemModel      *P3DStemModelGMesh::CreateCopy
  }
 
 bool               P3DStemModelGMesh::IsCloneable
-                                      (bool AllowScaling) const
+                                      (bool AllowScaling P3D_UNUSED_ATTR) const
  {
   return(true);
  }
