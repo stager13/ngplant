@@ -45,6 +45,7 @@ elif CrossCompileMode:
     NGPShotEnv.Append(LIBS=WIN32_BASELIBS)
     NGPShotEnv.Append(LINKFLAGS='-s')
 else:
+    NGPShotEnv.Append(LIBS=['X11'])
     NGPShotEnv.Append(LIBS=['GL'])
     NGPShotEnv.Append(LIBS=['GLU'])
     if not ProfilingEnabled:
