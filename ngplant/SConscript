@@ -141,6 +141,8 @@ if CrossCompileMode or NGPlantEnv['PLATFORM'] == 'win32' or NGPlantEnv['PLATFORM
 
 if NGPlantEnv['PLATFORM'] == 'darwin':
     NGPlantEnv.Append(FRAMEWORKS=['OpenGL'])
+elif NGPlantEnv['PLATFORM'] == 'posix':
+    NGPlantEnv.Append(LIBS=['GL'])
 
 NGPlantEnv.Append(LIBPATH=NGPlantEnv['LIBPNG_LIBPATH'])
 
