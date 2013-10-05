@@ -60,6 +60,7 @@ enum /* These constants are needed for pre-0.9.3 compatibility only */
                                        float               UScale,
                                        unsigned int        VMode,
                                        float               VScale,
+                                       float               LengthScaleFactor,
                                        const P3DMatrix4x4f*Transform)
                    : Axis(Length,AxisResolution),
                      Profile(ProfileResolution),
@@ -73,6 +74,8 @@ enum /* These constants are needed for pre-0.9.3 compatibility only */
    {
     WorldTransform = *Transform;
    }
+
+  this->LengthScaleFactor = LengthScaleFactor;
 
   this->UMode  = UMode;
   this->UScale = UScale;
@@ -403,6 +406,12 @@ void               P3DStemModelTubeInstance::SetSegOrientation
   Axis.SetSegOrientation(SegIndex,Orientation);
  }
 
+float              P3DStemModelTubeInstance::GetLengthScaleFactor
+                                      () const
+ {
+  return LengthScaleFactor;
+ }
+
                    P3DStemModelTube::P3DStemModelTube
                                       ()
  {
@@ -667,6 +676,7 @@ P3DStemModelInstance
                         UScale,
                         VMode,
                         VScale,
+                        1.0f,
                        &WorldTransform);
      }
     else
@@ -681,6 +691,7 @@ P3DStemModelInstance
                         UScale,
                         VMode,
                         VScale,
+                        1.0f,
                         0);
      }
    }
@@ -718,8 +729,9 @@ P3DStemModelInstance
                               ParentTransform.m,
                               TempTransform.m);
 
-    InstanceLength =
-     parent->GetLength() * Length * LengthOffsetInfluenceCurve.GetValue(offset);
+    float LengthScaleFactor = LengthOffsetInfluenceCurve.GetValue(offset);
+
+    InstanceLength = parent->GetLength() * Length * LengthScaleFactor;
 
     if (rng != 0)
      {
@@ -736,6 +748,7 @@ P3DStemModelInstance
                       UScale,
                       VMode,
                       VScale,
+                      LengthScaleFactor,
                      &WorldTransform);
    }
 

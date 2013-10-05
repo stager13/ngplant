@@ -33,7 +33,8 @@ enum
   wxID_STEM_WIDTH_CTRL                    ,
   wxID_SECTION_COUNT_CTRL                 ,
   wxID_CURVATURE_CTRL                     ,
-  wxID_THICKNESS_CTRL
+  wxID_THICKNESS_CTRL                     ,
+  wxID_WIDTH_THICKNESS_SCALING_CTRL
  };
 
 BEGIN_EVENT_TABLE(P3DStemWingsPanel,wxPanel)
@@ -42,6 +43,7 @@ BEGIN_EVENT_TABLE(P3DStemWingsPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_SECTION_COUNT_CTRL,P3DStemWingsPanel::OnSectionCountChanged)
  EVT_P3DCURVECTRL_VALUE_CHANGED(wxID_CURVATURE_CTRL,P3DStemWingsPanel::OnCurvatureChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_THICKNESS_CTRL,P3DStemWingsPanel::OnThicknessChanged)
+ EVT_CHECKBOX(wxID_WIDTH_THICKNESS_SCALING_CTRL,P3DStemWingsPanel::OnWidthThicknessScalingChanged)
 END_EVENT_TABLE()
 
                    P3DStemWingsPanel::P3DStemWingsPanel
@@ -57,7 +59,7 @@ END_EVENT_TABLE()
   wxBoxSizer *TopSizer = new wxBoxSizer(wxVERTICAL);
 
   wxStaticBoxSizer *WingsParamsTopSizer  = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Wings parameters")),wxVERTICAL);
-  wxFlexGridSizer  *WingsParamsGridSizer = new wxFlexGridSizer(6,2,3,3);
+  wxFlexGridSizer  *WingsParamsGridSizer = new wxFlexGridSizer(7,2,3,3);
 
   WingsParamsGridSizer->AddGrowableCol(1);
 
@@ -125,6 +127,15 @@ END_EVENT_TABLE()
 
   WingsParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
+  /* Width/thickness scaling checkbox */
+
+  WingsParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Apply scaling")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  wxCheckBox *WidthThicknessScalingCheckBox = new wxCheckBox(this,wxID_WIDTH_THICKNESS_SCALING_CTRL,wxT(""));
+  WidthThicknessScalingCheckBox->SetValue(model->IsWidthScalingEnabled());
+
+  WingsParamsGridSizer->Add(WidthThicknessScalingCheckBox,1,wxALIGN_RIGHT,0);
+
   WingsParamsTopSizer->Add(WingsParamsGridSizer,0,wxEXPAND,0);
 
   TopSizer->Add(WingsParamsTopSizer,0,wxEXPAND | wxALL,1);
@@ -149,6 +160,7 @@ void               P3DStemWingsPanel::OnWingsAngleChanged
 
 typedef P3DParamEditCmdTemplate<P3DStemModelWings,float> P3DStemWingsFloatParamEditCmd;
 typedef P3DParamEditCmdTemplate<P3DStemModelWings,unsigned int> P3DStemWingsUIntParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DStemModelWings,bool> P3DStemWingsBoolParamEditCmd;
 typedef P3DParamCurveEditCmdTemplate<P3DStemModelWings> P3DStemWingsCurveParamEditCmd;
 
 void               P3DStemWingsPanel::OnStemWidthChanged
@@ -193,6 +205,17 @@ void               P3DStemWingsPanel::OnThicknessChanged
          event.GetFloatValue(),
          model->GetThickness(),
          &P3DStemModelWings::SetThickness));
+ }
+
+void               P3DStemWingsPanel::OnWidthThicknessScalingChanged
+                                      (wxCommandEvent     &event)
+ {
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DStemWingsBoolParamEditCmd
+         (model,
+          event.IsChecked(),
+          model->IsWidthScalingEnabled(),
+          &P3DStemModelWings::EnableWidthScaling));
  }
 
 void               P3DStemWingsPanel::UpdateControls

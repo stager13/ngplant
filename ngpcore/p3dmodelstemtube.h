@@ -57,6 +57,7 @@ class P3DStemModelTubeInstance : public P3DStemModelInstance
                                        float               UScale,
                                        unsigned int        VMode,
                                        float               VScale,
+                                       float               LengthScaleFactor,
                                        const P3DMatrix4x4f*Transform);
 
   virtual
@@ -96,6 +97,9 @@ class P3DStemModelTubeInstance : public P3DStemModelInstance
     return(Axis.GetSegOrientation(SegIndex));
    }
 
+  float            GetLengthScaleFactor
+                                      () const;
+
   private          :
 
   void             CalcVertexPos      (float              *Pos,
@@ -118,6 +122,7 @@ class P3DStemModelTubeInstance : public P3DStemModelInstance
   P3DTubeAxisSegLine                   Axis;
   P3DTubeProfileCircle                 Profile;
   P3DTubeProfileScaleCustomCurve       ProfileScale;
+  float                                LengthScaleFactor;
   unsigned int                         UMode;
   float                                UScale;
   unsigned int                         VMode;
