@@ -500,6 +500,7 @@ void               P3DStemModelWingsInstance::CalcVertexTexCoord0At
   SectionCount = 1;
   MakeDefaultCurvatureCurve(Curvature);
   Thickness    = 0.0f;
+  WidthScalingEnabled = false;
  }
 
 void               P3DStemModelWings::MakeDefaultCurvatureCurve
@@ -521,6 +522,7 @@ P3DStemModel      *P3DStemModelWings::CreateCopy
   Result->SectionCount = SectionCount;
   Result->Curvature.CopyFrom(Curvature);
   Result->Thickness    = Thickness;
+  Result->WidthScalingEnabled = WidthScalingEnabled;
 
   return(Result);
  }
@@ -546,12 +548,23 @@ P3DStemModelInstance
 
   Parent->GetWorldTransform(ParentTransform.m);
 
+  float InstanceWidth     = Width;
+  float InstanceThickness = Thickness;
+
+  if (WidthScalingEnabled)
+   {
+    float ScaleFactor = ParentInstance->GetLengthScaleFactor();
+
+    InstanceWidth     *= ScaleFactor;
+    InstanceThickness *= ScaleFactor;
+   }
+
   return(new P3DStemModelWingsInstance( ParentStemModel,
                                         ParentInstance,
                                         SectionCount,
-                                        Width,
+                                        InstanceWidth,
                                        &Curvature,
-                                        Thickness,
+                                        InstanceThickness,
                                        &ParentTransform,
                                         Orientation));
  }
@@ -808,17 +821,19 @@ void               P3DStemModelWings::Save
   FmtStream.WriteString("ss","Curvature","CubicSpline");
   P3DSaveSplineCurve(&FmtStream,&Curvature);
   FmtStream.WriteString("sf","Thickness",Thickness);
+  FmtStream.WriteString("sb","WidthThicknessScaling",WidthScalingEnabled);
  }
 
 void               P3DStemModelWings::Load
                                       (P3DInputStringFmtStream
                                                           *SourceStream,
                                        const P3DFileVersion
-                                                          *Version P3D_UNUSED_ATTR)
+                                                          *Version)
  {
   char                                 StrValue[255 + 1];
   float                                FloatValue;
   unsigned int                         UintValue;
+  bool                                 BoolValue;
 
   SourceStream->ReadFmtStringTagged("WingsAngle","f",&FloatValue);
   SetWingsAngle(FloatValue);
@@ -830,6 +845,17 @@ void               P3DStemModelWings::Load
   P3DLoadSplineCurve(&Curvature,SourceStream,StrValue);
   SourceStream->ReadFmtStringTagged("Thickness","f",&FloatValue);
   SetThickness(FloatValue);
+
+  if ((Version->Major == 0) && (Version->Minor > 10))
+   {
+    SourceStream->ReadFmtStringTagged("WidthThicknessScaling","b",&BoolValue);
+
+    EnableWidthScaling(BoolValue);
+   }
+  else
+   {
+    EnableWidthScaling(false);
+   }
  }
 
 void               P3DStemModelWings::SetWingsAngle
@@ -906,5 +932,17 @@ float              P3DStemModelWings::GetThickness
                                       () const
  {
   return(Thickness);
+ }
+
+void               P3DStemModelWings::EnableWidthScaling
+                                      (bool                 Enable)
+ {
+  WidthScalingEnabled = Enable;
+ }
+
+bool               P3DStemModelWings::IsWidthScalingEnabled
+                                      () const
+ {
+  return WidthScalingEnabled;
  }
 

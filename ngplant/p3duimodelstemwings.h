@@ -45,6 +45,9 @@ class P3DStemWingsPanel : public P3DUIParamPanel
   void             OnCurvatureChanged (P3DCurveCtrlEvent  &event);
   void             OnThicknessChanged (wxSpinSliderEvent  &event);
 
+  void             OnWidthThicknessScalingChanged
+                                      (wxCommandEvent     &event);
+
   virtual void     UpdateControls     ();
 
   private          :

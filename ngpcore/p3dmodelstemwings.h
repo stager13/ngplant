@@ -131,6 +131,10 @@ class P3DStemModelWings : public P3DStemModel
   void             SetThickness       (float               Thickness);
   float            GetThickness       () const;
 
+  void             EnableWidthScaling (bool                 Enable);
+  bool             IsWidthScalingEnabled
+                                      () const;
+
   static void      MakeDefaultCurvatureCurve
                                      (P3DMathNaturalCubicSpline
                                                           &Curve);
@@ -151,6 +155,7 @@ class P3DStemModelWings : public P3DStemModel
   unsigned int                         SectionCount;
   P3DMathNaturalCubicSpline            Curvature;
   float                                Thickness;
+  bool                                 WidthScalingEnabled;
  };
 
 #endif
