@@ -19,6 +19,9 @@
 ***************************************************************************/
 
 #include <wx/wx.h>
+#include <wx/filename.h>
+
+#include <ngpcore/p3dsplineio.h>
 
 #include <p3dappprefs.h>
 
@@ -26,7 +29,9 @@
 
 enum
  {
-  P3D_RESET_TO_DEFAULT = wxID_HIGHEST
+  P3D_RESET_TO_DEFAULT = wxID_HIGHEST + 1,
+  P3D_ID_EXPORT                          ,
+  P3D_ID_IMPORT
  };
 
 unsigned int  P3DCurveCtrl::BestWidth  = P3DCurveCtrlMinWidth;
@@ -61,6 +66,11 @@ class P3DCurveCtrlDialog : public wxDialog
   void             SetDefaultCurve    (const P3DMathNaturalCubicSpline
                                                           &Curve);
 
+  void             OnExportButtonClicked
+                                      (wxCommandEvent     &Event);
+  void             OnImportButtonClicked
+                                      (wxCommandEvent     &Event);
+
   private          :
 
   void             CreateControls     (const P3DMathNaturalCubicSpline
@@ -69,8 +79,13 @@ class P3DCurveCtrlDialog : public wxDialog
   P3DCurveCtrl    *CurveCtrl;
 
   DECLARE_CLASS(P3DCurveCtrlDialog)
-/*  DECLARE_EVENT_TABLE() */
+  DECLARE_EVENT_TABLE()
  };
+
+BEGIN_EVENT_TABLE(P3DCurveCtrlDialog,wxDialog)
+ EVT_BUTTON(P3D_ID_EXPORT,P3DCurveCtrlDialog::OnExportButtonClicked)
+ EVT_BUTTON(P3D_ID_IMPORT,P3DCurveCtrlDialog::OnImportButtonClicked)
+END_EVENT_TABLE()
 
 IMPLEMENT_CLASS(P3DCurveCtrlDialog,wxDialog)
 
@@ -131,6 +146,8 @@ void               P3DCurveCtrlDialog::CreateControls
 
   wxBoxSizer      *ButtonSizer = new wxBoxSizer(wxHORIZONTAL);
 
+  ButtonSizer->Add(new wxButton(this,P3D_ID_IMPORT,wxT("Import...")),0,wxALL,5);
+  ButtonSizer->Add(new wxButton(this,P3D_ID_EXPORT,wxT("Export...")),0,wxALL,5);
   ButtonSizer->Add(new wxButton(this,wxID_OK,wxT("Ok")),0,wxALL,5);
   ButtonSizer->Add(new wxButton(this,wxID_CANCEL,wxT("Cancel")),0,wxALL,5);
 
@@ -155,6 +172,69 @@ void               P3DCurveCtrlDialog::SetDefaultCurve
                                                           &Curve)
  {
   CurveCtrl->SetDefaultCurve(Curve);
+ }
+
+void               P3DCurveCtrlDialog::OnExportButtonClicked
+                                      (wxCommandEvent     &Event)
+ {
+  wxString       FileNameStr;
+
+  FileNameStr = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngc"),wxT("*.ngc"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+  if (!FileNameStr.empty())
+   {
+    wxFileName FileName(FileNameStr);
+
+    if (!FileName.HasExt())
+     {
+      FileName.SetExt(wxT("ngc"));
+     }
+
+    try
+     {
+      P3DOutputStringStreamFile          TargetStream;
+
+      TargetStream.Open(FileName.GetFullPath().mb_str());
+
+      P3DExportSplineCurve(&TargetStream,&CurveCtrl->GetCurve());
+
+      TargetStream.Close();
+     }
+    catch (P3DException &Exception)
+     {
+      ::wxMessageBox(wxString(Exception.GetMessage(),wxConvUTF8),
+                     wxT("Error"),wxOK | wxICON_ERROR);
+     }
+   }
+ }
+
+void               P3DCurveCtrlDialog::OnImportButtonClicked(wxCommandEvent     &Event)
+ {
+  wxString       FileName;
+
+  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".ngc"),wxT("*.ngc"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+  if (!FileName.empty())
+   {
+    try
+     {
+      P3DMathNaturalCubicSpline        Spline;
+      P3DInputStringStreamFile         SourceStream;
+
+      SourceStream.Open(FileName.mb_str());
+
+      P3DImportSplineCurve(&Spline,&SourceStream);
+
+      SourceStream.Close();
+
+      CurveCtrl->SetCurve(Spline);
+     }
+    catch (P3DException &Exception)
+     {
+      ::wxMessageBox(wxString(Exception.GetMessage(),wxConvUTF8),
+                     wxT("Error"),wxOK | wxICON_ERROR);
+     }
+   }
  }
 
 BEGIN_EVENT_TABLE(P3DCurveCtrl,wxWindow)
