@@ -29,8 +29,9 @@
 
 ***************************************************************************/
 
-#include <ngpcore/p3dmodel.h>
+#include <ngpcore/p3dsplineio.h>
 
+#include <ngpcore/p3dmodel.h>
 #include <ngpcore/p3dmodelstemquad.h>
 
 class P3DStemModelQuadInstance : public P3DStemModelInstance

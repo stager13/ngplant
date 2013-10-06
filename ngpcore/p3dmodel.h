@@ -466,19 +466,5 @@ class P3D_DLL_ENTRY P3DPlantModel
   unsigned int                         Flags;
  };
 
-/*FIXME: not best header for next prototype (implemented in p3dmodelstemtube.cpp) */
-
-extern void        P3DSaveSplineCurve (P3DOutputStringFmtStream
-                                                          *FmtStream,
-                                       const P3DMathNaturalCubicSpline
-                                                          *Spline);
-
-
-extern void        P3DLoadSplineCurve (P3DMathNaturalCubicSpline
-                                                          *Spline,
-                                       P3DInputStringFmtStream
-                                                          *SourceStream,
-                                       const char         *CurveName);
-
 #endif
 

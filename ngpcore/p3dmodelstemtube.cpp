@@ -40,6 +40,8 @@
 
 #include <ngpcore/p3dplant.h>
 
+#include <ngpcore/p3dsplineio.h>
+
 #include <ngpcore/p3dmodel.h>
 #include <ngpcore/p3dmodelstemtube.h>
 
@@ -972,56 +974,6 @@ void               P3DStemModelTube::FillIndexBuffer
   else
    {
     throw P3DExceptionGeneric("unsupported primitive type");
-   }
- }
-
-void               P3DSaveSplineCurve (P3DOutputStringFmtStream
-                                                          *FmtStream,
-                                       const P3DMathNaturalCubicSpline
-                                                          *Spline)
- {
-  unsigned int                         CPCount;
-  unsigned int                         CPIndex;
-
-  CPCount = Spline->GetCPCount();
-
-  FmtStream->WriteString("su","CPCount",CPCount);
-
-  for (CPIndex = 0; CPIndex < CPCount; CPIndex++)
-   {
-    FmtStream->WriteString("sff","Point",Spline->GetCPX(CPIndex),Spline->GetCPY(CPIndex));
-   }
- }
-
-void               P3DLoadSplineCurve (P3DMathNaturalCubicSpline
-                                                          *Spline,
-                                       P3DInputStringFmtStream
-                                                          *SourceStream,
-                                       const char         *CurveName)
- {
-  unsigned int                         CPCount;
-  unsigned int                         CPIndex;
-  float                                X,Y;
-
-  if (strcmp(CurveName,"CubicSpline") != 0)
-   {
-    throw P3DExceptionGeneric("Unsupported curve type");
-   }
-
-  CPCount = Spline->GetCPCount();
-
-  for (CPIndex = 0; CPIndex < CPCount; CPIndex++)
-   {
-    Spline->DelCP(0);
-   }
-
-  SourceStream->ReadFmtStringTagged("CPCount","u",&CPCount);
-
-  for (CPIndex = 0; CPIndex < CPCount; CPIndex++)
-   {
-    SourceStream->ReadFmtStringTagged("Point","ff",&X,&Y);
-
-    Spline->AddCP(X,Y);
    }
  }
 

@@ -29,6 +29,8 @@
 
 ***************************************************************************/
 
+#include <ngpcore/p3dsplineio.h>
+
 #include <ngpcore/p3dmodel.h>
 #include <ngpcore/p3dbalgstd.h>
 
