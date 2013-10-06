@@ -32,6 +32,8 @@
 #include <ngpcore/p3dmath.h>
 #include <ngpcore/p3dmodel.h>
 
+#include <ngpcore/p3dsplineio.h>
+
 #include <ngpcore/p3dmodelstemtube.h>
 #include <ngpcore/p3dmodelstemwings.h>
 
