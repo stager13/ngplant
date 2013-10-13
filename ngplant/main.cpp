@@ -197,6 +197,8 @@ class P3DUndoRedoMenuStateUpdater
 
   Canvas3D = new P3DCanvas3D(this);
 
+  P3DApp::GetApp()->GetTexManager()->SetCanvas(Canvas3D);
+
   EditPanel = new P3DModelEditPanel(this);
 
   wxBoxSizer *main_sizer = new wxBoxSizer(wxHORIZONTAL);

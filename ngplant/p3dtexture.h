@@ -25,6 +25,8 @@
 #include <string>
 
 #include <wx/wx.h>
+#include <ngput/p3dglext.h>
+#include <wx/glcanvas.h>
 
 #include <ngput/p3dglext.h>
 #include <ngput/p3dimage.h>
@@ -49,6 +51,8 @@ class P3DTexManagerGL
                    P3DTexManagerGL    ();
                   ~P3DTexManagerGL    ();
 
+  void             SetCanvas          (wxGLCanvas         *glCanvas);
+
   P3DTexHandle     LoadFromFile       (const char         *FileName,
                                        wxString           &ErrorMessage);
   P3DTexHandle     GetHandleByGenericName
@@ -64,13 +68,14 @@ class P3DTexManagerGL
 
   const P3DImageFmtHandler
                   *GetFmtHandler      () const;
-  
+
   private          :
 
   P3DTexHandle     GetUnusedSlot      ();
   P3DTexHandle     FindByFileName     (const char         *FileName) const;
   P3DTexHandle     FindByGenericName  (const char         *GenericName) const;
 
+  wxGLCanvas                          *glCanvas;
   P3DImageFmtHandlerComposite          ImageFmtHandler;
 
   std::vector<P3DTexManagerGLEntry>    TextureSet;
