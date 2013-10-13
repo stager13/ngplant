@@ -45,6 +45,12 @@
  {
  }
 
+void               P3DTexManagerGL::SetCanvas
+                                      (wxGLCanvas         *glCanvas)
+ {
+  this->glCanvas = glCanvas;
+ }
+
 P3DTexHandle       P3DTexManagerGL::LoadFromFile
                                       (const char         *FileName,
                                        wxString           &ErrorMessage)
@@ -149,6 +155,8 @@ P3DTexHandle       P3DTexManagerGL::LoadFromFile
     Entry->FileName    = FileName;
     Entry->GenericName = GenericName;
 
+    glCanvas->SetCurrent();
+
     glGenTextures(1,&Entry->GLHandle);
 
     glBindTexture(GL_TEXTURE_2D,Entry->GLHandle);
@@ -245,6 +253,8 @@ void               P3DTexManagerGL::FreeTexture
 
   if (Entry->RefCount == 0)
    {
+    glCanvas->SetCurrent();
+
     glDeleteTextures(1,&Entry->GLHandle);
 
     delete Entry->Bitmap;
