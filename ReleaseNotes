@@ -1,8 +1,30 @@
-                    ngPlant 0.9.10 Release Notes
+                    ngPlant 0.9.11 Release Notes
 
-  This is thirteenth public release of ngPlant. It is a development release, so
+  This is fourteenth public release of ngPlant. It is a development release, so
 many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
+
+Changes since 0.9.10:
+- added "Start RevAngle" parameter to branching algorithm
+- added "Origin offset X" and "Origin offset Y" parameters to "Quad" stem model
+- added "Apply scaling" parameter to "Wings" stem model
+- added support for "dummy" branches
+- added "export/import" support to spline edit dialog
+- added Min. Offset <= Max. Offset constraint in "Branching" parameters panel
+  (Cory Cohen)
+- added confirmation dialog to "New", "Open" and "Quid" commands (Cory Cohen)
+- added optional command line argument to ngplant - .ngp file name to be opened
+  (Cory Cohen)
+- improved automatic branch group name generation
+- added generation of default .obj/.mtl/.dae file name(s) to OBJ and
+  COLLADA export plugins
+- fixed 3d-view refresh problem on Ubuntu (Cory Cohen)
+- MacOS X 10.7 support restored
+- P3DStemModelQuad::FillCloneVAttrBuffer(I) fix (always use scale factor 1.0
+  for clone data)
+- fixed (possible) crash on MacOS X 10.8 during texture loading
+- fixed handling of textures and branch group names with spaces in .ngp file
+  format
 
 Changes since 0.9.9:
 - added COLLADA export plugin
