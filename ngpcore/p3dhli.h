@@ -37,7 +37,7 @@
 
 #define P3DHLI_VER_MAJOR    (0)
 #define P3DHLI_VER_MINOR    (9)
-#define P3DHLI_VER_RELEASE  (6)
+#define P3DHLI_VER_RELEASE  (11)
 
 typedef float *(P3DHLIVAttrBufferSet[P3D_MAX_ATTRS]);
 

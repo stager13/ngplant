@@ -1,5 +1,5 @@
 Name "ngPlant"
-OutFile ngPlant-0.9.10-setup.exe
+OutFile ngPlant-0.9.11-setup.exe
 InstallDir $PROGRAMFILES\ngPlant
 InstallDirRegKey HKLM "Software\ngPlant" "Install_Dir"
 
@@ -65,11 +65,11 @@ Section "Base"
  WriteRegStr HKLM SOFTWARE\ngPlant "Install_Dir" "$INSTDIR"
 
  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ngPlant" "DisplayName" "ngPlant"
- WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ngPlant" "UninstallString" '"$INSTDIR\ngPlant-0.9.10-uninst.exe"'
+ WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ngPlant" "UninstallString" '"$INSTDIR\ngPlant-0.9.11-uninst.exe"'
  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ngPlant" "NoModify" 1
  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ngPlant" "NoRepair" 1
 
- WriteUninstaller $INSTDIR\ngPlant-0.9.10-uninst.exe
+ WriteUninstaller $INSTDIR\ngPlant-0.9.11-uninst.exe
 SectionEnd
 
 Section "Texture library path setup"
@@ -96,7 +96,7 @@ SectionEnd
 
 Section "Start Menu Shortcuts"
   CreateDirectory "$SMPROGRAMS\ngPlant"
-  CreateShortCut "$SMPROGRAMS\ngPlant\Uninstall.lnk" "$INSTDIR\ngPlant-0.9.10-uninst.exe"
+  CreateShortCut "$SMPROGRAMS\ngPlant\Uninstall.lnk" "$INSTDIR\ngPlant-0.9.11-uninst.exe"
   CreateShortCut "$SMPROGRAMS\ngPlant\ngPlant.lnk" "$INSTDIR\ngplant.exe"
 SectionEnd
 
@@ -116,5 +116,5 @@ Section "Uninstall"
  Delete $INSTDIR\ReleaseNotes
  Delete $INSTDIR\ngpshot.exe
  Delete $INSTDIR\ngplant.exe
- Delete $INSTDIR\ngPlant-0.9.10-uninst.exe
+ Delete $INSTDIR\ngPlant-0.9.11-uninst.exe
 SectionEnd
