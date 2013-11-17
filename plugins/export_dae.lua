@@ -739,8 +739,6 @@ if Params then
       if FileName then
         FileName = OSPathJoin(DirName,FileName)
 
-        ShowMessageBox(FileName,"Hehe...")
-
         Export(FileName,DirName)
       end
     end
