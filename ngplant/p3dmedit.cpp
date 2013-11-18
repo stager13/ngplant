@@ -118,9 +118,9 @@ static std::string  GenerateClonedBranchName
 
   while (!Done && ++Index < 1000)
    {
-    std::ostringstream ResultStream;
+    std::ostringstream ResultStream(Prefix,std::ios_base::app);
 
-    ResultStream << Prefix << Index;
+    ResultStream << Index;
 
     Result = ResultStream.str();
 
