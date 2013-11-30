@@ -602,7 +602,8 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
 
       Hidden = true;
 
-      BranchModel = P3DPlantModel::GetBranchModelByIndex(PlantModel,GroupIndex);
+      BranchModel = P3DPlantModel::GetBranchModelByIndex
+                     (PlantModel,GroupIndex,!P3DApp::GetApp()->IsDummyVisible());
 
       if (BranchModel != 0)
        {

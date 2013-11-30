@@ -447,12 +447,14 @@ class P3D_DLL_ENTRY P3DPlantModel
   static const P3DBranchModel
                   *GetBranchModelByIndex
                                       (const P3DPlantModel*Model,
-                                       unsigned int        Index);
+                                       unsigned int        Index,
+                                       bool                IgnoreDummies = false);
 
   static P3DBranchModel
                   *GetBranchModelByIndex
                                       (P3DPlantModel      *Model,
-                                       unsigned int        Index);
+                                       unsigned int        Index,
+                                       bool                IgnoreDummies = false);
 
   static P3DBranchModel
                   *GetBranchModelByName
