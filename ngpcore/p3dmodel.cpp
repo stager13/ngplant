@@ -1204,17 +1204,24 @@ static P3DBranchModel
                   *GetBranchModelByIndex
                                       (const P3DBranchModel
                                                           *Model,
-                                       unsigned int       *Index)
+                                       unsigned int       *Index,
+                                       bool                IgnoreDummies)
  {
   unsigned int                         SubBranchIndex;
   unsigned int                         SubBranchCount;
   const P3DBranchModel                *Result;
 
-  (*Index)--;
-
-  if ((*Index) == 0)
+  if (IgnoreDummies && Model->IsDummy())
    {
-    return(const_cast<P3DBranchModel*>(Model));
+   }
+  else
+   {
+    (*Index)--;
+
+    if ((*Index) == 0)
+     {
+      return(const_cast<P3DBranchModel*>(Model));
+     }
    }
 
   Result         = 0;
@@ -1224,7 +1231,8 @@ static P3DBranchModel
   while ((Result == 0) && (SubBranchIndex < SubBranchCount))
    {
     Result = GetBranchModelByIndex(Model->GetSubBranchModel(SubBranchIndex),
-                                   Index);
+                                   Index,
+                                   IgnoreDummies);
 
     SubBranchIndex++;
    }
@@ -1263,25 +1271,27 @@ static P3DBranchModel
 
 P3DBranchModel    *P3DPlantModel::GetBranchModelByIndex
                                       (P3DPlantModel      *Model,
-                                       unsigned int        Index)
+                                       unsigned int        Index,
+                                       bool                IgnoreDummies)
  {
   unsigned int                         CurrIndex;
 
   CurrIndex = Index + 2; /* skip plant base group */
 
-  return(::GetBranchModelByIndex(Model->GetPlantBase(),&CurrIndex));
+  return(::GetBranchModelByIndex(Model->GetPlantBase(),&CurrIndex,IgnoreDummies));
  }
 
 const P3DBranchModel
                   *P3DPlantModel::GetBranchModelByIndex
                                       (const P3DPlantModel*Model,
-                                       unsigned int        Index)
+                                       unsigned int        Index,
+                                       bool                IgnoreDummies)
  {
   unsigned int                         CurrIndex;
 
   CurrIndex = Index + 2; /* skip plant base group */
 
-  return(::GetBranchModelByIndex(Model->GetPlantBase(),&CurrIndex));
+  return(::GetBranchModelByIndex(Model->GetPlantBase(),&CurrIndex,IgnoreDummies));
  }
 
 P3DBranchModel    *P3DPlantModel::GetBranchModelByName
