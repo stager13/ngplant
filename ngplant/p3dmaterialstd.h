@@ -107,6 +107,9 @@ class P3DMaterialInstanceSimple : public P3DMaterialInstance
   bool             IsHidden           () const;
   void             SetHidden          (bool                Hidden);
 
+  bool             IsSelected         () const;
+  void             SetSelected        (bool                Selected);
+
   private          :
 
   P3DTexHandle     TexHandles[P3D_MAX_TEX_LAYERS];
@@ -121,6 +124,7 @@ class P3DMaterialInstanceSimple : public P3DMaterialInstance
   /* created outside ngpcore. These fields are used by designer application. */
 
   bool             Hidden;
+  bool             Selected;
  };
 
 class P3DIDEMaterialSaver : public P3DMaterialSaver

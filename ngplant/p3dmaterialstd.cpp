@@ -61,7 +61,8 @@ P3DMaterialInstance
   this->TexManager    = TexManager;
   this->ShaderManager = ShaderManager;
 
-  Hidden = false;
+  Hidden   = false;
+  Selected = false;
 
   AlphaTestValue = 0.5f;
 
@@ -314,6 +315,18 @@ void               P3DMaterialInstanceSimple::SetHidden
                                       (bool                Hidden)
  {
   this->Hidden = Hidden;
+ }
+
+bool               P3DMaterialInstanceSimple::IsSelected
+                                      () const
+ {
+  return(Selected);
+ }
+
+void               P3DMaterialInstanceSimple::SetSelected
+                                      (bool                Selected)
+ {
+  this->Selected = Selected;
  }
 
 void               P3DIDEMaterialSaver::Save

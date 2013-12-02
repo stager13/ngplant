@@ -443,7 +443,25 @@ void               P3DPlantModelTreeCtrl::OnSelectionChanged
     return;
    }
 
-  BranchModel = ((P3DPlantModelTreeCtrlItemData*)(GetItemData(event.GetItem())))->GetBranchModel();
+  P3DMaterialInstanceSimple *MaterialInstance;
+
+  if (event.GetOldItem().IsOk())
+   {
+    MaterialInstance = GetMaterialInstanceByItemId(event.GetOldItem());
+
+    if (MaterialInstance != 0)
+     {
+      MaterialInstance->SetSelected(false);
+     }
+   }
+
+  BranchModel      = GetBranchModelByItemId(event.GetItem());
+  MaterialInstance = GetMaterialInstanceByItemId(event.GetItem());
+
+  if (MaterialInstance != 0)
+   {
+    MaterialInstance->SetSelected(true);
+   }
 
   BranchPanel->SwitchToBranch(BranchModel);
  }
@@ -1559,6 +1577,22 @@ P3DBranchModel    *P3DPlantModelTreeCtrl::GetBranchModelByItemId
   else
    {
     return(0);
+   }
+ }
+
+P3DMaterialInstanceSimple
+                  *P3DPlantModelTreeCtrl::GetMaterialInstanceByItemId
+                                      (wxTreeItemId        ItemId)
+ {
+  P3DBranchModel *BranchModel = GetBranchModelByItemId(ItemId);
+
+  if (BranchModel != 0)
+   {
+    return dynamic_cast<P3DMaterialInstanceSimple*>(BranchModel->GetMaterialInstance());
+   }
+  else
+   {
+    return 0;
    }
  }
 
