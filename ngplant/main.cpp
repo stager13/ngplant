@@ -660,10 +660,17 @@ void               P3DMainFrame::UpdateControls
   EditPanel->UpdateControls();
  }
 
-void               P3DMainFrame::InvalidatePlant
+void               P3DMainFrame::Refresh3DView
                                       ()
  {
   Canvas3D->ForceRefresh();
+ }
+
+void               P3DMainFrame::InvalidatePlant
+                                      ()
+ {
+  Refresh3DView();
+
   EditPanel->PlantInvalidated();
  }
 
@@ -829,6 +836,12 @@ P3DMaterialInstanceSimple
                                          StdMaterialDef);
 
   return(Result);
+ }
+
+void               P3DApp::Refresh3DView
+                                      ()
+ {
+  MainFrame->Refresh3DView();
  }
 
 void               P3DApp::InvalidatePlant

@@ -65,6 +65,7 @@ class P3DMainFrame : public wxFrame
   void             UpdateControls     ();
   bool             ApproveDataLoss    ();
 
+  void             Refresh3DView      ();
   void             InvalidatePlant    ();
 
   bool             IsGLExtInited      () const
@@ -116,6 +117,7 @@ class P3DApp : public wxApp
                   *CreateMatInstanceStd
                                       () const;
 
+  void             Refresh3DView      ();
   void             InvalidatePlant    ();
   void             InvalidateCamera   ();
   void             ForceUpdate        ();
