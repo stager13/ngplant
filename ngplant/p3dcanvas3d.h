@@ -45,7 +45,8 @@ class P3DCanvas3D : public wxGLCanvas
   void             OnSize             (wxSizeEvent        &event);
   void             OnMouseMotion      (wxMouseEvent       &event);
   void             OnMouseWheel       (wxMouseEvent       &event);
-  void             OnChar             (wxKeyEvent         &event);
+  void             OnKeyDown          (wxKeyEvent         &event);
+  void             OnKeyUp            (wxKeyEvent         &event);
 
   void             OnMouseEnter       (wxMouseEvent       &event);
 
@@ -65,6 +66,8 @@ class P3DCanvas3D : public wxGLCanvas
   long                                 m_y;
 
   bool                                 OrthoCamera;
+
+  bool                                 HighlightSelection;
 
   bool                                 GLExtInited;
 

@@ -40,7 +40,8 @@ BEGIN_EVENT_TABLE(P3DCanvas3D,wxGLCanvas)
  EVT_SIZE(P3DCanvas3D::OnSize)
  EVT_MOTION(P3DCanvas3D::OnMouseMotion)
  EVT_MOUSEWHEEL(P3DCanvas3D::OnMouseWheel)
- EVT_KEY_DOWN(P3DCanvas3D::OnChar)
+ EVT_KEY_DOWN(P3DCanvas3D::OnKeyDown)
+ EVT_KEY_UP(P3DCanvas3D::OnKeyUp)
  EVT_ENTER_WINDOW(P3DCanvas3D::OnMouseEnter)
 END_EVENT_TABLE()
 
@@ -60,7 +61,8 @@ static int P3DCanvas3DGLAttrs[] =
  {
   int                                               w,h;
 
-  GLExtInited = false;
+  GLExtInited        = false;
+  HighlightSelection = false;
 
   GetClientSize(&w,&h);
 
@@ -233,7 +235,7 @@ void               P3DCanvas3D::Render             ()
 
   if (PlantObject != 0)
    {
-    PlantObject->Render(P3DApp::GetApp()->GetModel(),true);
+    PlantObject->Render(P3DApp::GetApp()->GetModel(),HighlightSelection);
    }
 
   glFlush();
@@ -334,7 +336,7 @@ static int NumPadEmulationKeyMap[] =
   WXK_NUMPAD5, WXK_NUMPAD6, WXK_NUMPAD7, WXK_NUMPAD8, WXK_NUMPAD9
  };
 
-void               P3DCanvas3D::OnChar          (wxKeyEvent         &event)
+void               P3DCanvas3D::OnKeyDown       (wxKeyEvent         &event)
  {
   bool             CameraChanged;
   int              KeyCode;
@@ -440,13 +442,32 @@ void               P3DCanvas3D::OnChar          (wxKeyEvent         &event)
    {
     CameraChanged = false;
 
-    event.Skip();
+    if (event.GetKeyCode() == WXK_ALT)
+     {
+      HighlightSelection = true;
+
+      ForceRefresh();
+     }
+    else
+     {
+      event.Skip();
+     }
    }
 
   if (CameraChanged)
    {
     P3DApp::GetApp()->InvalidateCamera();
     Refresh();
+   }
+ }
+
+void               P3DCanvas3D::OnKeyUp         (wxKeyEvent         &event)
+ {
+  if (event.GetKeyCode() == WXK_ALT)
+   {
+    HighlightSelection = false;
+
+    ForceRefresh();
    }
  }
 
