@@ -359,6 +359,17 @@ float              P3DBranchGroupObject::CalcAlphaTestValue
  }
 
 void               P3DBranchGroupObject::Render
+                                      (bool                Selected) const
+ {
+  RenderGroup();
+
+  if (Selected)
+   {
+    RenderSelection();
+   }
+ }
+
+void               P3DBranchGroupObject::RenderGroup
                                       () const
  {
   if (PosBuffer == 0)      return;
@@ -513,6 +524,47 @@ void               P3DBranchGroupObject::Render
       glActiveTexture(GL_TEXTURE0);
      }
    }
+ }
+
+void               P3DBranchGroupObject::RenderSelection
+                                      () const
+ {
+  if (PosBuffer == 0) return;
+
+  /* material setup */
+
+  glDisable(GL_COLOR_MATERIAL);
+  glDisable(GL_TEXTURE_2D);
+  glDisable(GL_ALPHA_TEST);
+  glDisable(GL_LIGHTING);
+  glColor3f(1.0f,1.0f,1.0f);
+
+  if (MaterialData.TwoSided)
+   {
+    glDisable(GL_CULL_FACE);
+   }
+  else
+   {
+    glEnable(GL_CULL_FACE);
+   }
+
+  /* verts setup */
+
+  glVertexPointer(3,GL_FLOAT,0,PosBuffer);
+  glEnableClientState(GL_VERTEX_ARRAY);
+
+  glPolygonOffset(-1.0f,-1.0f);
+  glEnable(GL_POLYGON_OFFSET_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+  glDepthFunc(GL_LEQUAL);
+  glDrawElements(GL_TRIANGLES,TotalIndexCount,GL_UNSIGNED_INT,IndexBuffer);
+  glDepthFunc(GL_LESS);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+  glDisable(GL_POLYGON_OFFSET_LINE);
+  glPolygonOffset(0.0f,0.0f);
+
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glEnable(GL_LIGHTING);
  }
 
 void               P3DBranchGroupObject::InvalidateCamera
@@ -733,7 +785,8 @@ void               P3DPlantObject::InvalidateCamera
  }
 
 void               P3DPlantObject::Render
-                                      () const
+                                      (const P3DPlantModel*PlantModel,
+                                       bool                HighlightSelection) const
  {
   unsigned int     GroupIndex;
 
@@ -747,9 +800,34 @@ void               P3DPlantObject::Render
     CameraModified = false;
    }
 
+  bool IsDummyVisible = P3DApp::GetApp()->IsDummyVisible();
+
   for (GroupIndex = 0; GroupIndex < GroupCount; GroupIndex++)
    {
-    Groups[GroupIndex]->Render();
+    bool                             Selected;
+    const P3DBranchModel            *BranchModel;
+
+    Selected = false;
+
+    if (HighlightSelection)
+     {
+      BranchModel = P3DPlantModel::GetBranchModelByIndex
+                     (PlantModel,GroupIndex,!IsDummyVisible);
+
+      if (BranchModel != 0)
+       {
+        const P3DMaterialInstanceSimple *MaterialInstance;
+
+        MaterialInstance = dynamic_cast<const P3DMaterialInstanceSimple*>(BranchModel->GetMaterialInstance());
+
+        if (MaterialInstance != 0)
+         {
+          Selected = MaterialInstance->IsSelected();
+         }
+       }
+     }
+
+    Groups[GroupIndex]->Render(Selected);
    }
  }
 

@@ -60,7 +60,7 @@ class P3DBranchGroupObject
                   ~P3DBranchGroupObject
                                       ();
 
-  void             Render             () const;
+  void             Render             (bool                Selected) const;
   void             InvalidateCamera   ();
 
   unsigned int     GetVertexCount     () const;
@@ -71,6 +71,9 @@ class P3DBranchGroupObject
   private          :
 
   float            CalcAlphaTestValue (float               LODLevel) const;
+
+  void             RenderGroup        () const;
+  void             RenderSelection    () const;
 
   float           *PosBuffer;
   float           *NormalBuffer;
@@ -107,7 +110,8 @@ class P3DPlantObject
                   ~P3DPlantObject     ();
 
   void             InvalidateCamera   ();
-  void             Render             () const;
+  void             Render             (const P3DPlantModel*PlantModel,
+                                       bool                HighlightSelection) const;
 
   unsigned int     GetGroupVertexCount(unsigned int        GroupIndex) const;
   unsigned int     GetGroupTriangleCount

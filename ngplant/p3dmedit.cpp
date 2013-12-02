@@ -464,6 +464,8 @@ void               P3DPlantModelTreeCtrl::OnSelectionChanged
    }
 
   BranchPanel->SwitchToBranch(BranchModel);
+
+  P3DApp::GetApp()->Refresh3DView();
  }
 
 namespace {

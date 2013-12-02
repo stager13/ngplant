@@ -233,7 +233,7 @@ void               P3DCanvas3D::Render             ()
 
   if (PlantObject != 0)
    {
-    PlantObject->Render();
+    PlantObject->Render(P3DApp::GetApp()->GetModel(),true);
    }
 
   glFlush();
