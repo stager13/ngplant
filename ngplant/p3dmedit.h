@@ -27,6 +27,8 @@
 
 #include <ngpcore/p3dmodel.h>
 
+#include <p3duimaterialstd.h>
+
 class P3DBranchPanel : public wxNotebook
  {
   public           :
@@ -96,6 +98,10 @@ class P3DPlantModelTreeCtrl : public wxTreeCtrl
   void             UpdateLabel        (wxTreeItemId        ItemId);
 
   P3DBranchModel  *GetBranchModelByItemId
+                                      (wxTreeItemId        ItemId);
+
+  P3DMaterialInstanceSimple
+                  *GetMaterialInstanceByItemId
                                       (wxTreeItemId        ItemId);
 
   private          :
