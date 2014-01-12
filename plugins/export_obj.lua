@@ -186,6 +186,7 @@ local function ExportMTLFile(MTLFileName,MaterialsMapping)
 
    MTLFile:write(string.format("newmtl pmat%u\n",GroupIndex))
    MTLFile:write(string.format("Kd %f %f %f\n",Material.Color.R,Material.Color.G,Material.Color.B))
+   MTLFile:write(string.format("Ns 1\n"))
 
    if Material.TexNames[NGP_TEX_DIFFUSE] then
     MTLFile:write(string.format("map_Kd %s\n",GetTextureFileName(Material.TexNames[NGP_TEX_DIFFUSE])))
