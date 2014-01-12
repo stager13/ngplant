@@ -248,6 +248,11 @@ static bool        ExportObjData      (FILE               *TargetStream,
 
         if (Result)
          {
+          Result = FPrintFWrap(TargetMTLStream,"Ns 1\n");
+         }
+
+        if (Result)
+         {
           Result = FPrintFWrap(TargetStream,"usemtl pmat%u\n",MatIndex++);
          }
 
