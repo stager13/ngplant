@@ -109,6 +109,7 @@ local function ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping)
  for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
   local Material = Group:GetMaterial()
 
+  OBJFile:write(string.format("g bgroup%s\n",GroupIndex))
   OBJFile:write(string.format("usemtl pmat%s\n",MaterialsMapping[GroupIndex]))
 
   if Material.TexNames[NGP_TEX_DIFFUSE] then
