@@ -253,6 +253,11 @@ static bool        ExportObjData      (FILE               *TargetStream,
 
         if (Result)
          {
+          Result = FPrintFWrap(TargetStream,"g bgroup%u\n",GroupIndex);
+         }
+
+        if (Result)
+         {
           Result = FPrintFWrap(TargetStream,"usemtl pmat%u\n",MatIndex++);
          }
 
