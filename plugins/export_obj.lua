@@ -178,8 +178,9 @@ local function ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping)
  OBJFile:close()
 end
 
-local function ExportMTLFile(MTLFileName,MaterialsMapping)
+local function ExportMTLFile(MTLFileName,MaterialsMapping,ExportDir)
  local MTLFile = io.open(MTLFileName,"w")
+ local TexFileList = {}
 
  for GroupIndex,Group in VisibleGroupsIter(PlantModel) do
   if MaterialsMapping[GroupIndex] == GroupIndex then
@@ -189,8 +190,30 @@ local function ExportMTLFile(MTLFileName,MaterialsMapping)
    MTLFile:write(string.format("Kd %f %f %f\n",Material.Color.R,Material.Color.G,Material.Color.B))
    MTLFile:write(string.format("Ns 1\n"))
 
-   if Material.TexNames[NGP_TEX_DIFFUSE] then
-    MTLFile:write(string.format("map_Kd %s\n",GetTextureFileName(Material.TexNames[NGP_TEX_DIFFUSE])))
+   local TexName = Material.TexNames[NGP_TEX_DIFFUSE]
+
+   if TexName then
+    if ExportDir then
+     TexName     = OSPathBaseName(TexName)
+     TexFileName = Material.TexFileNames[NGP_TEX_DIFFUSE]
+
+     if TexFileList[TexName] then
+      if TexFileList[TexName] ~= TexFileName then
+       error("Several textures with the same basename (" .. TexName .. " are not allowed")
+      end
+     else
+      local DestFileName = OSPathJoin(ExportDir,TexName)
+
+      if not OSFileExists(DestFileName) or
+         ShowYesNoMessageBox("File " .. DestFileName .. " already exists. Overwrite it?","Confirmation") then
+       OSFileCopy(TexFileName,DestFileName)
+      end
+     end
+    else
+     TexName = GetTextureFileName(TexName)
+    end
+
+    MTLFile:write(string.format("map_Kd %s\n",TexName))
    end
   end
  end
@@ -198,36 +221,74 @@ local function ExportMTLFile(MTLFileName,MaterialsMapping)
  MTLFile:close()
 end
 
-OBJFileName = ShowFileSaveDialog("Choose .OBJ file name",GetDerivedFileName("obj"))
+Params = ShowParameterDialog(
+ {
+  {
+   label   = "Create self-contained dir",
+   name    = "CreateSelfContainedDir",
+   type    = "choice",
+   choices = { "Yes","No" },
+   default = 0
+  },
+  {
+   label   = "Export hidden branch groups",
+   name    = "ExportHiddenGroups",
+   type    = "choice",
+   choices = { "Yes","No" },
+   default = ExportPreferences.HiddenGroupsExportMode == NGP_NEVER and 1 or 0
+  },
+  {
+   label   = "Export branches outside visible range",
+   name    = "ExportOutVisRangeGroups",
+   type    = "choice",
+   choices = { "Yes","No" },
+   default = ExportPreferences.OutVisRangeExportMode == NGP_NEVER and 1 or 0
+  },
+  {
+   label   = "Join similar materials",
+   name    = "JoinSimilarMaterials",
+   type    = "choice",
+   choices = { "Yes","No" },
+   default = 0
+  }
+ })
 
-if OBJFileName then
- MTLFileName = string.gsub(OBJFileName,".[oO][bB][jJ]$",".mtl")
- MTLFileName = ShowFileSaveDialog("Choose .MTL file name",MTLFileName)
+if Params then
+ ExportHiddenGroups      = Params.ExportHiddenGroups == "Yes"
+ ExportOutVisRangeGroups = Params.ExportOutVisRangeGroups == "Yes"
 
- if MTLFileName then
+ local JoinMaterials           = Params.JoinSimilarMaterials == "Yes"
+ local CreateSelfContainedDir  = Params.CreateSelfContainedDir == "Yes"
 
-  if     ExportPreferences.HiddenGroupsExportMode == NGP_ALWAYS then
-   ExportHiddenGroups = true
-  elseif ExportPreferences.HiddenGroupsExportMode == NGP_NEVER then
-   ExportHiddenGroups = false
-  else
-   ExportHiddenGroups = ShowYesNoMessageBox('Export hidden branch groups?','Export mode')
+ if CreateSelfContainedDir then
+  local DirName = ShowDirSelectDialog("Choose directory")
+
+  if DirName then
+   local OBJFileName = ShowGetStringDialog("Choose .obj file name","",GetDerivedFileName("obj"))
+
+   if OBJFileName then
+    local MTLFileName = string.gsub(OBJFileName,".[oO][bB][jJ]$",".mtl")
+
+    local FullOBJFileName = OSPathJoin(DirName,OBJFileName)
+    local FullMTLFileName = OSPathJoin(DirName,MTLFileName)
+
+    local MaterialsMapping = CreateMaterialsMapping(JoinMaterials)
+
+    ExportOBJFile(FullOBJFileName,MTLFileName,MaterialsMapping)
+    ExportMTLFile(FullMTLFileName,MaterialsMapping,DirName)
+   end
   end
+ else
+  local FullOBJFileName = ShowFileSaveDialog("Choose .obj file name",GetDerivedFileName("obj"))
 
-  if     ExportPreferences.OutVisRangeExportMode == NGP_ALWAYS then
-   ExportOutVisRangeGroups = true
-  elseif ExportPreferences.OutVisRangeExportMode == NGP_NEVER then
-   ExportOutVisRangeGroups = false
-  else
-   ExportOutVisRangeGroups = ShowYesNoMessageBox('Export branch groups which are outside LOD visibility range?','Export mode')
+  if FullOBJFileName then
+   local FullMTLFileName = string.gsub(FullOBJFileName,".[oO][bB][jJ]$",".mtl")
+
+   local MaterialsMapping = CreateMaterialsMapping(JoinMaterials)
+
+   ExportOBJFile(FullOBJFileName,FullMTLFileName,MaterialsMapping)
+   ExportMTLFile(FullMTLFileName,MaterialsMapping)
   end
-
-  local JoinMaterials = ShowYesNoMessageBox('Join similar materials?','Materials mapping')
-
-  local MaterialsMapping = CreateMaterialsMapping(JoinMaterials)
-
-  ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping)
-  ExportMTLFile(MTLFileName,MaterialsMapping)
  end
 end
 
