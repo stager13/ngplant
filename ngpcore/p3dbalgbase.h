@@ -43,6 +43,23 @@ class P3DBranchingAlgBase : public P3DBranchingAlg
   virtual P3DBranchingAlg
                   *CreateCopy         () const;
 
+  float            GetSpread          () const;
+  void             SetSpread          (float                         Spread);
+
+  float            GetDensity         () const;
+  void             SetDensity         (float                         Density);
+
+  float            GetDensityV        () const;
+  void             SetDensityV        (float                         DensityV);
+
+  unsigned int     GetMinNumber       () const;
+  void             SetMinNumber       (unsigned int                  MinNumber);
+
+  bool             IsMaxLimitEnabled  () const;
+  void             SetMaxLimitEnabled (bool                          IsEnabled);
+  unsigned int     GetMaxNumber       () const;
+  void             SetMaxNumber       (unsigned int                  MaxNumber);
+
   float            GetRotationAngle   () const;
   void             SetRotationAngle   (float               RotAngle);
 
@@ -60,7 +77,15 @@ class P3DBranchingAlgBase : public P3DBranchingAlg
 
   private          :
 
-  float            Rotation;
+  float                                Spread;
+
+  float                                Density; /* branches per square meter */
+  float                                DensityV;
+  unsigned int                         MinNumber; /* min. number of branches */
+  bool                                 MaxLimitEnabled; /* if false, MaxNumber is not used */
+  unsigned int                         MaxNumber; /* max. number of branches */
+
+  float                                Rotation;
  };
 
 #endif

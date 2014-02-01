@@ -36,6 +36,13 @@
                    P3DBranchingAlgBase::P3DBranchingAlgBase
                                       ()
  {
+  Spread          = 1.0f;
+  Density         = 1.0f;
+  DensityV        = 0.0f;
+  MinNumber       = 1;
+  MaxLimitEnabled = false;
+  MaxNumber       = 1;
+
   Rotation  = 0.0f;
  }
 
@@ -46,9 +53,110 @@ P3DBranchingAlg   *P3DBranchingAlgBase::CreateCopy
 
   Result = new P3DBranchingAlgBase();
 
+  Result->Spread          = Spread;
+  Result->Density         = Density;
+  Result->DensityV        = DensityV;
+  Result->MinNumber       = MinNumber;
+  Result->MaxLimitEnabled = MaxLimitEnabled;
+  Result->MaxNumber       = MaxNumber;
+
   Result->Rotation = Rotation;
 
   return(Result);
+ }
+
+float              P3DBranchingAlgBase::GetSpread
+                                      () const
+ {
+  return(Spread);
+ }
+
+void               P3DBranchingAlgBase::SetSpread
+                                      (float                         Spread)
+ {
+  if (Spread < 0.0f)
+   {
+   }
+  else
+   {
+    this->Spread = Spread;
+   }
+ }
+
+float              P3DBranchingAlgBase::GetDensity
+                                      () const
+ {
+  return(Density);
+ }
+
+void               P3DBranchingAlgBase::SetDensity
+                                      (float                         Density)
+ {
+  if (Density < 0.0f)
+   {
+   }
+  else
+   {
+    this->Density = Density;
+   }
+ }
+
+float              P3DBranchingAlgBase::GetDensityV
+                                      () const
+ {
+  return(DensityV);
+ }
+
+void               P3DBranchingAlgBase::SetDensityV
+                                      (float                         DensityV)
+ {
+  this->DensityV = P3DMath::Clampf(0.0f,1.0f,DensityV);
+ }
+
+unsigned int       P3DBranchingAlgBase::GetMinNumber
+                                      () const
+ {
+  return MinNumber;
+ }
+
+void               P3DBranchingAlgBase::SetMinNumber
+                                      (unsigned int                  MinNumber)
+ {
+  this->MinNumber = MinNumber;
+
+  if (MinNumber > MaxNumber)
+   {
+    MaxNumber = MinNumber;
+   }
+ }
+
+bool               P3DBranchingAlgBase::IsMaxLimitEnabled
+                                      () const
+ {
+  return MaxLimitEnabled;
+ }
+
+void               P3DBranchingAlgBase::SetMaxLimitEnabled
+                                      (bool                          IsEnabled)
+ {
+  MaxLimitEnabled = IsEnabled;
+ }
+
+unsigned int       P3DBranchingAlgBase::GetMaxNumber
+                                      () const
+ {
+  return MaxNumber;
+ }
+
+void               P3DBranchingAlgBase::SetMaxNumber
+                                      (unsigned int                  MaxNumber)
+ {
+  this->MaxNumber = MaxNumber;
+
+  if (MaxNumber < MinNumber)
+   {
+    MinNumber = MaxNumber;
+   }
  }
 
 float              P3DBranchingAlgBase::GetRotationAngle
