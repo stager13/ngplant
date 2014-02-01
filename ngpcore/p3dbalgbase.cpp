@@ -36,11 +36,11 @@
                    P3DBranchingAlgBase::P3DBranchingAlgBase
                                       ()
  {
-  Spread          = 1.0f;
+  Spread          = 0.0f;
   Density         = 1.0f;
   DensityV        = 0.0f;
   MinNumber       = 1;
-  MaxLimitEnabled = false;
+  MaxLimitEnabled = true;
   MaxNumber       = 1;
 
   Rotation  = 0.0f;
@@ -171,16 +171,73 @@ void               P3DBranchingAlgBase::SetRotationAngle
   this->Rotation = P3DMath::Clampf(0.0f,P3DMATH_2PI,Rotation);
  }
 
+unsigned int       P3DBranchingAlgBase::CalcBranchCount
+                                      (P3DMathRNG         *RNG) const
+ {
+  unsigned int     BranchCount;
+  float            Area;
+
+  Area = Spread * Spread;
+
+  if (RNG != 0)
+   {
+    BranchCount = (int)(Area * (Density + RNG->UniformFloat(-DensityV,DensityV) * Density));
+   }
+  else
+   {
+    BranchCount = (int)(Area * Density);
+   }
+
+  if (BranchCount < MinNumber)
+   {
+    BranchCount = MinNumber;
+   }
+
+  if (MaxLimitEnabled && BranchCount > MaxNumber)
+   {
+    BranchCount = MaxNumber;
+   }
+
+  return BranchCount;
+ }
+
+void               P3DBranchingAlgBase::GenBranchOffset
+                                      (P3DVector3f        *Offset,
+                                       P3DMathRNG         *RNG) const
+ {
+  if (RNG != 0)
+   {
+    float HalfSpread = Spread * 0.5f;
+    float X          = RNG->UniformFloat(-HalfSpread,HalfSpread);
+    float Z          = RNG->UniformFloat(-HalfSpread,HalfSpread);
+
+    Offset->Set(X,0.0f,Z);
+   }
+  else
+   {
+    Offset->Set(0.0f,0.0f,0.0f);
+   }
+ }
+
 void               P3DBranchingAlgBase::CreateBranches
                                       (P3DBranchingFactory          *Factory,
                                        const P3DStemModelInstance   *Parent P3D_UNUSED_ATTR,
-                                       P3DMathRNG                   *RNG P3D_UNUSED_ATTR)
+                                       P3DMathRNG                   *RNG)
  {
-  P3DQuaternionf                       Orientation;
+  unsigned int     BranchCount;
+  P3DVector3f      BranchOffset;
+  P3DQuaternionf   Orientation;
 
   Orientation.FromAxisAndAngle(0.0f,1.0f,0.0f,Rotation);
 
-  Factory->GenerateBranch(0,&Orientation);
+  BranchCount = CalcBranchCount(RNG);
+
+  for (unsigned int BranchIndex = 0; BranchIndex < BranchCount; BranchIndex++)
+   {
+    GenBranchOffset(&BranchOffset,RNG);
+
+    Factory->GenerateBranch(&BranchOffset,&Orientation);
+   }
  }
 
 void               P3DBranchingAlgBase::Save
