@@ -4,6 +4,15 @@
 many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
+Changes since 0.9.11:
+- fixed problem with incorrect hide/show command handling in presence of
+  'dummy' branches
+- added current branch group highlighting by holding 'Alt' key pressed
+- multiple improvements in .OBJ export plugin (Vianney Tran):
+  - added workaround for Maya .obj importer bug
+  - added "group" statements generation
+  - implemented export to directory (similar to COLLADA export plugin)
+
 Changes since 0.9.10:
 - added "Start RevAngle" parameter to branching algorithm
 - added "Origin offset X" and "Origin offset Y" parameters to "Quad" stem model
