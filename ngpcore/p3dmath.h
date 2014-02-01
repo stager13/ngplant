@@ -106,6 +106,22 @@ class P3DVector3f
     return(v[2]);
    }
 
+  const float     &X                  () const
+   {
+    return(v[0]);
+   }
+
+  const float     &Y                  () const
+   {
+    return(v[1]);
+   }
+
+  const float     &Z                  () const
+   {
+    return(v[2]);
+   }
+
+
   void             Add                (const float        *V)
    {
     v[0] += V[0];
