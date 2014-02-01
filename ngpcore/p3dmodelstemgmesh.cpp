@@ -31,6 +31,8 @@
 
 #include <ngpcore/p3dmodel.h>
 
+#include <ngpcore/p3dbalgbase.h>
+
 #include <ngpcore/p3dmodelstemgmesh.h>
 
 class P3DStemModelGMeshInstance : public P3DStemModelInstance
@@ -339,11 +341,12 @@ P3DStemModelInstance
 
   if (Parent == 0)
    {
-    if (Orientation != 0)
+    if (Orientation != 0 || Offset != 0)
      {
       P3DMatrix4x4f                    WorldTransform;
 
-      Orientation->ToMatrix(WorldTransform.m);
+      P3DBranchingAlgBase::MakeBranchWorldMatrix
+       (WorldTransform.m,Offset,Orientation);
 
       Instance = new P3DStemModelGMeshInstance(MeshData,&WorldTransform);
      }
