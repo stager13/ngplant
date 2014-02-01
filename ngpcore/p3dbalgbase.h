@@ -77,6 +77,10 @@ class P3DBranchingAlgBase : public P3DBranchingAlg
 
   private          :
 
+  unsigned int     CalcBranchCount    (P3DMathRNG         *RNG) const;
+  void             GenBranchOffset    (P3DVector3f        *Offset,
+                                       P3DMathRNG         *RNG) const;
+
   float                                Spread;
 
   float                                Density; /* branches per square meter */
