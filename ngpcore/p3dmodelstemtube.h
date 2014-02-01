@@ -140,7 +140,7 @@ class P3DStemModelTube : public P3DStemModel
                   *CreateInstance     (P3DMathRNG         *rng,
                                        const P3DStemModelInstance
                                                           *parent,
-                                       float               offset,
+                                       const P3DVector3f  *offset,
                                        const P3DQuaternionf
                                                           *orientation) const;
 
