@@ -32,6 +32,7 @@
 #include <ngpcore/p3dsplineio.h>
 
 #include <ngpcore/p3dmodel.h>
+#include <ngpcore/p3dbalgbase.h>
 #include <ngpcore/p3dmodelstemquad.h>
 
 class P3DStemModelQuadInstance : public P3DStemModelInstance
@@ -519,7 +520,7 @@ P3DStemModelInstance
   P3DMatrix4x4f                        OriginOffsetTransform;
   float                                OffsetY;
 
-  OffsetY = Offset != 0 ? Offset->Y() : 0.0f;
+  OffsetY = (Parent != 0 && Offset != 0) ? Offset->Y() : 0.0f;
 
   Scale = ScalingCurve.GetValue(OffsetY);
 
@@ -530,12 +531,13 @@ P3DStemModelInstance
 
   if (Parent == 0)
    {
-    if (Orientation != 0)
+    if (Orientation != 0 || Offset != 0)
      {
       P3DMatrix4x4f                    TempTransform;
       P3DMatrix4x4f                    WorldTransform;
 
-      Orientation->ToMatrix(TempTransform.m);
+      P3DBranchingAlgBase::MakeBranchWorldMatrix
+       (TempTransform.m,Offset,Orientation);
 
       P3DMatrix4x4f::MultMatrix(WorldTransform.m,
                                 TempTransform.m,

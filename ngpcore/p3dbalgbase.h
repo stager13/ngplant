@@ -75,6 +75,11 @@ class P3DBranchingAlgBase : public P3DBranchingAlg
                                        const P3DFileVersion
                                                           *Version);
 
+  static void      MakeBranchWorldMatrix
+                                      (float                        *WorldTransform,
+                                       const P3DVector3f            *Offset,
+                                       const P3DQuaternionf         *Orientation);
+
   private          :
 
   unsigned int     CalcBranchCount    (P3DMathRNG         *RNG) const;

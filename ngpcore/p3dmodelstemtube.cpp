@@ -43,6 +43,7 @@
 #include <ngpcore/p3dsplineio.h>
 
 #include <ngpcore/p3dmodel.h>
+#include <ngpcore/p3dbalgbase.h>
 #include <ngpcore/p3dmodelstemtube.h>
 
 enum /* These constants are needed for pre-0.9.3 compatibility only */
@@ -651,7 +652,7 @@ P3DStemModelInstance
  {
   P3DStemModelTubeInstance            *Instance;
 
-  if (parent == 0)
+  if (parent == 0) // it means that P3DBrancingAlgBase is used
    {
     float                              InstanceLength;
 
@@ -662,11 +663,11 @@ P3DStemModelInstance
       InstanceLength += rng->UniformFloat(-LengthV,LengthV) * InstanceLength;
      }
 
-    if (orientation != 0)
+    if (offset != 0 || orientation != 0)
      {
-      P3DMatrix4x4f                    WorldTransform;
+      P3DMatrix4x4f WorldTransform;
 
-      orientation->ToMatrix(WorldTransform.m);
+      P3DBranchingAlgBase::MakeBranchWorldMatrix(WorldTransform.m,offset,orientation);
 
       Instance = new P3DStemModelTubeInstance
                       ( InstanceLength,

@@ -43,7 +43,7 @@
   MaxLimitEnabled = true;
   MaxNumber       = 1;
 
-  Rotation  = 0.0f;
+  Rotation = 0.0f;
  }
 
 P3DBranchingAlg   *P3DBranchingAlgBase::CreateCopy
@@ -261,5 +261,40 @@ void               P3DBranchingAlgBase::Load
 
   SourceStream->ReadFmtStringTagged("RotAngle","f",&FloatValue);
   SetRotationAngle(FloatValue);
+ }
+
+void               P3DBranchingAlgBase::MakeBranchWorldMatrix
+                                      (float                        *WorldTransform,
+                                       const P3DVector3f            *Offset,
+                                       const P3DQuaternionf         *Orientation)
+ {
+  if (Orientation != 0)
+   {
+    if (Offset != 0)
+     {
+      P3DMatrix4x4f OrientationTransform;
+      P3DMatrix4x4f OffsetTransform;
+
+      Orientation->ToMatrix(OrientationTransform.m);
+      P3DMatrix4x4f::MakeTranslation(OffsetTransform.m,Offset->X(),Offset->Y(),Offset->Z());
+
+      P3DMatrix4x4f::MultMatrix(WorldTransform,OffsetTransform.m,OrientationTransform.m);
+     }
+    else
+     {
+      Orientation->ToMatrix(WorldTransform);
+     }
+   }
+  else
+   {
+    if (Offset != 0)
+     {
+      P3DMatrix4x4f::MakeTranslation(WorldTransform,Offset->X(),Offset->Y(),Offset->Z());
+     }
+    else
+     {
+      P3DMatrix4x4f::MakeIdentity(WorldTransform);
+     }
+   }
  }
 
