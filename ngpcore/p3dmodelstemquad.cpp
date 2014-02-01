@@ -510,15 +510,18 @@ P3DStemModelInstance
                                       (P3DMathRNG         *RNG P3D_UNUSED_ATTR,
                                        const P3DStemModelInstance
                                                           *Parent,
-                                       float               Offset,
+                                       const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation) const
  {
   P3DStemModelQuadInstance            *Instance;
   float                                Scale;
   P3DMatrix4x4f                        OriginOffsetTransform;
+  float                                OffsetY;
 
-  Scale = ScalingCurve.GetValue(Offset);
+  OffsetY = Offset != 0 ? Offset->Y() : 0.0f;
+
+  Scale = ScalingCurve.GetValue(OffsetY);
 
   float ScaledWidth  = Width  * Scale;
   float ScaledLength = Length * Scale;
@@ -572,8 +575,8 @@ P3DStemModelInstance
     P3DMatrix4x4f                      TempTransform2;
     P3DMatrix4x4f                      TranslateTransform;
 
-    Parent->GetAxisOrientationAt(ParentOrientation.q,Offset);
-    Parent->GetAxisPointAt(ParentAxisPos.v,Offset);
+    Parent->GetAxisOrientationAt(ParentOrientation.q,OffsetY);
+    Parent->GetAxisPointAt(ParentAxisPos.v,OffsetY);
     Parent->GetWorldTransform(ParentTransform.m);
 
     P3DQuaternionf::CrossProduct(InstanceOrientation.q,

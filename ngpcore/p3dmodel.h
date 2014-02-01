@@ -255,7 +255,7 @@ class P3DStemModel
                   *CreateInstance     (P3DMathRNG         *rng,
                                        const P3DStemModelInstance
                                                           *parent,
-                                       float               offset,
+                                       const P3DVector3f  *offset,
                                        const P3DQuaternionf
                                                           *orientation) const = 0;
 
@@ -320,7 +320,7 @@ class P3DBranchingFactory
 
   virtual         ~P3DBranchingFactory() {};
 
-  virtual void     GenerateBranch     (float               offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *offset,
                                        const P3DQuaternionf
                                                           *orientation) = 0;
  };

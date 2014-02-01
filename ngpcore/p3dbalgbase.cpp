@@ -180,7 +180,7 @@ void               P3DBranchingAlgBase::CreateBranches
 
   Orientation.FromAxisAndAngle(0.0f,1.0f,0.0f,Rotation);
 
-  Factory->GenerateBranch(0.0f,&Orientation);
+  Factory->GenerateBranch(0,&Orientation);
  }
 
 void               P3DBranchingAlgBase::Save

@@ -331,7 +331,7 @@ P3DStemModelInstance
                                       (P3DMathRNG         *RNG P3D_UNUSED_ATTR,
                                        const P3DStemModelInstance
                                                           *Parent,
-                                       float               Offset,
+                                       const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation) const
  {
@@ -362,9 +362,12 @@ P3DStemModelInstance
     P3DMatrix4x4f                      TempTransform;
     P3DMatrix4x4f                      TempTransform2;
     P3DMatrix4x4f                      TranslateTransform;
+    float                              OffsetY;
 
-    Parent->GetAxisOrientationAt(ParentOrientation.q,Offset);
-    Parent->GetAxisPointAt(ParentAxisPos.v,Offset);
+    OffsetY = Offset != 0 ? Offset->Y() : 0.0f;
+
+    Parent->GetAxisOrientationAt(ParentOrientation.q,OffsetY);
+    Parent->GetAxisPointAt(ParentAxisPos.v,OffsetY);
     Parent->GetWorldTransform(ParentTransform.m);
 
     P3DQuaternionf::CrossProduct(InstanceOrientation.q,

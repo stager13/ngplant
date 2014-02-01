@@ -290,7 +290,6 @@ void               P3DBranchingAlgStd::CreateBranches
                                        P3DMathRNG                   *RNG)
  {
   unsigned int                         BranchCount;
-  float                                CurrOffset;
   float                                OffsetStep;
   float                                CurrRevAngle;
   float                                BranchRegionLength;
@@ -335,7 +334,8 @@ void               P3DBranchingAlgStd::CreateBranches
     float                              MultRevAngleStep;
 
     OffsetStep = (MaxOffset - MinOffset) / (BranchCount + 1);
-    CurrOffset = MinOffset + OffsetStep;
+
+    P3DVector3f CurrOffset(0.0f,MinOffset + OffsetStep,0.0f);
 
     MultRevAngleStep = (2.0f * P3DMATH_PI) / Multiplicity;
 
@@ -345,7 +345,7 @@ void               P3DBranchingAlgStd::CreateBranches
 
       for (unsigned int MultIndex = 0; MultIndex < Multiplicity; MultIndex++)
        {
-        BaseDeclination = DeclinationCurve.GetValue(CurrOffset);
+        BaseDeclination = DeclinationCurve.GetValue(CurrOffset.Y());
 
         if (RNG != 0)
          {
@@ -360,7 +360,7 @@ void               P3DBranchingAlgStd::CreateBranches
         P3DQuaternionf::CrossProduct(TempRot.q,rev.q,decl.q);
         P3DQuaternionf::CrossProduct(orientation.q,TempRot.q,Rot.q);
 
-        Factory->GenerateBranch(CurrOffset,&orientation);
+        Factory->GenerateBranch(&CurrOffset,&orientation);
        }
 
       if (RNG != 0)
@@ -372,7 +372,7 @@ void               P3DBranchingAlgStd::CreateBranches
         CurrRevAngle += RevAngle;
        }
 
-      CurrOffset += OffsetStep;
+      CurrOffset.Y() += OffsetStep;
      }
    }
  }

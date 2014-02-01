@@ -534,7 +534,7 @@ P3DStemModelInstance
                                       (P3DMathRNG         *RNG P3D_UNUSED_ATTR,
                                        const P3DStemModelInstance
                                                           *Parent,
-                                       float               Offset P3D_UNUSED_ATTR,
+                                       const P3DVector3f  *Offset P3D_UNUSED_ATTR,
                                        const P3DQuaternionf
                                                           *Orientation P3D_UNUSED_ATTR) const
  {

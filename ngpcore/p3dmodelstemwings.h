@@ -49,7 +49,7 @@ class P3DStemModelWings : public P3DStemModel
                   *CreateInstance     (P3DMathRNG         *RNG,
                                        const P3DStemModelInstance
                                                           *Parent,
-                                       float               Offset,
+                                       const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation) const;
 

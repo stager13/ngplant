@@ -645,7 +645,7 @@ P3DStemModelInstance
                                       (P3DMathRNG         *rng,
                                        const P3DStemModelInstance
                                                           *parent,
-                                       float               offset,
+                                       const P3DVector3f  *offset,
                                        const P3DQuaternionf
                                                           *orientation) const
  {
@@ -699,6 +699,7 @@ P3DStemModelInstance
    }
   else
    {
+    float                              OffsetY;
     P3DMatrix4x4f                      ParentTransform;
     P3DMatrix4x4f                      WorldTransform;
     P3DQuaternionf                     ParentOrientation;
@@ -709,8 +710,10 @@ P3DStemModelInstance
     P3DMatrix4x4f                      TranslateTransform;
     float                              InstanceLength;
 
-    parent->GetAxisOrientationAt(ParentOrientation.q,offset);
-    parent->GetAxisPointAt(ParentAxisPos.v,offset);
+    OffsetY = offset != 0 ? offset->Y() : 0.0f;
+
+    parent->GetAxisOrientationAt(ParentOrientation.q,OffsetY);
+    parent->GetAxisPointAt(ParentAxisPos.v,OffsetY);
     parent->GetWorldTransform(ParentTransform.m);
 
     P3DQuaternionf::CrossProduct(InstanceOrientation.q,
@@ -731,7 +734,7 @@ P3DStemModelInstance
                               ParentTransform.m,
                               TempTransform.m);
 
-    float LengthScaleFactor = LengthOffsetInfluenceCurve.GetValue(offset);
+    float LengthScaleFactor = LengthOffsetInfluenceCurve.GetValue(OffsetY);
 
     InstanceLength = parent->GetLength() * Length * LengthScaleFactor;
 
@@ -743,7 +746,7 @@ P3DStemModelInstance
     Instance = new P3DStemModelTubeInstance
                     ( InstanceLength,
                       AxisResolution,
-                      parent->GetMinRadiusAt(offset) * ProfileScaleBase,
+                      parent->GetMinRadiusAt(OffsetY) * ProfileScaleBase,
                      &ProfileScaleCurve,
                       ProfileResolution,
                       UMode,

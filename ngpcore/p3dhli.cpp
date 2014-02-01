@@ -122,7 +122,7 @@ class P3DHLIBranchCalculator : public P3DBranchingFactory
     this->Counter       = Counter;
    }
 
-  virtual void     GenerateBranch     (float               Offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation)
    {
@@ -198,7 +198,7 @@ class P3DHLIBranchCalculatorMulti : public P3DBranchingFactory
     this->Counters       = Counters;
    }
 
-  virtual void     GenerateBranch     (float               Offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation)
    {
@@ -290,7 +290,7 @@ class P3DHLIFillCloneTransformBufferHelper : public P3DBranchingFactory
     this->ScaleBuffer       = ScaleBuffer;
    }
 
-  virtual void     GenerateBranch     (float               Offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation)
    {
@@ -403,7 +403,7 @@ class P3DHLIFillVAttrBufferHelper : public P3DBranchingFactory
     this->Buffer         = Buffer;
    }
 
-  virtual void     GenerateBranch     (float               Offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation)
    {
@@ -521,7 +521,7 @@ class P3DHLIFillVAttrBufferIHelper : public P3DBranchingFactory
     this->Buffer         = Buffer;
    }
 
-  virtual void     GenerateBranch     (float               Offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation)
    {
@@ -652,7 +652,7 @@ class P3DHLIFillVAttrBuffersIHelper : public P3DBranchingFactory
     this->DataBuffers    = DataBuffers;
    }
 
-  virtual void     GenerateBranch     (float               Offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation)
    {
@@ -798,7 +798,7 @@ class P3DHLIFillVAttrBuffersIMultiHelper : public P3DBranchingFactory
     this->VAttrBufferSetArray = VAttrBufferSetArray;
    }
 
-  virtual void     GenerateBranch     (float               Offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *Offset,
                                        const P3DQuaternionf
                                                           *Orientation)
    {
@@ -1370,7 +1370,7 @@ unsigned int       P3DHLIPlantInstance::GetBranchCount
                                                    BranchModel,
                                                   &Counter);
 
-  Calculator.GenerateBranch(0.0f,0);
+  Calculator.GenerateBranch(0,0);
 
   return(Counter);
  }
@@ -1397,7 +1397,7 @@ void               P3DHLIPlantInstance::GetBranchCountMulti
                                           DummiesEnabled,
                                           BranchCounts);
 
-  Calculator.GenerateBranch(0.0f,0);
+  Calculator.GenerateBranch(0,0);
  }
 
 class P3DBranchingFactoryBoundCalc : public P3DBranchingFactory
@@ -1412,7 +1412,7 @@ class P3DBranchingFactoryBoundCalc : public P3DBranchingFactory
                                                     float           *Min,
                                                     float           *Max);
 
-  virtual void     GenerateBranch     (float               offset,
+  virtual void     GenerateBranch     (const P3DVector3f  *offset,
                                        const P3DQuaternionf
                                                           *orientation);
 
@@ -1444,7 +1444,7 @@ class P3DBranchingFactoryBoundCalc : public P3DBranchingFactory
  }
 
 void               P3DBranchingFactoryBoundCalc::GenerateBranch
-                                      (float               offset,
+                                      (const P3DVector3f  *offset,
                                        const P3DQuaternionf
                                                           *orientation)
  {
@@ -1525,7 +1525,7 @@ static void        P3DHLICalcBBox     (float              *Min,
                      Min,
                      Max);
 
-  BranchingFactory.GenerateBranch(0.0f,0);
+  BranchingFactory.GenerateBranch(0,0);
  }
 
 void               P3DHLIPlantInstance::GetBoundingBox
@@ -1555,7 +1555,7 @@ void               P3DHLIPlantInstance::FillCloneTransformBuffer
                                               OrientationBuffer != 0 ? &OrientationBuffer : 0,
                                               ScaleBuffer != 0 ? &ScaleBuffer : 0);
 
-  Helper.GenerateBranch(0.0f,0);
+  Helper.GenerateBranch(0,0);
  }
 
 unsigned int       P3DHLIPlantInstance::GetVAttrCount
@@ -1592,7 +1592,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffer
                                       Attr,
                                      &Buffer);
 
-  Helper.GenerateBranch(0.0f,0);
+  Helper.GenerateBranch(0,0);
  }
 
 unsigned int       P3DHLIPlantInstance::GetVAttrCountI
@@ -1629,7 +1629,7 @@ void               P3DHLIPlantInstance::FillVAttrBufferI
                                        VAttrFormat,
                                       &Buffer);
 
-  Helper.GenerateBranch(0.0f,0);
+  Helper.GenerateBranch(0,0);
  }
 
 void               P3DHLIPlantInstance::FillVAttrBuffersI
@@ -1656,7 +1656,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffersI
                                        VAttrBuffers,
                                        DataBuffers);
 
-  Helper.GenerateBranch(0.0f,0);
+  Helper.GenerateBranch(0,0);
  }
 
 void               P3DHLIPlantInstance::FillVAttrBuffersIMulti
@@ -1691,7 +1691,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffersIMulti
                                                  DummiesEnabled,
                                                  TempVAttrBufferSet);
 
-    Helper.GenerateBranch(0.0f,0);
+    Helper.GenerateBranch(0,0);
 
     delete TempVAttrBufferSet;
    }
