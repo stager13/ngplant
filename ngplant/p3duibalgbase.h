@@ -36,6 +36,13 @@ class P3DBranchingAlgBasePanel : public P3DUIParamPanel
                                       (wxWindow           *Parent,
                                        P3DBranchingAlgBase*Alg);
 
+  void             OnSpreadChanged    (wxSpinSliderEvent  &event);
+  void             OnDensityChanged   (wxSpinSliderEvent  &event);
+  void             OnDensityVChanged  (wxSpinSliderEvent  &event);
+  void             OnMinNumberChanged (wxSpinSliderEvent  &event);
+  void             OnMaxLimitEnabledChanged
+                                      (wxCommandEvent     &event);
+  void             OnMaxNumberChanged (wxSpinSliderEvent  &event);
   void             OnRotAngleChanged  (wxSpinSliderEvent  &event);
 
   private          :
