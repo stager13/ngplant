@@ -32,8 +32,12 @@
 #ifndef __P3DMATH_H__
 #define __P3DMATH_H__
 
+#include <math.h>
+
 #define P3DMATH_PI  (3.1415926)
 #define P3DMATH_2PI (P3DMATH_PI * 2.0)
+
+#define P3DMATH_ALMOST_ZERO(a) (fabs(a) < 1E-5f)
 
 #define P3DMATH_DEG2RAD(deg) ((deg) * P3DMATH_PI / 180.0f)
 #define P3DMATH_RAD2DEG(rad) ((rad) * 180.0f / P3DMATH_PI)
