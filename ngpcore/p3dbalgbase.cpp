@@ -33,15 +33,24 @@
 #include <ngpcore/p3dmodel.h>
 #include <ngpcore/p3dbalgbase.h>
 
+static bool        IsPointInsideCircle(float X, float Y, float R)
+ {
+  return X * X + Y * Y <= R * R;
+ }
+
                    P3DBranchingAlgBase::P3DBranchingAlgBase
                                       ()
  {
+  Shape           = SQUARE_SHAPE;
   Spread          = 0.0f;
   Density         = 1.0f;
   DensityV        = 0.0f;
   MinNumber       = 1;
   MaxLimitEnabled = true;
   MaxNumber       = 1;
+
+  DeclFactor  = 0.0f;
+  DeclFactorV = 0.0f;
 
   Rotation = 0.0f;
  }
@@ -53,6 +62,7 @@ P3DBranchingAlg   *P3DBranchingAlgBase::CreateCopy
 
   Result = new P3DBranchingAlgBase();
 
+  Result->Shape           = Shape;
   Result->Spread          = Spread;
   Result->Density         = Density;
   Result->DensityV        = DensityV;
@@ -60,9 +70,24 @@ P3DBranchingAlg   *P3DBranchingAlgBase::CreateCopy
   Result->MaxLimitEnabled = MaxLimitEnabled;
   Result->MaxNumber       = MaxNumber;
 
+  Result->DeclFactor  = DeclFactor;
+  Result->DeclFactorV = DeclFactorV;
+
   Result->Rotation = Rotation;
 
   return(Result);
+ }
+
+unsigned int       P3DBranchingAlgBase::GetShape
+                                      () const
+ {
+  return Shape;
+ }
+
+void               P3DBranchingAlgBase::SetShape
+                                      (unsigned int                  Shape)
+ {
+  this->Shape = Shape == CIRCLE_SHAPE ? CIRCLE_SHAPE : SQUARE_SHAPE;
  }
 
 float              P3DBranchingAlgBase::GetSpread
@@ -159,6 +184,30 @@ void               P3DBranchingAlgBase::SetMaxNumber
    }
  }
 
+float              P3DBranchingAlgBase::GetDeclFactor
+                                      () const
+ {
+  return(DeclFactor);
+ }
+
+void               P3DBranchingAlgBase::SetDeclFactor
+                                      (float                         DeclFactor)
+ {
+  this->DeclFactor = P3DMath::Clampf(-1.0f,1.0f,DeclFactor);
+ }
+
+float              P3DBranchingAlgBase::GetDeclFactorV
+                                      () const
+ {
+  return(DeclFactorV);
+ }
+
+void               P3DBranchingAlgBase::SetDeclFactorV
+                                      (float                         DeclFactorV)
+ {
+  this->DeclFactorV = P3DMath::Clampf(0.0f,1.0f,DeclFactorV);
+ }
+
 float              P3DBranchingAlgBase::GetRotationAngle
                                       () const
  {
@@ -201,15 +250,59 @@ unsigned int       P3DBranchingAlgBase::CalcBranchCount
   return BranchCount;
  }
 
+void               P3DBranchingAlgBase::GenOffsetSquare
+                                      (float              *X,
+                                       float              *Y,
+                                       P3DMathRNG         *RNG) const
+ {
+  float HalfSpread = Spread * 0.5f;
+
+  *X = RNG->UniformFloat(-HalfSpread,HalfSpread);
+  *Y = RNG->UniformFloat(-HalfSpread,HalfSpread);
+ }
+
+void               P3DBranchingAlgBase::GenOffsetCircle
+                                      (float              *X,
+                                       float              *Y,
+                                       P3DMathRNG         *RNG) const
+ {
+  const unsigned int MAX_RETRIES  = 100;
+  unsigned int       Counter      = 0;
+  bool               InsideCircle = false;
+  float              HalfSpread   = Spread * 0.5f;
+
+  while (!InsideCircle && Counter < MAX_RETRIES)
+   {
+    GenOffsetSquare(X,Y,RNG);
+
+    InsideCircle = IsPointInsideCircle(*X,*Y,HalfSpread);
+
+    Counter++;
+   }
+
+  if (!InsideCircle)
+   {
+    *X = *Y = 0.0f;
+   }
+ }
+
 void               P3DBranchingAlgBase::GenBranchOffset
                                       (P3DVector3f        *Offset,
                                        P3DMathRNG         *RNG) const
  {
   if (RNG != 0)
    {
-    float HalfSpread = Spread * 0.5f;
-    float X          = RNG->UniformFloat(-HalfSpread,HalfSpread);
-    float Z          = RNG->UniformFloat(-HalfSpread,HalfSpread);
+    float X;
+    float Z;
+
+    if (Shape == CIRCLE_SHAPE)
+     {
+      GenOffsetCircle(&X,&Z,RNG);
+     }
+    else
+     {
+      GenOffsetSquare(&X,&Z,RNG);
+     }
 
     Offset->Set(X,0.0f,Z);
    }
@@ -217,6 +310,50 @@ void               P3DBranchingAlgBase::GenBranchOffset
    {
     Offset->Set(0.0f,0.0f,0.0f);
    }
+ }
+
+void               P3DBranchingAlgBase::CalcBranchOrientationInCircleShape
+                                      (P3DQuaternionf     *Orientation,
+                                       float               X,
+                                       float               Z,
+                                       P3DMathRNG         *RNG) const
+ {
+  P3DQuaternionf   Rotation1Quat;
+  P3DQuaternionf   Rotation2Quat;
+  P3DQuaternionf   DeclinationQuat;
+  P3DQuaternionf   TempQuat;
+  float            DeclinationAngle;
+
+  float XAxisVsPointAngle = P3DMath::ATan2(X,Z);
+
+  Rotation1Quat.FromAxisAndAngle(0.0f,1.0f,0.0f,XAxisVsPointAngle);
+  Rotation2Quat.FromAxisAndAngle(0.0f,1.0f,0.0f,Rotation);
+
+  float SquaredRadius = Spread * Spread * 0.25f;
+  float NormDistance;
+
+  if (!P3DMATH_ALMOST_ZERO(SquaredRadius))
+   {
+    NormDistance = P3DMath::Sqrtf((X * X + Z * Z) / (Spread * Spread * 0.25f));
+   }
+  else
+   {
+    NormDistance = 0.0f;
+   }
+
+  if (RNG != 0)
+   {
+    NormDistance += RNG->UniformFloat(-DeclFactorV,DeclFactorV);
+   }
+
+  DeclinationAngle = P3DMath::Clampf
+                      (-P3DMATH_PI * 0.5,P3DMATH_PI * 0.5,
+                       NormDistance * DeclFactor * P3DMATH_PI * 0.5);
+
+  DeclinationQuat.FromAxisAndAngle(1.0f,0.0f,0.0f,DeclinationAngle);
+
+  P3DQuaternionf::CrossProduct(TempQuat.q,Rotation1Quat.q,DeclinationQuat.q);
+  P3DQuaternionf::CrossProduct(Orientation->q,TempQuat.q,Rotation2Quat.q);
  }
 
 void               P3DBranchingAlgBase::CreateBranches
@@ -228,13 +365,21 @@ void               P3DBranchingAlgBase::CreateBranches
   P3DVector3f      BranchOffset;
   P3DQuaternionf   Orientation;
 
-  Orientation.FromAxisAndAngle(0.0f,1.0f,0.0f,Rotation);
+  if (Shape == SQUARE_SHAPE)
+   {
+    Orientation.FromAxisAndAngle(0.0f,1.0f,0.0f,Rotation);
+   }
 
   BranchCount = CalcBranchCount(RNG);
 
   for (unsigned int BranchIndex = 0; BranchIndex < BranchCount; BranchIndex++)
    {
     GenBranchOffset(&BranchOffset,RNG);
+
+    if (Shape == CIRCLE_SHAPE)
+     {
+      CalcBranchOrientationInCircleShape(&Orientation,BranchOffset.X(),BranchOffset.Z(),RNG);
+     }
 
     Factory->GenerateBranch(&BranchOffset,&Orientation);
    }

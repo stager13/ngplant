@@ -28,21 +28,29 @@
 
 enum
  {
-  wxID_SPREAD_CTRL  = wxID_HIGHEST + 1,
+  wxID_SHAPE_CTRL = wxID_HIGHEST + 1,
+  wxID_SPREAD_CTRL,
   wxID_DENSITY_CTRL,
   wxID_DENSITYV_CTRL,
   wxID_MIN_NUMBER_CTRL,
   wxID_MAX_LIMIT_ENABLED_CTRL,
   wxID_MAX_NUMBER_CTRL,
+  wxID_DECLFACTOR_CTRL,
+  wxID_DECLFACTORV_CTRL,
   wxID_ROTANGLE_CTRL
  };
 
 BEGIN_EVENT_TABLE(P3DBranchingAlgBasePanel,wxPanel)
+ EVT_CHOICE(wxID_SHAPE_CTRL,P3DBranchingAlgBasePanel::OnShapeChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_SPREAD_CTRL,P3DBranchingAlgBasePanel::OnSpreadChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_DENSITY_CTRL,P3DBranchingAlgBasePanel::OnDensityChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_DENSITYV_CTRL,P3DBranchingAlgBasePanel::OnDensityVChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_MIN_NUMBER_CTRL,P3DBranchingAlgBasePanel::OnMinNumberChanged)
- EVT_CHECKBOX(wxID_MAX_LIMIT_ENABLED_CTRL,P3DBranchingAlgBasePanel::OnMaxLimitEnabledChanged) EVT_SPINSLIDER_VALUE_CHANGED(wxID_MAX_NUMBER_CTRL,P3DBranchingAlgBasePanel::OnMaxNumberChanged) EVT_SPINSLIDER_VALUE_CHANGED(wxID_ROTANGLE_CTRL,P3DBranchingAlgBasePanel::OnRotAngleChanged)
+ EVT_CHECKBOX(wxID_MAX_LIMIT_ENABLED_CTRL,P3DBranchingAlgBasePanel::OnMaxLimitEnabledChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_MAX_NUMBER_CTRL,P3DBranchingAlgBasePanel::OnMaxNumberChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_DECLFACTOR_CTRL,P3DBranchingAlgBasePanel::OnDeclFactorChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_DECLFACTORV_CTRL,P3DBranchingAlgBasePanel::OnDeclFactorVChanged)
+ EVT_SPINSLIDER_VALUE_CHANGED(wxID_ROTANGLE_CTRL,P3DBranchingAlgBasePanel::OnRotAngleChanged)
 END_EVENT_TABLE()
 
 /*FIXME: copy of P3DBAlgStdMinMaxNumberEditCmd */
@@ -104,9 +112,21 @@ class P3DBAlgBaseMinMaxNumberEditCmd : public P3DEditCommand
 
   wxBoxSizer           *TopSizer        = new wxBoxSizer(wxVERTICAL);
   wxStaticBoxSizer     *ParametersSizer = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Parameters")),wxVERTICAL);
-  wxFlexGridSizer      *GridSizer       = new wxFlexGridSizer(7,2,2,2);
+  wxFlexGridSizer      *GridSizer       = new wxFlexGridSizer(10,2,2,2);
 
   GridSizer->AddGrowableCol(1);
+
+  /* Shape */
+
+  GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Shape")),0,wxALIGN_CENTER_VERTICAL,0);
+
+  wxChoice *ShapeCtrl = new wxChoice(this,wxID_SHAPE_CTRL,wxDefaultPosition,wxDefaultSize,(int)0,(const wxString*)NULL);
+  ShapeCtrl->Append(wxT("Square"));
+  ShapeCtrl->Append(wxT("Circle"));
+
+  ShapeCtrl->SetSelection(Alg->GetShape() == P3DBranchingAlgBase::CIRCLE_SHAPE ? 1 : 0);
+
+  GridSizer->Add(ShapeCtrl,1,wxALIGN_RIGHT,0);
 
   /* Spread */
 
@@ -125,7 +145,6 @@ class P3DBAlgBaseMinMaxNumberEditCmd : public P3DEditCommand
   SpinSlider->SetSensitivity(0.1f,0.01f,1.0f,0.1f,0.01f);
 
   GridSizer->Add(SpinSlider,1,wxALL | wxALIGN_RIGHT,1);
-
 
   /* DensityV */
 
@@ -163,6 +182,24 @@ class P3DBAlgBaseMinMaxNumberEditCmd : public P3DEditCommand
 
   GridSizer->Add(SpinSlider,1,wxALL | wxALIGN_RIGHT,1);
 
+  /* DeclFactor */
+
+  GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Declination")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  SpinSlider = new wxSpinSliderCtrl(this,wxID_DECLFACTOR_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDeclFactor(),-1.0,1.0);
+  SpinSlider->SetSensitivity(0.1f,0.01f,0.2f,0.1f,0.1f);
+
+  GridSizer->Add(SpinSlider,1,wxALL | wxALIGN_RIGHT,1);
+
+  /* DeclFactorV */
+
+  GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Variation")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
+
+  SpinSlider = new wxSpinSliderCtrl(this,wxID_DECLFACTORV_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDeclFactorV(),0.0,1.0);
+  SpinSlider->SetSensitivity(0.1f,0.01f,0.2f,0.1f,0.1f);
+
+  GridSizer->Add(SpinSlider,1,wxALL | wxALIGN_RIGHT,1);
+
   /* RotAngle */
 
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("RotAngle")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
@@ -187,6 +224,19 @@ class P3DBAlgBaseMinMaxNumberEditCmd : public P3DEditCommand
  }
 
 typedef P3DParamEditCmdTemplate<P3DBranchingAlgBase,float> P3DBAlgBaseFloatParamEditCmd;
+typedef P3DParamEditCmdTemplate<P3DBranchingAlgBase,unsigned int> P3DBAlgBaseUIntParamEditCmd;
+
+void               P3DBranchingAlgBasePanel::OnShapeChanged
+                                      (wxCommandEvent     &event)
+ {
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBAlgBaseUIntParamEditCmd
+        (Alg,
+         event.GetSelection() == 1 ? P3DBranchingAlgBase::CIRCLE_SHAPE :
+                                     P3DBranchingAlgBase::SQUARE_SHAPE ,
+         Alg->GetShape(),
+         &P3DBranchingAlgBase::SetShape));
+ }
 
 void               P3DBranchingAlgBasePanel::OnSpreadChanged
                                       (wxSpinSliderEvent  &event)
@@ -296,6 +346,28 @@ void               P3DBranchingAlgBasePanel::OnMaxNumberChanged
          (Alg,
           NewMinNumber,NewMaxNumber,LimitEnabled,
           OldMinNumber,OldMaxNumber,LimitEnabled));
+ }
+
+void               P3DBranchingAlgBasePanel::OnDeclFactorChanged
+                                      (wxSpinSliderEvent  &event)
+ {
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBAlgBaseFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetDeclFactor(),
+          &P3DBranchingAlgBase::SetDeclFactor));
+ }
+
+void               P3DBranchingAlgBasePanel::OnDeclFactorVChanged
+                                      (wxSpinSliderEvent  &event)
+ {
+  P3DApp::GetApp()->ExecEditCmd
+   (new P3DBAlgBaseFloatParamEditCmd
+         (Alg,
+          event.GetFloatValue(),
+          Alg->GetDeclFactorV(),
+          &P3DBranchingAlgBase::SetDeclFactorV));
  }
 
 void               P3DBranchingAlgBasePanel::OnRotAngleChanged
