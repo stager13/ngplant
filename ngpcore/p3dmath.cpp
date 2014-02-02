@@ -63,6 +63,13 @@ float              P3DMath::ACosf     (float               a)
   return(acosf(a));
  }
 
+
+float              P3DMath::ATan2     (float               y,
+                                       float               x)
+ {
+  return atan2(y,x);
+ }
+
 float              P3DMath::Sqrtf     (float               a)
  {
   return(sqrtf(a));

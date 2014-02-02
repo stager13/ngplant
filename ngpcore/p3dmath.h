@@ -52,6 +52,8 @@ class P3DMath
   static float     Sqrtf              (float               a);
 
   static float     ACosf              (float               a);
+  static float     ATan2              (float               y,
+                                       float               x);
 
   static float     Clampf             (float               min,
                                        float               max,
