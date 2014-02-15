@@ -5,6 +5,8 @@ many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
 Changes since 0.9.11:
+- now it is possible to have multiple first-level branches distributed
+  across circle or square area
 - fixed problem with incorrect hide/show command handling in presence of
   'dummy' branches
 - added current branch group highlighting by holding 'Alt' key pressed
