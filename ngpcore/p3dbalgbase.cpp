@@ -393,16 +393,57 @@ void               P3DBranchingAlgBase::Save
 
   FmtStream.WriteString("ss","BranchingAlg","Base");
 
+  FmtStream.WriteString("su","Shape",Shape);
+  FmtStream.WriteString("sf","Spread",Spread);
+
+  FmtStream.WriteString("sf","Density",Density);
+  FmtStream.WriteString("sf","DensityV",DensityV);
+
+  FmtStream.WriteString("su","MinNumber",MinNumber);
+  FmtStream.WriteString("sb","MaxLimitEnabled",MaxLimitEnabled);
+  FmtStream.WriteString("su","MaxNumber",MaxNumber);
+
+  FmtStream.WriteString("sf","DeclFactor",DeclFactor);
+  FmtStream.WriteString("sf","DeclFactorV",DeclFactorV);
+
   FmtStream.WriteString("sf","RotAngle",Rotation);
  }
 
 void               P3DBranchingAlgBase::Load
                                       (P3DInputStringFmtStream
-                                                          *SourceStream P3D_UNUSED_ATTR,
+                                                          *SourceStream,
                                        const P3DFileVersion
-                                                          *Version P3D_UNUSED_ATTR)
+                                                          *Version)
  {
+  bool                                 BoolValue;
+  unsigned int                         UintValue;
   float                                FloatValue;
+
+  if (Version->Minor > 11)
+   {
+    SourceStream->ReadFmtStringTagged("Shape","u",&UintValue);
+    SetShape(UintValue);
+
+    SourceStream->ReadFmtStringTagged("Spread","f",&FloatValue);
+    SetSpread(FloatValue);
+
+    SourceStream->ReadFmtStringTagged("Density","f",&FloatValue);
+    SetDensity(FloatValue);
+    SourceStream->ReadFmtStringTagged("DensityV","f",&FloatValue);
+    SetDensityV(FloatValue);
+
+    SourceStream->ReadFmtStringTagged("MinNumber","u",&UintValue);
+    SetMinNumber(UintValue);
+    SourceStream->ReadFmtStringTagged("MaxLimitEnabled","b",&BoolValue);
+    SetMaxLimitEnabled(BoolValue);
+    SourceStream->ReadFmtStringTagged("MaxNumber","u",&UintValue);
+    SetMaxNumber(UintValue);
+
+    SourceStream->ReadFmtStringTagged("DeclFactor","f",&FloatValue);
+    SetDeclFactor(FloatValue);
+    SourceStream->ReadFmtStringTagged("DeclFactorV","f",&FloatValue);
+    SetDeclFactorV(FloatValue);
+   }
 
   SourceStream->ReadFmtStringTagged("RotAngle","f",&FloatValue);
   SetRotationAngle(FloatValue);
