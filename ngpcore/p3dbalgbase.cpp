@@ -224,17 +224,27 @@ unsigned int       P3DBranchingAlgBase::CalcBranchCount
                                       (P3DMathRNG         *RNG) const
  {
   unsigned int     BranchCount;
-  float            Area;
 
-  Area = Spread * Spread;
-
-  if (RNG != 0)
+  // It is important to not use RNG if Spread is 0 for
+  // backward compatibility
+  if (P3DMATH_ALMOST_ZERO(Spread))
    {
-    BranchCount = (int)(Area * (Density + RNG->UniformFloat(-DensityV,DensityV) * Density));
+    BranchCount = 0;
    }
   else
    {
-    BranchCount = (int)(Area * Density);
+    float Area;
+
+    Area = Spread * Spread;
+
+    if (RNG != 0)
+     {
+      BranchCount = (int)(Area * (Density + RNG->UniformFloat(-DensityV,DensityV) * Density));
+     }
+    else
+     {
+      BranchCount = (int)(Area * Density);
+     }
    }
 
   if (BranchCount < MinNumber)
@@ -290,7 +300,13 @@ void               P3DBranchingAlgBase::GenBranchOffset
                                       (P3DVector3f        *Offset,
                                        P3DMathRNG         *RNG) const
  {
-  if (RNG != 0)
+  // It is important to not use RNG if Spread is 0 for
+  // backward compatibility
+  if (P3DMATH_ALMOST_ZERO(Spread))
+   {
+    Offset->Set(0.0f,0.0f,0.0f);
+   }
+  else if (RNG != 0)
    {
     float X;
     float Z;
