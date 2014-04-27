@@ -71,9 +71,13 @@ enum
   wxID_EXPORT_OBJ,
   wxID_RUN_SCRIPT,
   wxID_SHOW_DUMMIES,
+  wxID_OPEN_RECENT,
 
-  wxID_EXPORT_PLUGIN_FIRST = wxID_RUN_SCRIPT + 10000,
-  wxID_EXPORT_PLUGIN_LAST  = wxID_EXPORT_PLUGIN_FIRST + 250
+  wxID_EXPORT_PLUGIN_FIRST = wxID_OPEN_RECENT + 10000,
+  wxID_EXPORT_PLUGIN_LAST  = wxID_EXPORT_PLUGIN_FIRST + 250,
+
+  wxID_RECENT_FILES_FIRST = wxID_EXPORT_PLUGIN_LAST + 1,
+  wxID_RECENT_FILES_LAST  = wxID_RECENT_FILES_FIRST + P3D_RECENT_FILES_MAX - 1
  };
 
 P3DApp *P3DApp::SelfPtr = NULL;
@@ -81,6 +85,7 @@ P3DApp *P3DApp::SelfPtr = NULL;
 BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_NEW,P3DMainFrame::OnNew)
  EVT_MENU(wxID_OPEN,P3DMainFrame::OnOpen)
+ EVT_MENU_RANGE(wxID_RECENT_FILES_FIRST,wxID_RECENT_FILES_LAST,P3DMainFrame::OnOpenRecent)
  EVT_MENU(wxID_SAVE,P3DMainFrame::OnSave)
  EVT_MENU(wxID_SAVEAS,P3DMainFrame::OnSaveAs)
  EVT_MENU(wxID_EXPORT_OBJ,P3DMainFrame::OnExportObj)
@@ -168,8 +173,20 @@ class P3DUndoRedoMenuStateUpdater
 
   ExportMenu->Append(wxID_RUN_SCRIPT,wxT("Run export script..."));
 
+  P3DRecentFiles *RecentFiles = P3DApp::GetApp()->GetRecentFiles();
+
+  wxMenu *RecentFilesMenu = RecentFiles->CreateMenu();
+
   FileMenu->Append(wxID_NEW,wxT("&New\tCtrl-N"));
   FileMenu->Append(wxID_OPEN,wxT("&Open...\tCtrl-O"));
+
+  FileMenu->Append(wxID_OPEN_RECENT,wxT("Open Recent"),RecentFilesMenu);
+
+  if (RecentFiles->IsEmpty())
+   {
+    FileMenu->Enable(wxID_OPEN_RECENT,false);
+   }
+
   FileMenu->Append(wxID_SAVE,wxT("&Save\tCtrl-S"));
   FileMenu->Append(wxID_SAVEAS,wxT("Save as..."));
   FileMenu->Append(wxID_EXPORT,wxT("Export to"),ExportMenu);
@@ -586,6 +603,21 @@ void               P3DMainFrame::OnOpen
   OpenModelFile(FileName);
  }
 
+void               P3DMainFrame::OnOpenRecent
+                                      (wxCommandEvent     &event)
+ {
+  if (!ApproveDataLoss()) return;
+
+  int FileIndex = event.GetId() - wxID_RECENT_FILES_FIRST;
+
+  const char *FileName = P3DApp::GetApp()->GetRecentFiles()->GetFileName(FileIndex);
+
+  if (FileName != NULL)
+   {
+    OpenModelFile(wxString(FileName,wxConvUTF8));
+   }
+ }
+
 bool               P3DMainFrame::OpenModelFile
                                       (const wxString     &FileName)
  {
@@ -614,6 +646,9 @@ bool               P3DMainFrame::OpenModelFile
       SourceStream.Close();
 
       P3DApp::GetApp()->SetFileName(FileName.mb_str());
+      P3DApp::GetApp()->GetRecentFiles()->OnFileOpened(FileName.mb_str());
+
+      UpdateRecentFilesMenu();
 
       EditPanel->HideAll();
 
@@ -674,10 +709,28 @@ void               P3DMainFrame::InvalidatePlant
   EditPanel->PlantInvalidated();
  }
 
+void               P3DMainFrame::UpdateRecentFilesMenu
+                                      ()
+ {
+  wxMenu     *FileMenu;
+  wxMenuBar  *MenuBar             = GetMenuBar();
+  wxMenuItem *RecentFilesMenuItem = MenuBar->FindItem(wxID_OPEN_RECENT,&FileMenu);
+
+  P3DRecentFiles *RecentFiles = P3DApp::GetApp()->GetRecentFiles();
+
+  if (RecentFilesMenuItem != NULL)
+   {
+    RecentFiles->UpdateMenu(RecentFilesMenuItem->GetSubMenu());
+
+    FileMenu->Enable(wxID_OPEN_RECENT,!RecentFiles->IsEmpty());
+   }
+ }
+
 IMPLEMENT_APP(P3DApp)
 
                    P3DApp::~P3DApp    ()
  {
+  delete RecentFiles;
   delete CommandQueue;
   delete PlantModel;
  }
@@ -765,6 +818,9 @@ void               P3DApp::SaveModel  (const char         *FileName)
    {
     ::wxMessageBox(wxT("Error while saving model"),wxT("Error"),wxOK | wxICON_ERROR);
    }
+
+  RecentFiles->OnFileSaved(FileName);
+  MainFrame->UpdateRecentFilesMenu();
  }
 
 P3DTexManagerGL   *P3DApp::GetTexManager
@@ -782,6 +838,12 @@ P3DShaderManager  *P3DApp::GetShaderManager
 P3DIDEVFS         *P3DApp::GetTexFS   ()
  {
   return(&TexFS);
+ }
+
+P3DRecentFiles    *P3DApp::GetRecentFiles
+                                      ()
+ {
+  return RecentFiles;
  }
 
 const wxBitmap    &P3DApp::GetBitmap  (unsigned int        Bitmap)
@@ -1206,6 +1268,7 @@ bool               P3DApp::OnInit     ()
   LODLevel = 1.0f;
 
   CommandQueue = new P3DEditCommandQueue();
+  RecentFiles  = new P3DRecentFiles(wxID_RECENT_FILES_FIRST);
 
   PlantModel  = CreateNewPlantModel();
   PlantObject = 0;
