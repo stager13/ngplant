@@ -39,6 +39,7 @@
 #include <p3dpluginfo.h>
 #include <p3dappprefs.h>
 #include <p3dcmdqueue.h>
+#include <p3drecentfiles.h>
 
 class P3DMainFrame : public wxFrame
  {
@@ -48,6 +49,7 @@ class P3DMainFrame : public wxFrame
 
   void             OnNew              (wxCommandEvent     &event);
   void             OnOpen             (wxCommandEvent     &event);
+  void             OnOpenRecent       (wxCommandEvent     &event);
   void             OnSave             (wxCommandEvent     &event);
   void             OnSaveAs           (wxCommandEvent     &event);
   void             OnExportObj        (wxCommandEvent     &event);
@@ -67,6 +69,8 @@ class P3DMainFrame : public wxFrame
 
   void             Refresh3DView      ();
   void             InvalidatePlant    ();
+
+  void             UpdateRecentFilesMenu ();
 
   bool             IsGLExtInited      () const
    {
@@ -129,6 +133,7 @@ class P3DApp : public wxApp
   wxString         GetDerivedFileName (const wxString     &FileNameExtension);
 
   P3DIDEVFS       *GetTexFS           ();
+  P3DRecentFiles  *GetRecentFiles     ();
 
   const wxBitmap  &GetBitmap          (unsigned int        Bitmap);
 
@@ -241,6 +246,7 @@ class P3DApp : public wxApp
   bool             DummyVisible;
 
   P3DEditCommandQueue                 *CommandQueue;
+  P3DRecentFiles                      *RecentFiles;
 
   static P3DApp   *SelfPtr;
  };
