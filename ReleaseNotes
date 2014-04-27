@@ -14,6 +14,7 @@ Changes since 0.9.11:
   - added workaround for Maya .obj importer bug
   - added "group" statements generation
   - implemented export to directory (similar to COLLADA export plugin)
+- "Open Recent" action support added
 
 Changes since 0.9.10:
 - added "Start RevAngle" parameter to branching algorithm
