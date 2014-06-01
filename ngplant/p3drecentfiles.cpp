@@ -50,11 +50,11 @@ void          P3DRecentFiles::UpdateMenu        (wxMenu        *menu) const
 
 void          P3DRecentFiles::ClearMenu         (wxMenu        *menu) const
  {
-  wxMenuItem *item;
+  size_t n = menu->GetMenuItemCount();
 
-  while ((item = menu->FindItemByPosition(0)) != NULL)
+  while (n > 0)
    {
-    menu->Destroy(item);
+    menu->Destroy(menu->FindItemByPosition(--n));
    }
  }
 
