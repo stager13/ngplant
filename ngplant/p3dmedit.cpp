@@ -431,23 +431,33 @@ void               P3DPlantModelTreeCtrl::OnSelectionChanged
  {
   P3DBranchModel                      *BranchModel;
 
+  wxTreeItemId OldItemId = event.GetOldItem();
+  wxTreeItemId NewItemId = event.GetItem();
+
   #if defined(__WXMSW__)
    {
-    SetItemBold(event.GetOldItem(),false);
-    SetItemBold(event.GetItem(),true);
+    if (OldItemId.IsOk())
+     {
+      SetItemBold(OldItemId,false);
+     }
+
+    if (NewItemId.IsOk())
+     {
+      SetItemBold(NewItemId,true);
+     }
    }
   #endif
 
-  if (!event.GetItem().IsOk())
+  if (!NewItemId.IsOk())
    {
     return;
    }
 
   P3DMaterialInstanceSimple *MaterialInstance;
 
-  if (event.GetOldItem().IsOk())
+  if (OldItemId.IsOk())
    {
-    MaterialInstance = GetMaterialInstanceByItemId(event.GetOldItem());
+    MaterialInstance = GetMaterialInstanceByItemId(OldItemId);
 
     if (MaterialInstance != 0)
      {
@@ -455,8 +465,8 @@ void               P3DPlantModelTreeCtrl::OnSelectionChanged
      }
    }
 
-  BranchModel      = GetBranchModelByItemId(event.GetItem());
-  MaterialInstance = GetMaterialInstanceByItemId(event.GetItem());
+  BranchModel      = GetBranchModelByItemId(NewItemId);
+  MaterialInstance = GetMaterialInstanceByItemId(NewItemId);
 
   if (MaterialInstance != 0)
    {
