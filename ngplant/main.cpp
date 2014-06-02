@@ -728,6 +728,11 @@ void               P3DMainFrame::UpdateRecentFilesMenu
 
 IMPLEMENT_APP(P3DApp)
 
+                   P3DApp::P3DApp     ()
+ : MainFrame(0)
+ {
+ }
+
                    P3DApp::~P3DApp    ()
  {
   delete RecentFiles;
@@ -903,7 +908,10 @@ P3DMaterialInstanceSimple
 void               P3DApp::Refresh3DView
                                       ()
  {
-  MainFrame->Refresh3DView();
+  if (MainFrame != 0)
+   {
+    MainFrame->Refresh3DView();
+   }
  }
 
 void               P3DApp::InvalidatePlant

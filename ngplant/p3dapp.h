@@ -98,6 +98,7 @@ class P3DApp : public wxApp
  {
   public           :
 
+                   P3DApp             ();
   virtual         ~P3DApp             ();
 
   virtual bool     OnInit             ();
