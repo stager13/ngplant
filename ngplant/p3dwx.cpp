@@ -430,21 +430,21 @@ void               wxSpinSliderCtrl::OnPaint
   dc.SetPen(*(wxThePenList->FindOrCreatePen(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE),1,wxSOLID)));
   dc.SetBrush(*(wxTheBrushList->FindOrCreateBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE),wxSOLID)));
 
-  dc.DrawRectangle(0,
-                   0,
-                   client_width,
-                   client_height);
+  dc.DrawRectangle(0,0,client_width,client_height);
 
+  /* draw +/- signs */
   dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
-  dc.DrawLine(5,client_height / 2, client_height - 4, client_height / 2);
-  dc.DrawLine(client_width - client_height + 5,
-              client_height / 2,
-              client_width  - 4,
-              client_height / 2);
-  dc.DrawLine(client_width - client_height / 2,
-              5,
-              client_width - client_height / 2 ,
-              client_height - 4);
+
+  int sign_len      = 5;
+  int sign_center_y = client_height / 2;
+  int top_y         = sign_center_y - sign_len / 2;
+  int left          = 1;
+  int right         = client_width - left - 1;
+
+  dc.DrawLine(left,sign_center_y,left + sign_len,sign_center_y);
+
+  dc.DrawLine(right,sign_center_y,right - sign_len,sign_center_y);
+  dc.DrawLine(right - sign_len / 2,top_y,right - sign_len / 2,top_y + sign_len);
 
   /* draw value */
 
