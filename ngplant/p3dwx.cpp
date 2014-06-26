@@ -441,10 +441,21 @@ void               wxSpinSliderCtrl::OnPaint
   int left          = 1;
   int right         = client_width - left - 1;
 
-  dc.DrawLine(left,sign_center_y,left + sign_len,sign_center_y);
+  #ifdef __WXOSX__
+   {
+    dc.DrawLine(left,sign_center_y,left + sign_len - 1,sign_center_y);
 
-  dc.DrawLine(right,sign_center_y,right - sign_len,sign_center_y);
-  dc.DrawLine(right - sign_len / 2,top_y,right - sign_len / 2,top_y + sign_len);
+    dc.DrawLine(right,sign_center_y,right - sign_len + 1,sign_center_y);
+    dc.DrawLine(right - sign_len / 2,top_y,right - sign_len / 2,top_y + sign_len - 1);
+   }
+  #else
+   {
+    dc.DrawLine(left,sign_center_y,left + sign_len,sign_center_y);
+
+    dc.DrawLine(right,sign_center_y,right - sign_len,sign_center_y);
+    dc.DrawLine(right - sign_len / 2,top_y,right - sign_len / 2,top_y + sign_len);
+   }
+  #endif
 
   /* draw value */
 
