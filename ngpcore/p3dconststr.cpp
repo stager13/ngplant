@@ -88,9 +88,9 @@ void               P3DConstStr::InitEmpty       ()
 
 void               P3DConstStr::Set             (const char         *SourceStr)
  {
-  const char *NewStr = strdup(SourceStr);
+  const char *NewStr = SourceStr != 0 ? strdup(SourceStr) : 0;
 
-  if (NewStr != 0)
+  if (SourceStr == 0 || NewStr != 0)
    {
     Free();
 
