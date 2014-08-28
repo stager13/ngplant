@@ -22,5 +22,6 @@ syntax: regexp
 ^devtools/ngpbench$
 
 ^pywrapper/setup.py
+^pywrapper/_ngp.so
 
 
