@@ -39,7 +39,7 @@
 #include <ngpcore/p3dmathrng.h>
 
 #include <ngpcore/p3dplant.h>
-
+#include <ngpcore/p3dconststr.h>
 #include <ngpcore/p3diostream.h>
 
 typedef struct
@@ -417,6 +417,50 @@ class P3DBranchModel
   unsigned int                         SubBranchCount;
  };
 
+class P3D_DLL_ENTRY P3DModelMetaInfo
+ {
+  public           :
+
+                   P3DModelMetaInfo   ();
+
+  const char      *GetAuthor          () const;
+  const char      *GetLicenseName     () const;
+  const char      *GetLicenseURL      () const;
+  const char      *GetPlantInfoURL    () const;
+
+  void             Clear              ();
+
+  void             SetAuthor          (const char         *Author);
+  void             SetLicenseName     (const char         *LicenseName);
+  void             SetLicenseURL      (const char         *LicenseURL);
+  void             SetPlantInfoURL    (const char         *PlantInfoURL);
+
+  enum { ValueMaxLength = 1024 };
+
+  void             Save               (P3DOutputStringStream
+                                                          *TargetStream) const;
+
+  void             Load               (P3DInputStringFmtStream
+                                                          *SourceStream);
+
+  private          :
+
+  void             WriteInfoString    (P3DOutputStringFmtStream
+                                                          *TargetStream,
+                                       const char         *Name,
+                                       const char         *Value) const;
+
+  void             ReadInfoString     (P3DConstStr        *Value,
+                                       P3DInputStringFmtStream
+                                                          *SourceStream,
+                                       const char         *Name);
+
+  P3DConstStr      Author;
+  P3DConstStr      LicenseName;
+  P3DConstStr      LicenseURL;
+  P3DConstStr      PlantInfoURL;
+ };
+
 #define P3D_MODEL_FLAG_NO_RANDOMNESS (0x1)
 
 class P3D_DLL_ENTRY P3DPlantModel
@@ -432,6 +476,10 @@ class P3D_DLL_ENTRY P3DPlantModel
 
   unsigned int     GetBaseSeed        () const;
   void             SetBaseSeed        (unsigned int        BaseSeed);
+
+  P3DModelMetaInfo*GetMetaInfo        ();
+  const
+  P3DModelMetaInfo*GetMetaInfo        () const;
 
   unsigned int     GetFlags           () const;
   void             SetFlags           (unsigned int        Flags);
@@ -464,6 +512,7 @@ class P3D_DLL_ENTRY P3DPlantModel
   private          :
 
   P3DBranchModel                      *PlantBase;
+  P3DModelMetaInfo                     MetaInfo;
   unsigned int                         BaseSeed;
   unsigned int                         Flags;
  };
