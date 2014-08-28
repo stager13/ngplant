@@ -36,6 +36,11 @@
 
 #include <ngpcore/p3dconststr.h>
 
+                   P3DConstStr::P3DConstStr     ()
+ {
+  InitEmpty();
+ }
+
                    P3DConstStr::P3DConstStr     (const char         *SourceStr)
  {
   InitEmpty();
@@ -57,9 +62,16 @@ const P3DConstStr& P3DConstStr::operator =      (const P3DConstStr  &SourceStr)
  {
   if (this != &SourceStr)
    {
-    Free();
     Set(SourceStr.c_str());
    }
+
+  return *this;
+ }
+
+const
+P3DConstStr       &P3DConstStr::operator =      (const char         *SourceStr)
+ {
+  Set(SourceStr);
 
   return *this;
  }
@@ -76,9 +88,15 @@ void               P3DConstStr::InitEmpty       ()
 
 void               P3DConstStr::Set             (const char         *SourceStr)
  {
-  Str = strdup(SourceStr);
+  const char *NewStr = strdup(SourceStr);
 
-  if (Str == 0)
+  if (NewStr != 0)
+   {
+    Free();
+
+    Str = NewStr;
+   }
+  else
    {
     throw P3DExceptionGeneric("out of memory");
    }

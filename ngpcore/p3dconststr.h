@@ -36,12 +36,15 @@ class P3DConstStr
  {
   public           :
 
+                   P3DConstStr        ();
                    P3DConstStr        (const char         *SourceStr);
                    P3DConstStr        (const P3DConstStr  &SourceStr);
                   ~P3DConstStr        ();
 
   const
   P3DConstStr     &operator =         (const P3DConstStr  &SourceStr);
+  const
+  P3DConstStr     &operator =         (const char         *SourceStr);
 
   const char      *c_str              () const;
 
