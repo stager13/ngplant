@@ -19,6 +19,7 @@ p3dsplineio.cpp
 p3dexcept.cpp
 p3dhli.cpp
 p3dgmeshdata.cpp
+p3dconststr.cpp
 """)
 
 NGPCORE_INCLUDES = Split("""
