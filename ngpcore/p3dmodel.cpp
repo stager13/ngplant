@@ -35,6 +35,7 @@
 #include <ngpcore/p3ddefs.h>
 #include <ngpcore/p3dcompat.h> /* for snprintf definition in MSVC environment */
 #include <ngpcore/p3dexcept.h>
+#include <ngpcore/p3dconststr.h>
 #include <ngpcore/p3diostream.h>
 #include <ngpcore/p3dplant.h>
 
@@ -1055,6 +1056,106 @@ void               P3DBranchModel::Load
    }
  }
 
+                   P3DModelMetaInfo::P3DModelMetaInfo
+                                      ()
+ {
+ }
+
+const char        *P3DModelMetaInfo::GetAuthor       () const
+ {
+  return Author.c_str();
+ }
+
+const char        *P3DModelMetaInfo::GetLicenseName  () const
+ {
+  return LicenseName.c_str();
+ }
+
+const char        *P3DModelMetaInfo::GetLicenseURL   () const
+ {
+  return LicenseURL.c_str();
+ }
+
+const char        *P3DModelMetaInfo::GetPlantInfoURL () const
+ {
+  return PlantInfoURL.c_str();
+ }
+
+void               P3DModelMetaInfo::Clear           ()
+ {
+  Author       = 0;
+  LicenseName  = 0;
+  LicenseURL   = 0;
+  PlantInfoURL = 0;
+ }
+
+void               P3DModelMetaInfo::SetAuthor       (const char    *Author)
+ {
+  this->Author = Author;
+ }
+
+void               P3DModelMetaInfo::SetLicenseName  (const char    *LicenseName)
+ {
+  this->LicenseName = LicenseName;
+ }
+
+void               P3DModelMetaInfo::SetLicenseURL   (const char    *LicenseURL)
+ {
+  this->LicenseURL = LicenseURL;
+ }
+
+void               P3DModelMetaInfo::SetPlantInfoURL (const char    *PlantInfoURL)
+ {
+  this->PlantInfoURL = PlantInfoURL;
+ }
+
+void               P3DModelMetaInfo::Save            (P3DOutputStringStream
+                                                                    *TargetStream) const
+ {
+  P3DOutputStringFmtStream             FmtStream(TargetStream);
+
+  WriteInfoString(&FmtStream,"Author",Author.c_str());
+  WriteInfoString(&FmtStream,"LicenseName",LicenseName.c_str());
+  WriteInfoString(&FmtStream,"LicenseURL",LicenseURL.c_str());
+  WriteInfoString(&FmtStream,"PlantInfoURL",PlantInfoURL.c_str());
+ }
+
+void               P3DModelMetaInfo::Load            (P3DInputStringFmtStream
+                                                                    *SourceStream)
+ {
+  ReadInfoString(&Author,SourceStream,"Author");
+  ReadInfoString(&LicenseName,SourceStream,"LicenseName");
+  ReadInfoString(&LicenseURL,SourceStream,"LicenseURL");
+  ReadInfoString(&PlantInfoURL,SourceStream,"PlantInfoURL");
+ }
+
+void               P3DModelMetaInfo::WriteInfoString (P3DOutputStringFmtStream
+                                                                    *TargetStream,
+                                                      const char    *Name,
+                                                      const char    *Value) const
+ {
+  TargetStream->WriteString("ss",Name,Value != 0 ? Value : "__None__");
+ }
+
+void               P3DModelMetaInfo::ReadInfoString  (P3DConstStr   *Value,
+                                                      P3DInputStringFmtStream
+                                                                    *SourceStream,
+                                                      const char    *Name)
+ {
+  char Buffer[ValueMaxLength + 1];
+
+  SourceStream->ReadFmtStringTagged(Name,"s",Buffer,sizeof(Buffer));
+
+  if (strcmp(Buffer,"__None__") == 0)
+   {
+    *Value = 0;
+   }
+  else
+   {
+    *Value = Buffer;
+   }
+ }
+
                    P3DPlantModel::P3DPlantModel
                                       ()
  {
@@ -1094,6 +1195,19 @@ void               P3DPlantModel::SetBaseSeed
   this->BaseSeed = BaseSeed;
  }
 
+P3DModelMetaInfo*  P3DPlantModel::GetMetaInfo
+                                      ()
+ {
+  return &MetaInfo;
+ }
+
+const
+P3DModelMetaInfo  *P3DPlantModel::GetMetaInfo
+                                      () const
+ {
+  return &MetaInfo;
+ }
+
 unsigned int       P3DPlantModel::GetFlags
                                       () const
  {
@@ -1106,7 +1220,7 @@ void               P3DPlantModel::SetFlags
   this->Flags = Flags;
  }
 
-#define P3D_VERSION_MINOR (12)
+#define P3D_VERSION_MINOR (13)
 #define P3D_VERSION_MAJOR (0)
 
 void               P3DPlantModel::Save(P3DOutputStringStream
@@ -1116,6 +1230,7 @@ void               P3DPlantModel::Save(P3DOutputStringStream
   P3DOutputStringFmtStream             FmtStream(TargetStream);
 
   FmtStream.WriteString("suu","P3D",(unsigned int)P3D_VERSION_MAJOR,(unsigned int)P3D_VERSION_MINOR);
+  MetaInfo.Save(TargetStream);
   FmtStream.WriteString("su","BaseSeed",BaseSeed);
 
   PlantBase->Save(TargetStream,MaterialSaver);
@@ -1154,6 +1269,8 @@ void               P3DPlantModel::Load(P3DInputStringStream
   P3DInputStringFmtStream                                  FmtStream(SourceStream);
   P3DFileVersion                                           Version;
 
+  MetaInfo.Clear();
+
   while (PlantBase->GetSubBranchCount() > 0)
    {
     PlantBase->RemoveSubBranch(PlantBase->GetSubBranchCount() - 1);
@@ -1170,6 +1287,11 @@ void               P3DPlantModel::Load(P3DInputStringStream
   if (Version.Minor < 7)
    {
     FmtStream.EnableEscapeChars(false);
+   }
+
+  if (Version.Minor >= 13)
+   {
+    MetaInfo.Load(&FmtStream);
    }
 
   FmtStream.ReadFmtStringTagged("BaseSeed","u",&BaseSeed);
