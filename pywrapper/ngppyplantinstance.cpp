@@ -31,6 +31,7 @@
 
 #include <ngppyplantinstance.h>
 #include <ngppybranchgroup.h>
+#include <ngppymodelmetainfo.h>
 
 static void        PlantInstanceDealloc
                                       (PlantInstanceObject*self)
@@ -134,6 +135,35 @@ extern "C" int    PlantInstanceCheck(PlantInstanceObject*InstanceObject)
    }
  }
 
+static PyObject    *PlantInstanceGetMetaInfo
+                                      (PyObject           *self,
+                                       PyObject           *args)
+ {
+  PlantInstanceObject                 *InstanceObject;
+  ModelMetaInfoObject                 *MetaInfo;
+  const P3DModelMetaInfo              *MetaInfoLow;
+
+  InstanceObject = (PlantInstanceObject*)self;
+
+  if (!PlantInstanceCheck(InstanceObject))
+   {
+    return(NULL);
+   }
+
+  MetaInfoLow = InstanceObject->Template->GetMetaInfo();
+  MetaInfo    = PyObject_New(ModelMetaInfoObject,&ModelMetaInfoType);
+
+  if (MetaInfo != NULL)
+   {
+    MetaInfo->Author       = Py_BuildValue("z",MetaInfoLow->GetAuthor());
+    MetaInfo->LicenseName  = Py_BuildValue("z",MetaInfoLow->GetLicenseName());
+    MetaInfo->LicenseURL   = Py_BuildValue("z",MetaInfoLow->GetLicenseURL());
+    MetaInfo->PlantInfoURL = Py_BuildValue("z",MetaInfoLow->GetPlantInfoURL());
+   }
+
+  return((PyObject*)MetaInfo);
+ }
+
 static PyObject    *PlantInstanceGetGroupCount
                                       (PyObject           *self,
                                        PyObject           *args)
@@ -212,6 +242,12 @@ static PyObject    *PlantInstanceGetBoundingBox
 
 static PyMethodDef PlantInstanceMethods[] =
  {
+  {
+   "GetMetaInfo",
+   (PyCFunction)PlantInstanceGetMetaInfo,
+   METH_NOARGS,
+   "Return plant model meta information"
+  },
   {
    "GetGroupCount",
    (PyCFunction)PlantInstanceGetGroupCount,

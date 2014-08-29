@@ -36,6 +36,7 @@
 #include <ngppyplantinstance.h>
 #include <ngppybranchgroup.h>
 #include <ngppymaterialdef.h>
+#include <ngppymodelmetainfo.h>
 
 static PyMethodDef ModuleMethods[] =
  {
@@ -71,15 +72,24 @@ PyMODINIT_FUNC     init_ngp            (void)
     return;
    }
 
+  ModelMetaInfoType.tp_new = PyType_GenericNew;
+
+  if (PyType_Ready(&ModelMetaInfoType) < 0)
+   {
+    return;
+   }
+
   ModuleObject = Py_InitModule3("_ngp",ModuleMethods,"ngPlant library python extension module");
 
   Py_INCREF(&PlantInstanceType);
   Py_INCREF(&BranchGroupType);
   Py_INCREF(&MaterialDefType);
+  Py_INCREF(&ModelMetaInfoType);
 
   PyModule_AddObject(ModuleObject,"PlantInstance",(PyObject*)&PlantInstanceType);
   PyModule_AddObject(ModuleObject,"BranchGroup",(PyObject*)&BranchGroupType);
   PyModule_AddObject(ModuleObject,"MaterialDef",(PyObject*)&MaterialDefType);
+  PyModule_AddObject(ModuleObject,"ModelMetaInfo",(PyObject*)&ModelMetaInfoType);
 
   PyModule_AddIntConstant(ModuleObject,"ATTR_VERTEX",(long)P3D_ATTR_VERTEX);
   PyModule_AddIntConstant(ModuleObject,"ATTR_NORMAL",(long)P3D_ATTR_NORMAL);
