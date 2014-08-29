@@ -44,6 +44,21 @@ to your projects.
  </section>
 
  <section>
+  <name>Changes made in 0.9.13</name>
+  <para>
+   <ul>
+    <li>
+     Class <classref classname="P3DModelMetaInfo"/> added.
+    </li>
+    <li>
+     <methodref classname="P3DHLIPlantTemplate" name="GetMetaInfo"/> method
+     added to <classref classname="P3DHLIPlantTemplate"/> class.
+    </li>
+   </ul>
+  </para>
+ </section>
+
+ <section>
   <name>Changes made in 0.9.5</name>
   <para>
    <ul>
@@ -379,6 +394,19 @@ between all instances created from the same template.
      <desc>
 <para>
 Load plant template from <argname>SourceStream</argname>.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetMetaInfo</name>
+     <shortdesc>Return meta information about model</shortdesc>
+<prototype>
+  const P3DModelMetaInfo* GetMetaInfo () const;
+</prototype>
+     <desc>
+<para>
+Return meta information about model such as author, license and other.
 </para>
      </desc>
     </methodinfo>
@@ -1062,6 +1090,71 @@ or <constant>P3D_ATTR_BILLBOARD_POS</constant>.
      </desc>
     </methodinfo>
 
+   </methods>
+  </classinfo>
+
+  <classinfo>
+   <name>P3DModelMetaInfo</name>
+   <shortdesc>Model meta information class</shortdesc>
+   <desc>
+This class contains meta information about model such as author, license and
+so on. Note: only constant methods are described below.
+   </desc>
+
+   <methods>
+    <methodinfo>
+     <name>GetAuthor</name>
+     <shortdesc>Return author information</shortdesc>
+<prototype>
+  const char      *GetAuthor          () const;
+</prototype>
+     <desc>
+<para>
+Return name and (possibly) e-mail of model author or 0 if value is not set.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetLicenseName</name>
+     <shortdesc>Return the license name</shortdesc>
+<prototype>
+  const char      *GetLicenseName     () const;
+</prototype>
+     <desc>
+<para>
+Return the name of the license for this model or 0 if value is not set.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetLicenseURL</name>
+     <shortdesc>Return the license URL</shortdesc>
+<prototype>
+  const char      *GetLicenseURL      () const;
+</prototype>
+     <desc>
+<para>
+Return the URL pointing to detailed description of license
+or 0 if value is not set.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetPlantInfoURL</name>
+     <shortdesc>Return the plant description URL</shortdesc>
+<prototype>
+  const char      *GetPlantInfoURL    () const;
+</prototype>
+     <desc>
+<para>
+Return the URL pointing to detailed description of plant
+or 0 if value is not set.
+</para>
+     </desc>
+    </methodinfo>
    </methods>
   </classinfo>
 
