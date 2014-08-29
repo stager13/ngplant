@@ -28,13 +28,21 @@ enum
  {
   wxID_SEED_CTRL = wxID_HIGHEST + 1,
   wxID_LOD_CTRL,
-  wxID_RANDOMNESS_STATE_CTRL
+  wxID_RANDOMNESS_STATE_CTRL,
+  wxID_AUTHOR_CTRL,
+  wxID_LICENSE_NAME_CTRL,
+  wxID_LICENSE_URL_CTRL,
+  wxID_PLANT_INFO_URL_CTRL
  };
 
 BEGIN_EVENT_TABLE(P3DOptGeneralPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_SEED_CTRL,P3DOptGeneralPanel::OnSeedChanged)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_LOD_CTRL,P3DOptGeneralPanel::OnLODChanged)
  EVT_CHECKBOX(wxID_RANDOMNESS_STATE_CTRL,P3DOptGeneralPanel::OnRandomnessStateChanged)
+ EVT_TEXT(wxID_AUTHOR_CTRL,P3DOptGeneralPanel::OnAuthorChanged)
+ EVT_TEXT(wxID_LICENSE_NAME_CTRL,P3DOptGeneralPanel::OnLicenseNameChanged)
+ EVT_TEXT(wxID_LICENSE_URL_CTRL,P3DOptGeneralPanel::OnLicenseURLChanged)
+ EVT_TEXT(wxID_PLANT_INFO_URL_CTRL,P3DOptGeneralPanel::OnPlantInfoURLChanged)
 END_EVENT_TABLE()
 
                    P3DOptGeneralPanel::P3DOptGeneralPanel
@@ -43,6 +51,19 @@ END_EVENT_TABLE()
  {
   wxBoxSizer *TopSizer = new wxBoxSizer(wxVERTICAL);
 
+  TopSizer->Add(CreateRandomnessBox(),0,wxEXPAND | wxALL,1);
+  TopSizer->Add(CreateLODBox(),0,wxEXPAND | wxALL,1);
+  TopSizer->Add(CreateModelInfoBox(),0,wxEXPAND | wxALL,1);
+
+  SetSizer(TopSizer);
+
+  TopSizer->Fit(this);
+  TopSizer->SetSizeHints(this);
+ }
+
+wxSizer           *P3DOptGeneralPanel::CreateRandomnessBox
+                                      ()
+ {
   wxStaticBoxSizer *SeedTopSizer  = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Randomness")),wxVERTICAL);
   wxFlexGridSizer  *SeedGridSizer = new wxFlexGridSizer(2,2,3,3);
 
@@ -68,8 +89,12 @@ END_EVENT_TABLE()
 
   SeedTopSizer->Add(SeedGridSizer,0,wxEXPAND,0);
 
-  TopSizer->Add(SeedTopSizer,0,wxEXPAND | wxALL,1);
+  return SeedTopSizer;
+ }
 
+wxSizer           *P3DOptGeneralPanel::CreateLODBox
+                                      ()
+ {
   wxStaticBoxSizer *LODTopSizer  = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("LOD")),wxVERTICAL);
   wxFlexGridSizer  *LODGridSizer = new wxFlexGridSizer(1,2,3,3);
 
@@ -77,7 +102,8 @@ END_EVENT_TABLE()
 
   LODGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("LOD level")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
-  spin_slider = new wxSpinSliderCtrl(this,wxID_LOD_CTRL,wxSPINSLIDER_MODE_FLOAT,P3DApp::GetApp()->GetLODLevel(),0.0f,1.0f);
+  wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_LOD_CTRL,wxSPINSLIDER_MODE_FLOAT,P3DApp::GetApp()->GetLODLevel(),0.0f,1.0f);
+
   spin_slider->SetStdStep(0.1);
   spin_slider->SetSmallStep(0.01);
   spin_slider->SetLargeMove(0.05);
@@ -88,19 +114,76 @@ END_EVENT_TABLE()
 
   LODTopSizer->Add(LODGridSizer,0,wxEXPAND,0);
 
-  TopSizer->Add(LODTopSizer,0,wxEXPAND | wxALL,1);
-
-  SetSizer(TopSizer);
-
-  TopSizer->Fit(this);
-  TopSizer->SetSizeHints(this);
+  return LODTopSizer;
  }
 
-class P3DEditCmdChangeModelSeed : public P3DEditCommand
+wxSizer           *P3DOptGeneralPanel::CreateModelInfoBox
+                                      ()
+ {
+  wxStaticBoxSizer *TopSizer  = new wxStaticBoxSizer(new wxStaticBox(this,wxID_STATIC,wxT("Model information")),wxVERTICAL);
+  wxBoxSizer       *BoxSizer  = new wxBoxSizer(wxVERTICAL);
+
+  const P3DModelMetaInfo *MetaInfo = P3DApp::GetApp()->GetModel()->GetMetaInfo();
+
+  BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Author:")),0,wxALL,1);
+  BoxSizer->Add(CreateInfoTextCtrl(wxID_AUTHOR_CTRL,MetaInfo->GetAuthor()),0,wxALL | wxEXPAND,1);
+  BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("License:")),0,wxALL,1);
+  BoxSizer->Add(CreateInfoTextCtrl(wxID_LICENSE_NAME_CTRL,MetaInfo->GetLicenseName()),0,wxALL | wxEXPAND,1);
+  BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("License URL:")),0,wxALL,1);
+  BoxSizer->Add(CreateInfoTextCtrl(wxID_LICENSE_URL_CTRL,MetaInfo->GetLicenseURL()),0,wxALL | wxEXPAND,1);
+  BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Plant description URL:")),0,wxALL,1);
+  BoxSizer->Add(CreateInfoTextCtrl(wxID_PLANT_INFO_URL_CTRL,MetaInfo->GetPlantInfoURL()),0,wxALL | wxEXPAND,1);
+
+  TopSizer->Add(BoxSizer,0,wxEXPAND,0);
+
+  return TopSizer;
+ }
+
+wxTextCtrl        *P3DOptGeneralPanel::CreateInfoTextCtrl
+                                      (int                 id,
+                                       const char         *value)
+ {
+  return new wxTextCtrl(this,id,InfoValueToText(value));
+ }
+
+wxString           P3DOptGeneralPanel::InfoValueToText
+                                      (const char         *value)
+ {
+  if (value == 0)
+   {
+    return wxEmptyString;
+   }
+  else
+   {
+    return wxString(value,wxConvUTF8);
+   }
+ }
+
+const char        *P3DOptGeneralPanel::TextToInfoValue
+                                      (const wxString     &text)
+ {
+  wxString trimmedText = text;
+
+  trimmedText.Trim(false); // remove leading white-spaces
+  trimmedText.Trim(true);  // remove trailing white-spaces
+
+  if (trimmedText.IsEmpty())
+   {
+    return 0;
+   }
+  else
+   {
+    return trimmedText.mb_str();
+   }
+ }
+
+namespace {
+
+class ChangeModelSeedCommand : public P3DEditCommand
  {
   public           :
 
-                   P3DEditCmdChangeModelSeed
+                   ChangeModelSeedCommand
                                       (unsigned int        NewSeed)
    {
     OldSeed       = P3DApp::GetApp()->GetModel()->GetBaseSeed();
@@ -125,10 +208,43 @@ class P3DEditCmdChangeModelSeed : public P3DEditCommand
   unsigned int     OldSeed;
  };
 
+class SetModelInfoStrCmd : public P3DEditCommand
+ {
+  public           :
+
+                   SetModelInfoStrCmd (void (P3DModelMetaInfo::*SetInfoMethod)(const char*),
+                                       const wxString          &NewValue,
+                                       const wxString          &OldValue)
+   {
+    this->SetInfoMethod = SetInfoMethod;
+    this->NewValue      = NewValue;
+    this->OldValue      = OldValue;
+   }
+
+  virtual void     Exec               ()
+   {
+    (P3DApp::GetApp()->GetModel()->GetMetaInfo()->*SetInfoMethod)(NewValue.mb_str());
+    P3DApp::GetApp()->InvalidatePlant();
+   }
+
+  virtual void     Undo               ()
+   {
+    (P3DApp::GetApp()->GetModel()->GetMetaInfo()->*SetInfoMethod)(OldValue.mb_str());
+    P3DApp::GetApp()->InvalidatePlant();
+   }
+
+  private          :
+
+  void             (P3DModelMetaInfo::*SetInfoMethod)(const char*);
+  wxString         NewValue;
+  wxString         OldValue;
+ };
+}
+
 void               P3DOptGeneralPanel::OnSeedChanged
                                       (wxSpinSliderEvent  &event)
  {
-  P3DApp::GetApp()->ExecEditCmd(new P3DEditCmdChangeModelSeed(event.GetIntValue()));
+  P3DApp::GetApp()->ExecEditCmd(new ChangeModelSeedCommand(event.GetIntValue()));
  }
 
 void               P3DOptGeneralPanel::OnLODChanged
@@ -158,16 +274,86 @@ void               P3DOptGeneralPanel::OnRandomnessStateChanged
   P3DApp::GetApp()->InvalidatePlant();
  }
 
+void               P3DOptGeneralPanel::OnAuthorChanged
+                                      (wxCommandEvent     &event)
+ {
+  /* It seems that wxWidgets (at least gtk version) sends EVT_TEXT */
+  /* events even during creation of wxTextCtrl. To workaround this */
+  /* issue we ignore events if text wasn't changed.                */
+  wxString NewValue = event.GetString();
+  wxString OldValue = InfoValueToText(P3DApp::GetApp()->GetModel()->GetMetaInfo()->GetAuthor());
+
+  if (NewValue.Cmp(OldValue) != 0)
+   {
+    P3DApp::GetApp()->ExecEditCmd
+     (new SetModelInfoStrCmd
+           (&P3DModelMetaInfo::SetAuthor,NewValue,OldValue));
+   }
+ }
+
+void               P3DOptGeneralPanel::OnLicenseNameChanged
+                                      (wxCommandEvent     &event)
+ {
+  /* It seems that wxWidgets (at least gtk version) sends EVT_TEXT */
+  /* events even during creation of wxTextCtrl. To workaround this */
+  /* issue we ignore events if text wasn't changed.                */
+  wxString NewValue = event.GetString();
+  wxString OldValue = InfoValueToText(P3DApp::GetApp()->GetModel()->GetMetaInfo()->GetLicenseName());
+
+  if (NewValue.Cmp(OldValue) != 0)
+   {
+    P3DApp::GetApp()->ExecEditCmd
+     (new SetModelInfoStrCmd
+           (&P3DModelMetaInfo::SetLicenseName,NewValue,OldValue));
+   }
+ }
+
+void               P3DOptGeneralPanel::OnLicenseURLChanged
+                                      (wxCommandEvent     &event)
+ {
+  /* It seems that wxWidgets (at least gtk version) sends EVT_TEXT */
+  /* events even during creation of wxTextCtrl. To workaround this */
+  /* issue we ignore events if text wasn't changed.                */
+  wxString NewValue = event.GetString();
+  wxString OldValue = InfoValueToText(P3DApp::GetApp()->GetModel()->GetMetaInfo()->GetLicenseURL());
+
+  if (NewValue.Cmp(OldValue) != 0)
+   {
+    P3DApp::GetApp()->ExecEditCmd
+     (new SetModelInfoStrCmd
+           (&P3DModelMetaInfo::SetLicenseURL,NewValue,OldValue));
+   }
+ }
+
+void               P3DOptGeneralPanel::OnPlantInfoURLChanged
+                                      (wxCommandEvent     &event)
+ {
+  /* It seems that wxWidgets (at least gtk version) sends EVT_TEXT */
+  /* events even during creation of wxTextCtrl. To workaround this */
+  /* issue we ignore events if text wasn't changed.                */
+  wxString NewValue = event.GetString();
+  wxString OldValue = InfoValueToText(P3DApp::GetApp()->GetModel()->GetMetaInfo()->GetPlantInfoURL());
+
+  if (NewValue.Cmp(OldValue) != 0)
+   {
+    P3DApp::GetApp()->ExecEditCmd
+     (new SetModelInfoStrCmd
+           (&P3DModelMetaInfo::SetPlantInfoURL,NewValue,OldValue));
+   }
+ }
+
 void               P3DOptGeneralPanel::UpdateControls
                                       ()
  {
+  const P3DPlantModel *Model = P3DApp::GetApp()->GetModel();
+
   wxSpinSliderCtrl *SpinSlider;
 
   SpinSlider = (wxSpinSliderCtrl*)FindWindow(wxID_SEED_CTRL);
 
   if (SpinSlider != NULL)
    {
-    SpinSlider->SetValue(P3DApp::GetApp()->GetModel()->GetBaseSeed());
+    SpinSlider->SetValue(Model->GetBaseSeed());
    }
 
   wxCheckBox *CheckBox;
@@ -177,7 +363,25 @@ void               P3DOptGeneralPanel::UpdateControls
   if (CheckBox != NULL)
    {
     CheckBox->SetValue
-     ((P3DApp::GetApp()->GetModel()->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) != 0);
+     ((Model->GetFlags() & P3D_MODEL_FLAG_NO_RANDOMNESS) != 0);
    }
+
+  const P3DModelMetaInfo *MetaInfo = Model->GetMetaInfo();
+
+  UpdateTextCtrl(wxID_AUTHOR_CTRL,MetaInfo->GetAuthor());
+  UpdateTextCtrl(wxID_LICENSE_NAME_CTRL,MetaInfo->GetLicenseName());
+  UpdateTextCtrl(wxID_LICENSE_URL_CTRL,MetaInfo->GetLicenseURL());
+  UpdateTextCtrl(wxID_PLANT_INFO_URL_CTRL,MetaInfo->GetPlantInfoURL());
+ }
+
+void               P3DOptGeneralPanel::UpdateTextCtrl
+                                      (int                 id,
+                                       const char         *value)
+ {
+  wxTextCtrl *InfoTextCtrl;
+
+  InfoTextCtrl = (wxTextCtrl*)FindWindow(id);
+
+  InfoTextCtrl->ChangeValue(InfoValueToText(value));
  }
 

@@ -36,10 +36,31 @@ class P3DOptGeneralPanel : public P3DUIParamPanel
   void             OnLODChanged       (wxSpinSliderEvent  &event);
   void             OnRandomnessStateChanged
                                       (wxCommandEvent     &event);
+  void             OnAuthorChanged    (wxCommandEvent     &event);
+  void             OnLicenseNameChanged
+                                      (wxCommandEvent     &event);
+  void             OnLicenseURLChanged(wxCommandEvent     &event);
+  void             OnPlantInfoURLChanged
+                                      (wxCommandEvent     &event);
 
   virtual void     UpdateControls     ();
 
   private          :
+
+  wxSizer         *CreateRandomnessBox();
+  wxSizer         *CreateLODBox       ();
+  wxSizer         *CreateModelInfoBox ();
+
+  wxTextCtrl      *CreateInfoTextCtrl (int                 id,
+                                       const char         *value);
+
+  void             UpdateTextCtrl     (int                 id,
+                                       const char         *value);
+
+  static
+  wxString         InfoValueToText    (const char         *value);
+  static
+  const char      *TextToInfoValue    (const wxString     &text);
 
   DECLARE_EVENT_TABLE();
  };
