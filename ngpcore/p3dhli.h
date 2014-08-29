@@ -100,6 +100,9 @@ class P3D_DLL_ENTRY P3DHLIPlantTemplate
                                                           *SourceStream);
                    P3DHLIPlantTemplate(const P3DPlantModel*SourceModel);
 
+  const
+  P3DModelMetaInfo*GetMetaInfo        () const;
+
   unsigned int     GetGroupCount      () const;
 
   const char      *GetGroupName       (unsigned int        GroupIndex) const;

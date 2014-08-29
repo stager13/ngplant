@@ -1142,6 +1142,13 @@ const P3DBranchModel
   DummiesEnabled = false;
  }
 
+const
+P3DModelMetaInfo  *P3DHLIPlantTemplate::GetMetaInfo
+                                      () const
+ {
+  return Model->GetMetaInfo();
+ }
+
 unsigned int       P3DHLIPlantTemplate::GetGroupCount
                                       () const
  {
