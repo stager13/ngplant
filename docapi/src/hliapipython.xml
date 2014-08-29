@@ -39,6 +39,21 @@ library in pywrapper directory.
  </section>
 
  <section>
+  <name>Changes made in 0.9.13</name>
+  <para>
+   <ul>
+    <li>
+     Class <classref classname="ModelMetaInfo"/> added.
+    </li>
+    <li>
+     <methodref classname="PlantInstance" name="GetMetaInfo"/> method
+     added to <classref classname="PlantInstance"/> class.
+    </li>
+   </ul>
+  </para>
+ </section>
+
+ <section>
   <name>Changes made in 0.9.5</name>
   <para>
    <ul>
@@ -161,6 +176,20 @@ Using different seeds you can get almost infinite number of
 similar but slightly different plant models.
 If argument <argname>seed</argname> is omitted, or equal to zero,
 default seed will be used.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetMetaInfo</name>
+     <shortdesc>Return meta information about model</shortdesc>
+<prototype>
+  GetMetaInfo()
+</prototype>
+     <desc>
+<para>
+Return meta information about model such as author, license and other
+(<classref classname="ModelMetaInfo"/>).
 </para>
      </desc>
     </methodinfo>
@@ -510,6 +539,39 @@ of all branches in branch group, will be returned if
     </methodinfo>
 
    </methods>
+  </classinfo>
+
+  <classinfo>
+   <name>ModelMetaInfo</name>
+   <shortdesc>Model meta information class</shortdesc>
+   <desc>
+This class contains meta information about model such as author, license and
+so on. Note: only constant methods are described below.
+   </desc>
+
+   <attributes>
+
+    <attributeinfo>
+     <name>Author</name>
+     <shortdesc>Author information</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>LicenseName</name>
+     <shortdesc>License name</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>LicenseURL</name>
+     <shortdesc>License URL</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
+     <name>PlantInfoURL</name>
+     <shortdesc>Plant description URL</shortdesc>
+    </attributeinfo>
+   </attributes>
+
   </classinfo>
 
   <classinfo>
