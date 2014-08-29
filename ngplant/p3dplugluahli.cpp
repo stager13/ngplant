@@ -219,6 +219,44 @@ static int         PlantInstanceDtor  (lua_State          *State)
   return(0);
  }
 
+static void        SetModelMetaInfoValue
+                                      (P3DPlugLUAControl  *Control,
+                                       const char         *Name,
+                                       const char         *Value)
+ {
+  if (Value != 0)
+   {
+    Control->SetTableString(Name,Value);
+   }
+  else
+   {
+    Control->SetTableNil(Name);
+   }
+ }
+
+static int         PlantInstanceGetMetaInfo
+                                      (lua_State          *State)
+ {
+  P3DPlugLUAControl                    Control(State);
+  NGPLUAPlantInstance                **PlantInstance;
+  const P3DModelMetaInfo              *MetaInfo;
+
+  PlantInstance = (NGPLUAPlantInstance**)Control.GetArgUserData(1,PlantInstanceMetaTableName);
+  Control.Commit();
+
+  MetaInfo = (*PlantInstance)->Template->GetMetaInfo();
+
+  Control.PushNewTable();
+  SetModelMetaInfoValue(&Control,"Author",MetaInfo->GetAuthor());
+  SetModelMetaInfoValue(&Control,"LicenseName",MetaInfo->GetLicenseName());
+  SetModelMetaInfoValue(&Control,"LicenseURL",MetaInfo->GetLicenseURL());
+  SetModelMetaInfoValue(&Control,"PlantInfoURL",MetaInfo->GetPlantInfoURL());
+
+  Control.Commit();
+
+  return(1);
+ }
+
 static int         PlantInstanceGetGroupCount
                                       (lua_State          *State)
  {
@@ -294,6 +332,7 @@ static int         PlantInstanceGetBoundingBox
 
 static luaL_reg   PlantInstanceMethods[] =
  {
+  { "GetMetaInfo"   , PlantInstanceGetMetaInfo    },
   { "GetGroupCount" , PlantInstanceGetGroupCount  },
   { "GetGroup"      , PlantInstanceGetGroup       },
   { "GetBoundingBox", PlantInstanceGetBoundingBox }
