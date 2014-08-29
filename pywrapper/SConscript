@@ -60,9 +60,11 @@ ngpmodule.cpp
 ngppyplantinstance.cpp
 ngppybranchgroup.cpp
 ngppymaterialdef.cpp
+ngppymodelmetainfo.cpp
 ../ngpcore/p3dmath.cpp
 ../ngpcore/p3dmathrng.cpp
 ../ngpcore/p3dmathspline.cpp
+../ngpcore/p3dsplineio.cpp
 ../ngpcore/p3dplant.cpp
 ../ngpcore/p3dmodel.cpp
 ../ngpcore/p3dmodelstemtube.cpp
@@ -76,6 +78,7 @@ ngppymaterialdef.cpp
 ../ngpcore/p3diostream.cpp
 ../ngpcore/p3dexcept.cpp
 ../ngpcore/p3dhli.cpp
+../ngpcore/p3dconststr.cpp
 """)
 
 env.PyDistUtilSetup(target = 'setup.py',
