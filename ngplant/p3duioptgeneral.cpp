@@ -143,7 +143,11 @@ wxTextCtrl        *P3DOptGeneralPanel::CreateInfoTextCtrl
                                       (int                 id,
                                        const char         *value)
  {
-  return new wxTextCtrl(this,id,InfoValueToText(value));
+  wxTextCtrl *Ctrl = new wxTextCtrl(this,id,InfoValueToText(value));
+
+  Ctrl->SetMaxLength(P3DModelMetaInfo::ValueMaxLength);
+
+  return Ctrl;
  }
 
 wxString           P3DOptGeneralPanel::InfoValueToText
