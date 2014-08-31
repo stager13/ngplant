@@ -4,6 +4,10 @@
 many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
+Changes since 0.9.12:
+- added "Author", "License", "License URL" and "Plant description URL"
+  metadata support to .ngp file format.
+
 Changes since 0.9.11:
 - now it is possible to have multiple first-level branches distributed
   across circle or square area
