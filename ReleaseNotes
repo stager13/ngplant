@@ -7,6 +7,7 @@ to model storage format and internal API changes.
 Changes since 0.9.12:
 - added "Author", "License", "License URL" and "Plant description URL"
   metadata support to .ngp file format.
+- fixed "unresolved symbol(s)" error in pywrapper
 
 Changes since 0.9.11:
 - now it is possible to have multiple first-level branches distributed
