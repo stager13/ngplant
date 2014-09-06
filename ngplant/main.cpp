@@ -288,7 +288,6 @@ void               P3DMainFrame::OnSaveAs (wxCommandEvent     &event)
       FileName.SetExt(wxT("ngp"));
      }
 
-    P3DApp::GetApp()->GetTexFS()->SetModelPath(FileName.GetPath().mb_str());
     P3DApp::GetApp()->SaveModel(FileName.GetFullPath().mb_str());
    }
  }
@@ -821,6 +820,12 @@ void               P3DApp::SetModel   (P3DPlantModel      *Model)
 
 void               P3DApp::SaveModel  (const char         *FileName)
  {
+  std::string OldModelPath = TexFS.GetModelPath() != 0 ?
+                             std::string(TexFS.GetModelPath()) :
+                             std::string("");
+
+  TexFS.SetModelPath(wxFileName(wxString(FileName,wxConvUTF8)).GetPath().mb_str());
+
   try
    {
     P3DOutputStringStreamFile          TargetStream;
@@ -838,6 +843,15 @@ void               P3DApp::SaveModel  (const char         *FileName)
    }
   catch (...)
    {
+    if (OldModelPath.empty())
+     {
+      TexFS.SetModelPath(0);
+     }
+    else
+     {
+      TexFS.SetModelPath(OldModelPath.c_str());
+     }
+
     ::wxMessageBox(wxT("Error while saving model"),wxT("Error"),wxOK | wxICON_ERROR);
    }
 
