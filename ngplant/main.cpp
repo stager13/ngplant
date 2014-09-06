@@ -568,6 +568,7 @@ void               P3DMainFrame::OnNew(wxCommandEvent     &event)
     P3DApp::GetApp()->SetModel(NewModel);
 
     P3DApp::GetApp()->SetFileName("");
+    P3DApp::GetApp()->GetTexFS()->SetModelPath(0);
 
     EditPanel->RestoreAll();
    }
