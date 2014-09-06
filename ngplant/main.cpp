@@ -288,6 +288,7 @@ void               P3DMainFrame::OnSaveAs (wxCommandEvent     &event)
       FileName.SetExt(wxT("ngp"));
      }
 
+    P3DApp::GetApp()->GetTexFS()->SetModelPath(FileName.GetPath().mb_str());
     P3DApp::GetApp()->SaveModel(FileName.GetFullPath().mb_str());
    }
  }
@@ -630,6 +631,13 @@ bool               P3DMainFrame::OpenModelFile
    {
     NewModel = 0;
 
+    P3DIDEVFS  *TextureFS    = P3DApp::GetApp()->GetTexFS();
+    std::string OldModelPath = TextureFS->GetModelPath() == 0 ?
+                               std::string("") : std::string(TextureFS->GetModelPath());
+    wxString    NewModelPath = wxFileName(FileName).GetPath();
+
+    TextureFS->SetModelPath(NewModelPath.mb_str());
+
     try
      {
       P3DInputStringStreamFile         SourceStream;
@@ -662,6 +670,15 @@ bool               P3DMainFrame::OpenModelFile
      }
     catch (...)
      {
+      if (OldModelPath.empty())
+       {
+        TextureFS->SetModelPath(0);
+       }
+      else
+       {
+        TextureFS->SetModelPath(OldModelPath.c_str());
+       }
+
       ::wxMessageBox(wxT("Error while loading model"),wxT("Error"),wxOK | wxICON_ERROR);
      }
 

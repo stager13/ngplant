@@ -31,6 +31,9 @@ class P3DIDEVFS
   std::string      System2Generic     (const char         *FileName);
   std::string      Generic2System     (const char         *FileName);
 
+  const char      *GetModelPath       () const;
+  void             SetModelPath       (const char         *DirName);
+
   unsigned int     GetEntryCount      () const;
   const char      *GetEntry           (unsigned int        EntryIndex) const;
   void             AppendEntry        (const char         *DirName);
@@ -42,8 +45,13 @@ class P3DIDEVFS
   private          :
 
   void             ClearEntries       ();
+  std::string      JoinPathComponents (const std::string  &path,
+                                       const std::string  &name);
 
+  std::string                          ModelPath;
   std::vector<std::string>             Entries;
+
+  static const char                   *DIR_CHAR;
  };
 
 #endif

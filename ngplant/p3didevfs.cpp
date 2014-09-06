@@ -25,8 +25,11 @@
 #include <wx/filename.h>
 
 #include <ngpcore/p3diostream.h>
+#include <ngpcore/p3dmodel.h>
 #include <ngput/p3dospath.h>
 #include <p3didevfs.h>
+
+const char        *P3DIDEVFS::DIR_CHAR = "/";
 
 std::string        P3DIDEVFS::System2Generic
                                       (const char         *FileName)
@@ -41,9 +44,20 @@ std::string        P3DIDEVFS::System2Generic
     return(std::string(""));
    }
 
+  EntryFound = false;
+
+  if (!ModelPath.empty())
+   {
+    P3DPathName BasePath(ModelPath.c_str());
+
+    if (SystemFileName.MakeRelativeTo(&BasePath))
+     {
+      EntryFound = true;
+     }
+   }
+
   EntryIndex = 0;
   EntryCount = Entries.size();
-  EntryFound = false;
 
   while ((EntryIndex < EntryCount) && (!EntryFound))
    {
@@ -97,10 +111,21 @@ std::string        P3DIDEVFS::Generic2System
   P3DPathName                          SystemFileName(FileName);
   unsigned int                         EntryIndex;
   unsigned int                         EntryCount;
+  std::string                          FullPath;
 
   if (SystemFileName.IsAbsolute())
    {
     return(std::string(""));
+   }
+
+  if (!ModelPath.empty())
+   {
+    FullPath = JoinPathComponents(ModelPath,SystemFileName.c_str());
+
+    if (P3DFileExists(FullPath.c_str()))
+     {
+      return(FullPath);
+     }
    }
 
   EntryIndex = 0;
@@ -108,11 +133,7 @@ std::string        P3DIDEVFS::Generic2System
 
   while (EntryIndex < EntryCount)
    {
-    std::string  FullPath;
-
-    FullPath = std::string(Entries[EntryIndex].c_str()) +
-               std::string("/") +
-               std::string(SystemFileName.c_str());
+    FullPath = JoinPathComponents(Entries[EntryIndex],SystemFileName.c_str());
 
     if (P3DFileExists(FullPath.c_str()))
      {
@@ -123,6 +144,32 @@ std::string        P3DIDEVFS::Generic2System
    }
 
   return(std::string(""));
+ }
+
+const char        *P3DIDEVFS::GetModelPath
+                                      () const
+ {
+  if (!ModelPath.empty())
+   {
+    return ModelPath.c_str();
+   }
+  else
+   {
+    return 0;
+   }
+ }
+
+void               P3DIDEVFS::SetModelPath
+                                      (const char         *DirName)
+ {
+  if (DirName != 0)
+   {
+    ModelPath = JoinPathComponents(DirName,P3D_LOCAL_TEXTURES_PATH);
+   }
+  else
+   {
+    ModelPath = "";
+   }
  }
 
 unsigned int       P3DIDEVFS::GetEntryCount
@@ -190,5 +237,12 @@ void               P3DIDEVFS::ClearEntries
                                       ()
  {
   Entries.clear();
+ }
+
+std::string        P3DIDEVFS::JoinPathComponents
+                                      (const std::string  &path,
+                                       const std::string  &name)
+ {
+  return path + std::string(DIR_CHAR) + name;
  }
 
