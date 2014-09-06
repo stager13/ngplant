@@ -51,6 +51,8 @@
 
 #include <ngpcore/p3dmodel.h>
 
+const char *P3D_LOCAL_TEXTURES_PATH = "textures";
+
                    P3DVisRangeState::P3DVisRangeState
                                       ()
  {

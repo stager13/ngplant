@@ -42,6 +42,8 @@
 #include <ngpcore/p3dconststr.h>
 #include <ngpcore/p3diostream.h>
 
+extern const char *P3D_LOCAL_TEXTURES_PATH;
+
 typedef struct
  {
   unsigned int     Major;
