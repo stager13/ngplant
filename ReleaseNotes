@@ -5,6 +5,9 @@ many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
 Changes since 0.9.12:
+- now ngplant,ngpshot and ngpview tools search model textures in "textures"
+  directory (relative to model file) before searching in registered texture
+  paths
 - added "Author", "License", "License URL" and "Plant description URL"
   metadata support to .ngp file format.
 - fixed "unresolved symbol(s)" error in pywrapper
