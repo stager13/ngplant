@@ -51,6 +51,7 @@
 #include <ngput/p3dglmemcntx.h>
 
 #include <p3dshaders.h>
+#include "ngptexman.h"
 
 typedef struct
  {
@@ -151,126 +152,6 @@ class NGPShotGLContextWrapper
   P3DGLMemoryContextPBuffer            ContextPBuffer;
   #endif
  };
-
-class NGPTexManager
- {
-  public           :
-
-                   NGPTexManager      (const char         *TexPath);
-                  ~NGPTexManager      ();
-
-  GLuint           GetTextureHandle   (const char         *GenericName);
-
-  private          :
-
-  std::string                          TexPath;
-  std::map<std::string,GLuint>         Handles;
-  P3DImageFmtHandlerComposite          ImageFmtHandler;
- };
-
-                   NGPTexManager::NGPTexManager
-                                      (const char         *TexPath)
- {
-  this->TexPath = TexPath;
-
-  ImageFmtHandler.AddHandler(new P3DImageFmtHandlerTGA());
-  #ifdef WITH_LIBPNG
-  ImageFmtHandler.AddHandler(new P3DImageFmtHandlerPNG());
-  #endif
-  #ifdef WITH_LIBJPEG
-  ImageFmtHandler.AddHandler(new P3DImageFmtHandlerJPG());
-  #endif
- }
-
-                   NGPTexManager::~NGPTexManager
-                                      ()
- {
-  for (std::map<std::string,GLuint>::iterator Iter = Handles.begin();
-      Iter != Handles.end();
-      ++Iter)
-   {
-    GLuint         Handle;
-
-    Handle = Iter->second;
-
-    if (Handle != 0)
-     {
-      glDeleteTextures(1,&Handle);
-     }
-   }
- }
-
-GLuint             NGPTexManager::GetTextureHandle
-                                      (const char         *GenericName)
- {
-  std::map<std::string,GLuint>::iterator Iter = Handles.find(GenericName);
-
-  if (Iter != Handles.end())
-   {
-    return(Iter->second);
-   }
-  else
-   {
-    std::string                        FullPathStr;
-    GLuint                             Handle;
-
-    FullPathStr = TexPath + std::string("/") + GenericName;
-
-    P3DImageData                       ImageData;
-    P3DPathName                        FullPathName(FullPathStr.c_str());
-    std::string                        Ext;
-
-    Ext = FullPathName.GetExtension();
-
-    if (!ImageFmtHandler.LoadImageData
-          (&ImageData,FullPathName.c_str(),Ext.c_str()))
-     {
-      return(0);
-     }
-
-    glGenTextures(1,&Handle);
-
-    glBindTexture(GL_TEXTURE_2D,Handle);
-    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-
-    if      (ImageData.GetChannelCount() == 3)
-     {
-      gluBuild2DMipmaps(GL_TEXTURE_2D,
-                        3,
-                        ImageData.GetWidth(),
-                        ImageData.GetHeight(),
-                        GL_RGB,
-                        GL_UNSIGNED_BYTE,
-                        ImageData.GetData());
-     }
-    else if (ImageData.GetChannelCount() == 4)
-     {
-      gluBuild2DMipmaps(GL_TEXTURE_2D,
-                        4,
-                        ImageData.GetWidth(),
-                        ImageData.GetHeight(),
-                        GL_RGBA,
-                        GL_UNSIGNED_BYTE,
-                        ImageData.GetData());
-     }
-    else
-     {
-      glDeleteTextures(1,&Handle);
-
-      return(0);
-     }
-
-    glBindTexture(GL_TEXTURE_2D,0);
-
-    Handles[GenericName] = Handle;
-
-    return(Handle);
-   }
- }
 
 static char       *LoadFileContent    (const char         *FileName)
  {
@@ -485,7 +366,7 @@ static void        RenderBranchGroup  (P3DHLIPlantTemplate*PlantTemplate,
 
   if (MaterialDef->GetTexName(P3D_TEX_DIFFUSE) != 0)
    {
-    DiffuseTexHandle = TexManager->GetTextureHandle
+    DiffuseTexHandle = TexManager->LoadTexture
                         (MaterialDef->GetTexName(P3D_TEX_DIFFUSE));
 
     if (DiffuseTexHandle == 0)
@@ -497,7 +378,7 @@ static void        RenderBranchGroup  (P3DHLIPlantTemplate*PlantTemplate,
 
   if (MaterialDef->GetTexName(P3D_TEX_NORMAL_MAP) != 0)
    {
-    NormalTexHandle = TexManager->GetTextureHandle
+    NormalTexHandle = TexManager->LoadTexture
                         (MaterialDef->GetTexName(P3D_TEX_NORMAL_MAP));
 
     if (NormalTexHandle == 0)
@@ -849,7 +730,9 @@ static bool        MakeShot           (const char         *ModelFileName,
   P3DInputStringStreamFile             SourceStream;
   P3DHLIPlantTemplate                 *PlantTemplate;
   P3DHLIPlantInstance                 *PlantInstance;
-  NGPTexManager                        TexManager(TexPath);
+
+  std::string   ModelPath = P3DPathName::DirName(ModelFileName);
+  NGPTexManager TexManager(ModelPath.c_str(),TexPath);
 
   Result = true;
 

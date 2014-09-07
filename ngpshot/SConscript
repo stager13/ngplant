@@ -2,7 +2,7 @@ from sctool.SConcheck import *
 from sctool.SConcompat import *
 
 NGPSHOT_SRC = Split("""
-ngpshot.cpp p3dshaders.cpp
+ngpshot.cpp p3dshaders.cpp ngptexman.cpp
 """)
 
 NGPSHOT_INCLUDES=Split("""
