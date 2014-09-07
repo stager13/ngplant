@@ -31,15 +31,21 @@ class NGPViewTexManager
  {
   public           :
 
-                   NGPViewTexManager  (const char         *TexPath);
+                   NGPViewTexManager  (const char         *ModelPath,
+                                       const char         *TexPath);
                   ~NGPViewTexManager  ();
 
   GLuint           LoadTexture        (const char         *TexName);
 
   private          :
 
+  bool             TryLoadTexture     (P3DImageData       *ImageData,
+                                       const std::string  &Path,
+                                       const std::string  &Name) const;
+
   std::map<std::string,GLuint>         Handles;
   P3DImageFmtHandlerComposite          ImageFmtHandler;
+  std::string                          ModelPath;
   std::string                          TexPath;
  };
 
