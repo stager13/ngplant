@@ -359,6 +359,28 @@ std::string        P3DPathName::JoinPaths
 std::string        P3DPathName::BaseName
                                       (const char         *Path)
  {
+  return std::string(&Path[GetBaseNameStartPos(Path)]);
+ }
+
+std::string        P3DPathName::DirName
+                                      (const char         *Path)
+ {
+  for (int Index = GetBaseNameStartPos(Path) - 1; Index >= 0; Index--)
+   {
+    char Ch = Path[Index];
+
+    if (Ch != '\\' && Ch != '/')
+     {
+      return std::string(Path,Index + 1);
+     }
+   }
+
+  return std::string("");
+ }
+
+int                P3DPathName::GetBaseNameStartPos
+                                      (const char         *Path)
+ {
   int Len;
   int Index;
 
@@ -370,10 +392,10 @@ std::string        P3DPathName::BaseName
 
     if (Ch == '\\' || Ch == '/' || Ch == ':')
      {
-      return std::string(&Path[Index + 1]);
+      return Index + 1;
      }
    }
 
-  return std::string(Path);
+  return 0;
  }
 
