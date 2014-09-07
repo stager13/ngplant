@@ -3,7 +3,7 @@ from sctool.SConcompat import *
 
 NGPVIEW_SRC = Split("""
 ngpview.cpp
-ngpviewtexman.cpp
+ngptexman.cpp
 ngpviewdata.cpp
 """)
 

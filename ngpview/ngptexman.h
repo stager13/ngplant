@@ -27,13 +27,13 @@
 #include <ngput/p3dglext.h>
 #include <ngput/p3dimage.h>
 
-class NGPViewTexManager
+class NGPTexManager
  {
   public           :
 
-                   NGPViewTexManager  (const char         *ModelPath,
+                   NGPTexManager      (const char         *ModelPath,
                                        const char         *TexPath);
-                  ~NGPViewTexManager  ();
+                  ~NGPTexManager      ();
 
   GLuint           LoadTexture        (const char         *TexName);
 

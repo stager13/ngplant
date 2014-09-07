@@ -38,8 +38,8 @@
 
 #include <ngput/p3dospath.h>
 
-#include <ngpviewtexman.h>
-#include <ngpviewdata.h>
+#include "ngptexman.h"
+#include "ngpviewdata.h"
 
 static NGPViewMeshData      *PlantMesh = 0;
 static float                 RotAngle = 0.0f;
@@ -270,7 +270,7 @@ static void        GetBranchGroupMaterial
                                       (NGPViewSubMeshData *SubMeshData,
                                        const P3DMaterialDef
                                                           *MaterialDef,
-                                       NGPViewTexManager  *TextureManager)
+                                       NGPTexManager      *TextureManager)
  {
   const char                          *TexName;
 
@@ -438,7 +438,7 @@ static bool        GetBranchGroupData (NGPViewSubMeshData *SubMeshData,
                                        const P3DHLIPlantInstance
                                                           *PlantInstance,
                                        unsigned int        GroupIndex,
-                                       NGPViewTexManager  *TextureManager)
+                                       NGPTexManager      *TextureManager)
  {
   GetBranchGroupMaterial
    (SubMeshData,PlantTemplate->GetMaterial(GroupIndex),TextureManager);
@@ -457,7 +457,7 @@ static bool        GetBranchGroupData (NGPViewSubMeshData *SubMeshData,
 
 static bool        LoadModel          (NGPViewMeshData   **MeshData,
                                        const char         *SourceFileName,
-                                       NGPViewTexManager  *TextureManager)
+                                       NGPTexManager      *TextureManager)
  {
   bool                                 Result;
   P3DInputStringStreamFile             SourceStream;
@@ -776,7 +776,7 @@ int                main               (int                 argc,
 
     std::string ModelPath = P3DPathName::DirName(ModelFileName);
 
-    NGPViewTexManager TextureManager(ModelPath.c_str(),TexPath.c_str());
+    NGPTexManager TextureManager(ModelPath.c_str(),TexPath.c_str());
 
     glutCreateWindow("ngpview");
 

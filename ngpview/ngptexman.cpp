@@ -36,10 +36,10 @@
 
 #include <ngput/p3dospath.h>
 
-#include <ngpviewtexman.h>
+#include "ngptexman.h"
 
 
-                   NGPViewTexManager::NGPViewTexManager
+                   NGPTexManager::NGPTexManager
                                       (const char         *ModelPath,
                                        const char         *TexPath)
  {
@@ -55,7 +55,7 @@
   #endif
  }
 
-                   NGPViewTexManager::~NGPViewTexManager
+                   NGPTexManager::~NGPTexManager
                                       ()
  {
   for (std::map<std::string,GLuint>::iterator Iter = Handles.begin();
@@ -73,7 +73,7 @@
    }
  }
 
-bool               NGPViewTexManager::TryLoadTexture
+bool               NGPTexManager::TryLoadTexture
                                       (P3DImageData       *ImageData,
                                        const std::string  &Path,
                                        const std::string  &Name) const
@@ -88,7 +88,7 @@ bool               NGPViewTexManager::TryLoadTexture
           (ImageData,FullPathName.c_str(),Ext.c_str());
  }
 
-GLuint             NGPViewTexManager::LoadTexture
+GLuint             NGPTexManager::LoadTexture
                                       (const char         *TexName)
  {
   std::map<std::string,GLuint>::iterator Iter = Handles.find(TexName);
