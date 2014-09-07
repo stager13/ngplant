@@ -73,8 +73,13 @@ class P3DPathName
 
   static
   std::string      BaseName           (const char         *Path);
+  static
+  std::string      DirName            (const char         *Path);
 
   private          :
+
+  static
+  int              GetBaseNameStartPos(const char         *Path);
 
   std::string      Path;
  };
