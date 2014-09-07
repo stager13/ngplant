@@ -21,6 +21,8 @@
 #include <string>
 #include <map>
 
+#include <ngpcore/p3dmodel.h>
+
 #include <ngput/p3dglext.h>
 #include <ngput/p3dimage.h>
 #include <ngput/p3dimagetga.h>
@@ -38,9 +40,11 @@
 
 
                    NGPViewTexManager::NGPViewTexManager
-                                      (const char         *TexPath)
+                                      (const char         *ModelPath,
+                                       const char         *TexPath)
  {
-  this->TexPath = TexPath;
+  this->ModelPath = P3DPathName::JoinPaths(ModelPath,P3D_LOCAL_TEXTURES_PATH);
+  this->TexPath   = TexPath;
 
   ImageFmtHandler.AddHandler(new P3DImageFmtHandlerTGA());
   #ifdef WITH_LIBPNG
@@ -69,6 +73,21 @@
    }
  }
 
+bool               NGPViewTexManager::TryLoadTexture
+                                      (P3DImageData       *ImageData,
+                                       const std::string  &Path,
+                                       const std::string  &Name) const
+ {
+  std::string FullPathStr = Path + "/" + Name;
+
+  P3DPathName FullPathName(FullPathStr.c_str());
+
+  std::string Ext = FullPathName.GetExtension();
+
+  return ImageFmtHandler.LoadImageData
+          (ImageData,FullPathName.c_str(),Ext.c_str());
+ }
+
 GLuint             NGPViewTexManager::LoadTexture
                                       (const char         *TexName)
  {
@@ -80,19 +99,17 @@ GLuint             NGPViewTexManager::LoadTexture
    }
   else
    {
-    std::string                        FullPathStr;
+    P3DImageData                       ImageData;
+    std::string                        TexNameStr(TexName);
     GLuint                             Handle;
 
-    FullPathStr = TexPath + std::string("/") + TexName;
-
-    P3DImageData                       ImageData;
-    P3DPathName                        FullPathName(FullPathStr.c_str());
-    std::string                        Ext;
-
-    Ext = FullPathName.GetExtension();
-
-    if (!ImageFmtHandler.LoadImageData
-          (&ImageData,FullPathName.c_str(),Ext.c_str()))
+    if      (TryLoadTexture(&ImageData,ModelPath,TexNameStr))
+     {
+     }
+    else if (TryLoadTexture(&ImageData,TexPath,TexNameStr))
+     {
+     }
+    else
      {
       return(0);
      }

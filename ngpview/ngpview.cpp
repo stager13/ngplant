@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <cstring>
 
+#include <ngput/p3dospath.h>
 #include <ngput/p3dglext.h>
 
 #ifndef GLAPIENTRY
@@ -773,7 +774,9 @@ int                main               (int                 argc,
       TexPath = P3DPathInfo::GetCurrentDir();
      }
 
-    NGPViewTexManager                    TextureManager(TexPath.c_str());
+    std::string ModelPath = P3DPathName::DirName(ModelFileName);
+
+    NGPViewTexManager TextureManager(ModelPath.c_str(),TexPath.c_str());
 
     glutCreateWindow("ngpview");
 
