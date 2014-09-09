@@ -47,6 +47,7 @@
 
 #include <p3dmedit.h>
 #include <p3dexpobj.h>
+#include <p3dnga.h>
 #include <p3dmaterialstd.h>
 #include <p3dcanvas3d.h>
 #include <p3duiappopt.h>
@@ -69,6 +70,7 @@ enum
  {
   wxID_EXPORT      = wxID_HIGHEST + 1200,
   wxID_EXPORT_OBJ,
+  wxID_EXPORT_NGA,
   wxID_RUN_SCRIPT,
   wxID_SHOW_DUMMIES,
   wxID_OPEN_RECENT,
@@ -89,6 +91,7 @@ BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_SAVE,P3DMainFrame::OnSave)
  EVT_MENU(wxID_SAVEAS,P3DMainFrame::OnSaveAs)
  EVT_MENU(wxID_EXPORT_OBJ,P3DMainFrame::OnExportObj)
+ EVT_MENU(wxID_EXPORT_NGA,P3DMainFrame::OnExportNga)
  EVT_MENU_RANGE(wxID_EXPORT_PLUGIN_FIRST,wxID_EXPORT_PLUGIN_LAST,P3DMainFrame::OnExportObjPlugin)
  EVT_MENU(wxID_RUN_SCRIPT,P3DMainFrame::OnRunScript)
  EVT_MENU(wxID_SHOW_DUMMIES,P3DMainFrame::OnShowDummy)
@@ -165,6 +168,7 @@ class P3DUndoRedoMenuStateUpdater
   SetIcon(wxICON(ngplant));
 
   ExportMenu->Append(wxID_EXPORT_OBJ,wxT("Alias Wavefront .OBJ"));
+  ExportMenu->Append(wxID_EXPORT_NGA,wxT("ngPlant archive .NGA"));
 
   for (unsigned int Index = 0; Index < ExportPlugins.size(); Index++)
    {
@@ -522,6 +526,12 @@ void               P3DMainFrame::OnExportObj
       ::wxMessageBox(wxT("Error while exporting model"),wxT("Error"),wxOK | wxICON_ERROR);
      }
    }
+ }
+
+void               P3DMainFrame::OnExportNga
+                                          (wxCommandEvent     &event)
+ {
+  P3DNGAExport();
  }
 
 void               P3DMainFrame::OnExportObjPlugin

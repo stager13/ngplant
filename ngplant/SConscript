@@ -17,6 +17,7 @@ p3dpobject.cpp p3dshaders.cpp p3dlog.cpp
 p3dpluginfo.cpp p3duimodelstemempty.cpp p3dappprefs.cpp
 p3dcmdqueue.cpp p3dimagewx.cpp
 p3drecentfiles.cpp
+zipstore/zipstore.cpp p3dnga.cpp
 """)
 
 NGPLANT_INCLUDES=Split("""

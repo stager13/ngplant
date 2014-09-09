@@ -53,6 +53,7 @@ class P3DMainFrame : public wxFrame
   void             OnSave             (wxCommandEvent     &event);
   void             OnSaveAs           (wxCommandEvent     &event);
   void             OnExportObj        (wxCommandEvent     &event);
+  void             OnExportNga        (wxCommandEvent     &event);
   void             OnExportObjPlugin  (wxCommandEvent     &event);
   void             OnRunScript        (wxCommandEvent     &event);
   void             OnQuit             (wxCommandEvent     &event);
