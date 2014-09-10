@@ -331,6 +331,11 @@ static void       ExportToFile        (const char          *FileName)
   ZipWriter.Close();
  }
 
+static void       DisplayErrorMessage(const char          *Message)
+ {
+  ::wxMessageBox(wxString(Message,wxConvUTF8),wxT("Error"),wxOK | wxICON_ERROR);
+ }
+
 void              P3DNGAExport       ()
  {
   wxString        FileName;
@@ -344,7 +349,18 @@ void              P3DNGAExport       ()
 
   if (!FileName.empty())
    {
-    ExportToFile(FileName.mb_str());
+    try
+     {
+      ExportToFile(FileName.mb_str());
+     }
+    catch (P3DException &e)
+     {
+      DisplayErrorMessage(e.GetMessage());
+     }
+    catch (ZS::Error &e)
+     {
+      DisplayErrorMessage(e.GetMessage());
+     }
    }
  }
 
