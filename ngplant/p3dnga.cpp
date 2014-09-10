@@ -165,7 +165,7 @@ class NGAMaterialSaver : public P3DMaterialSaver
   static
   std::string      TexName2NGATexName (const char         *TexName);
 
-  typedef std::map<std::string,std::string> TextureBindings ;
+  typedef std::map<std::string,std::string> TextureBindings;
 
   mutable TextureBindings Textures;
  };
