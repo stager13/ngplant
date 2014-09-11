@@ -157,8 +157,8 @@ static const char *ErrorMessages[] =
   "unsupported feature (compression)",
   "broken zip file (bad central directory file header signature)",
   "broken zip file (bad local file header header signature)",
-  "trying to seek beyound the end of archive",
-  "trying to seek beyound the end of file",
+  "trying to seek beyond the end of archive",
+  "trying to seek beyond the end of file",
   "invalid datetime"
  };
 
@@ -205,6 +205,8 @@ Reader::DirEntry::DirEntry            (unsigned int   crc32,
   this->name              = name;
   this->dateTime          = dateTime;
   this->localHeaderOffset = localHeaderOffset;
+
+  next = 0;
  }
 
 Reader::DirEntry::~DirEntry           ()
@@ -242,7 +244,7 @@ Reader::File::Read                    (void          *dest,
  {
   offset += size;
 
-  if (offset >= this->size)
+  if (offset > this->size)
    {
     throw Error(Error::NO_MORE_DATA);
    }
