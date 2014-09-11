@@ -71,6 +71,8 @@ enum
   wxID_EXPORT      = wxID_HIGHEST + 1200,
   wxID_EXPORT_OBJ,
   wxID_EXPORT_NGA,
+  wxID_IMPORT,
+  wxID_IMPORT_NGA,
   wxID_RUN_SCRIPT,
   wxID_SHOW_DUMMIES,
   wxID_OPEN_RECENT,
@@ -93,6 +95,7 @@ BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU(wxID_EXPORT_OBJ,P3DMainFrame::OnExportObj)
  EVT_MENU(wxID_EXPORT_NGA,P3DMainFrame::OnExportNga)
  EVT_MENU_RANGE(wxID_EXPORT_PLUGIN_FIRST,wxID_EXPORT_PLUGIN_LAST,P3DMainFrame::OnExportObjPlugin)
+ EVT_MENU(wxID_IMPORT_NGA,P3DMainFrame::OnImportNga)
  EVT_MENU(wxID_RUN_SCRIPT,P3DMainFrame::OnRunScript)
  EVT_MENU(wxID_SHOW_DUMMIES,P3DMainFrame::OnShowDummy)
  EVT_MENU(wxID_EXIT,P3DMainFrame::OnQuit)
@@ -160,6 +163,7 @@ class P3DUndoRedoMenuStateUpdater
   wxMenu          *EditMenu = new wxMenu();
   wxMenu          *ViewMenu = new wxMenu();
   wxMenu          *HelpMenu = new wxMenu();
+  wxMenu          *ImportMenu = new wxMenu();
   wxMenu          *ExportMenu = new wxMenu();
   const P3DPluginInfoVector
                   &ExportPlugins = P3DApp::GetApp()->GetExportPlugins();
@@ -176,6 +180,8 @@ class P3DUndoRedoMenuStateUpdater
    }
 
   ExportMenu->Append(wxID_RUN_SCRIPT,wxT("Run export script..."));
+
+  ImportMenu->Append(wxID_IMPORT_NGA,wxT("ngPlant archive .NGA"));
 
   P3DRecentFiles *RecentFiles = P3DApp::GetApp()->GetRecentFiles();
 
@@ -194,6 +200,7 @@ class P3DUndoRedoMenuStateUpdater
   FileMenu->Append(wxID_SAVE,wxT("&Save\tCtrl-S"));
   FileMenu->Append(wxID_SAVEAS,wxT("Save as..."));
   FileMenu->Append(wxID_EXPORT,wxT("Export to"),ExportMenu);
+  FileMenu->Append(wxID_IMPORT,wxT("Import from"),ImportMenu);
   FileMenu->Append(wxID_PREFERENCES,wxT("Preferences..."));
   FileMenu->Append(wxID_EXIT,wxT("E&xit\tAlt-X"));
 
@@ -550,6 +557,12 @@ void               P3DMainFrame::OnExportObjPlugin
 
   P3DPlugLuaRunScript(ExportPlugins[PluginIndex].GetFileName(),
                       P3DApp::GetApp()->GetModel());
+ }
+
+void               P3DMainFrame::OnImportNga
+                                          (wxCommandEvent     &event)
+ {
+  P3DNGAImport();
  }
 
 void               P3DMainFrame::OnRunScript
