@@ -22,6 +22,7 @@
 #define __P3DNGA_H__
 
 extern void        P3DNGAExport       ();
+extern void        P3DNGAImport       ();
 
 #endif
 

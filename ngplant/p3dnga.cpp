@@ -18,6 +18,9 @@
 
 ***************************************************************************/
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -243,7 +246,88 @@ void               NGAMaterialSaver::SaveTexture
 
     throw;
    }
+ }
 
+class InFileStream : public ZS::InStream
+ {
+  public           :
+
+                   InFileStream       (const char         *fileName);
+  virtual         ~InFileStream       ();
+
+  virtual void               Read     (void               *dest,
+                                       size_t              size);
+
+  virtual unsigned long      GetSize  () const;
+  virtual unsigned long      GetPos   () const;
+  virtual void               Seek     (unsigned long       pos);
+
+  public           :
+
+  FILE            *file;
+ };
+
+InFileStream::InFileStream            (const char         *fileName)
+ {
+  file = fopen(fileName,"rb");
+
+  if (file == NULL)
+   {
+    throw ZS::Error(ZS::Error::IO_ERROR);
+   }
+ }
+
+InFileStream::~InFileStream           ()
+ {
+  if (fclose(file) != 0)
+   {
+    throw ZS::Error(ZS::Error::IO_ERROR);
+   }
+ }
+
+void
+InFileStream::Read                    (void               *dest,
+                                       size_t              size)
+ {
+  if (fread(dest,1,size,file) != size)
+   {
+    throw ZS::Error(ZS::Error::IO_ERROR);
+   }
+ }
+
+unsigned long
+InFileStream::GetSize                 () const
+ {
+  unsigned long currPos = GetPos();
+
+  if (fseek(file,0,SEEK_END) != 0)
+   {
+    throw ZS::Error(ZS::Error::IO_ERROR);
+   }
+
+  unsigned long size = GetPos();
+
+  if (fseek(file,currPos,SEEK_SET) != 0)
+   {
+    throw ZS::Error(ZS::Error::IO_ERROR);
+   }
+
+  return size;
+ }
+
+unsigned long
+InFileStream::GetPos                  () const
+ {
+  return ftell(file);
+ }
+
+void
+InFileStream::Seek                    (unsigned long       pos)
+ {
+  if (fseek(file,pos,SEEK_SET) != 0)
+   {
+    throw ZS::Error(ZS::Error::IO_ERROR);
+   }
  }
 
 void               NGAMaterialSaver::ProcessTextures
@@ -360,6 +444,199 @@ void              P3DNGAExport       ()
     catch (ZS::Error &e)
      {
       DisplayErrorMessage(e.GetMessage());
+     }
+   }
+ }
+
+static bool        FileExists         (const char         *FileName)
+ {
+  struct stat Info;
+
+  return stat(FileName,&Info) == 0;
+ }
+
+static void        MkDir              (const char         *DirName)
+ {
+  if (mkdir(DirName,0777) != 0)
+   {
+    throw P3DExceptionGeneric("unable to create directory");
+   }
+ }
+
+static void        MkDirIfNotExists   (const char         *DirName)
+ {
+  if (!FileExists(DirName))
+   {
+    MkDir(DirName);
+   }
+ }
+
+static bool        IsValidFileNameChar(char                c)
+ {
+  return (c >= 'a' && c <= 'z') ||
+         (c >= 'A' && c <= 'Z') ||
+         (c >= '0' && c <= '9') ||
+         c == '_' ||
+         c == '-' ||
+         c == ' ';
+ }
+
+static bool        IsValidFileName    (const char         *FileName)
+ {
+  bool        dot = false;
+  const char *c   = FileName;
+
+  while (*c != '\0')
+   {
+    if (IsValidFileNameChar(*c) || *c == '/')
+     {
+     }
+    else if (*c == '.')
+     {
+      if (dot)
+       {
+        return false; // don't allow two consequent dots
+       }
+     }
+    else
+     {
+      return false;
+     }
+
+    dot = *c == '.';
+
+    c++;
+   }
+
+  return true;
+ }
+
+static FILE       *CreateFileInDir    (const char         *FileName,
+                                       const char         *DirName)
+ {
+  std::string DirPrefix(DirName);
+
+  const char *Ptr = strchr(FileName,'/');
+
+  while (Ptr != NULL)
+   {
+    std::string PartDirName = DirPrefix + '/' + std::string(FileName,Ptr - FileName);
+
+    MkDirIfNotExists(PartDirName.c_str());
+
+    Ptr = strchr(Ptr + 1,'/');
+   }
+
+  FILE *DestFile = fopen((DirPrefix + '/' + FileName).c_str(),"wb");
+
+  if (DestFile == NULL)
+   {
+    throw P3DExceptionGeneric("unable to create file");
+   }
+
+  return DestFile;
+ }
+
+static void        UnpackIntoFile     (FILE               *DestFile,
+                                       ZS::Reader::File   &SrcFile)
+ {
+  char             Buffer[8 * 1024];
+  size_t           BytesToCopy;
+  size_t           BytesToRead;
+
+  BytesToCopy = SrcFile.GetSize();
+  BytesToRead = sizeof(Buffer);
+
+  while (BytesToCopy > 0)
+   {
+    if (BytesToRead > BytesToCopy)
+     {
+      BytesToRead = BytesToCopy;
+     }
+
+    SrcFile.Read(Buffer,BytesToRead);
+
+    if (fwrite(Buffer,1,BytesToRead,DestFile) != BytesToRead)
+     {
+      throw P3DExceptionGeneric("file write error");
+     }
+
+    BytesToCopy -= BytesToRead;
+   }
+ }
+
+static void        UnpackFileFromZip  (const char         *DestDir,
+                                       ZS::Reader::File   &File)
+ {
+  FILE       *DestFile;
+  const char *FileName;
+
+  FileName = File.GetName();
+
+  if (!IsValidFileName(FileName))
+   {
+    throw P3DExceptionGeneric("invalid filename inside .nga archive found");
+   }
+
+  DestFile = CreateFileInDir(FileName,DestDir);
+
+  UnpackIntoFile(DestFile,File);
+
+  if (fclose(DestFile) != 0)
+   {
+    throw P3DExceptionGeneric("error while unpacking file");
+   }
+ }
+
+static void        UnpackNGA          (const char          *DestDir,
+                                       ZS::Reader          &Reader)
+ {
+  Reader.SeekFirst();
+
+  while (!Reader.IsEOF())
+   {
+    ZS::Reader::File CurrFile = Reader.GetFile();
+
+    UnpackFileFromZip(DestDir,CurrFile);
+
+    Reader.SeekNext();
+   }
+ }
+
+static void        ImportFromFile     (const char          *DestDir,
+                                       const char          *FileName)
+ {
+  InFileStream     InStream(FileName);
+  ZS::Reader       Reader(InStream);
+
+  MkDirIfNotExists(DestDir);
+  UnpackNGA(DestDir,Reader);
+ }
+
+void               P3DNGAImport       ()
+ {
+  wxString FileName;
+
+  FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".nga"),wxT("*.nga"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+  if (!FileName.empty())
+   {
+    wxString DestDir = ::wxDirSelector(wxT("Choose a folder to unpack .nga to"));
+
+    if (!DestDir.empty())
+     {
+      try
+       {
+        ImportFromFile(DestDir.mb_str(),FileName.mb_str());
+       }
+      catch (P3DException &e)
+       {
+        DisplayErrorMessage(e.GetMessage());
+       }
+      catch (ZS::Error &e)
+       {
+        DisplayErrorMessage(e.GetMessage());
+       }
      }
    }
  }
