@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <string>
 #include <map>
 
 #include "zipstore/zipstore.h"
@@ -511,6 +512,14 @@ static bool        IsValidFileName    (const char         *FileName)
   return true;
  }
 
+static bool        ShowConfirmationDialog
+                                      (const char         *Message)
+ {
+  return wxMessageBox(wxString(Message,wxConvUTF8),
+                      wxT("Confirmation"),
+                       wxYES_NO | wxCANCEL) == wxYES;
+ }
+
 static FILE       *CreateFileInDir    (const char         *FileName,
                                        const char         *DirName)
  {
@@ -527,7 +536,19 @@ static FILE       *CreateFileInDir    (const char         *FileName,
     Ptr = strchr(Ptr + 1,'/');
    }
 
-  FILE *DestFile = fopen((DirPrefix + '/' + FileName).c_str(),"wb");
+  std::string FullFileName(DirPrefix + '/' + FileName);
+
+  if (FileExists(FullFileName.c_str()))
+   {
+    std::string ConfirmationMessage(std::string("Do you want to overwrite file ") + FullFileName + "?");
+
+    if (!ShowConfirmationDialog(ConfirmationMessage.c_str()))
+     {
+      throw P3DExceptionGeneric("Import cancelled");
+     }
+   }
+
+  FILE *DestFile = fopen(FullFileName.c_str(),"wb");
 
   if (DestFile == NULL)
    {
