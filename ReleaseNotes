@@ -5,6 +5,11 @@ many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
 Changes since 0.9.12:
+- added support for .nga file format. .nga file contain all information about
+  model (model parameters and textures). So .nga files simplify plant
+  models exchange - just export model via
+  "File"->"Export to"->"ngPlant archive .NGA" menu. To import .nga files
+  use "File"->"Import from"->"ngPlant archive .NGA" menu.
 - now ngplant,ngpshot and ngpview tools search model textures in "textures"
   directory (relative to model file) before searching in registered texture
   paths
