@@ -609,34 +609,76 @@ static void        UnpackFileFromZip  (const char         *DestDir,
    }
  }
 
-static void        UnpackNGA          (const char          *DestDir,
+static bool        StrEqualIgnoreCase (const char          *S1,
+                                       const char          *S2)
+ {
+  while (tolower(*S1) == tolower(*S2) && *S1 != '\0' && *S2 != '\0')
+   {
+    S1++;
+    S2++;
+   }
+
+  return *S1 == *S2;
+ }
+
+static bool        IsNGPFile          (const char          *FileName)
+ {
+  P3DPathName      PathName(FileName);
+
+  return StrEqualIgnoreCase(PathName.GetExtension().c_str(),"ngp");
+ }
+
+static std::string UnpackNGA          (const char          *DestDir,
                                        ZS::Reader          &Reader)
  {
+  std::string      NGPFileName;
+
   Reader.SeekFirst();
 
   while (!Reader.IsEOF())
    {
     ZS::Reader::File CurrFile = Reader.GetFile();
 
+    if (IsNGPFile(CurrFile.GetName()))
+     {
+      if (NGPFileName.empty())
+       {
+        NGPFileName = CurrFile.GetName();
+       }
+      else
+       {
+        throw P3DExceptionGeneric(".nga file is broken - it contains more than one .ngp entry");
+       }
+     }
+
     UnpackFileFromZip(DestDir,CurrFile);
 
     Reader.SeekNext();
    }
+
+  if (NGPFileName.empty())
+   {
+    throw P3DExceptionGeneric(".nga file is broken - it does not contain .ngp entry");
+   }
+
+  return std::string(DestDir) + '/' + NGPFileName;
  }
 
-static void        ImportFromFile     (const char          *DestDir,
+static std::string ImportFromFile     (const char          *DestDir,
                                        const char          *FileName)
  {
   InFileStream     InStream(FileName);
   ZS::Reader       Reader(InStream);
 
   MkDirIfNotExists(DestDir);
-  UnpackNGA(DestDir,Reader);
+
+  return UnpackNGA(DestDir,Reader);
  }
 
-void               P3DNGAImport       ()
+std::string        P3DNGAImport       ()
  {
-  wxString FileName;
+  std::string      NGPFileName;
+  wxString         FileName;
 
   FileName = ::wxFileSelector(wxT("File name"),wxT(""),wxT(""),wxT(".nga"),wxT("*.nga"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
@@ -648,7 +690,7 @@ void               P3DNGAImport       ()
      {
       try
        {
-        ImportFromFile(DestDir.mb_str(),FileName.mb_str());
+        NGPFileName = ImportFromFile(DestDir.mb_str(),FileName.mb_str());
        }
       catch (P3DException &e)
        {
@@ -660,5 +702,7 @@ void               P3DNGAImport       ()
        }
      }
    }
+
+  return NGPFileName;
  }
 

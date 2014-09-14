@@ -21,8 +21,10 @@
 #ifndef __P3DNGA_H__
 #define __P3DNGA_H__
 
+#include <string>
+
 extern void        P3DNGAExport       ();
-extern void        P3DNGAImport       ();
+extern std::string P3DNGAImport       ();
 
 #endif
 

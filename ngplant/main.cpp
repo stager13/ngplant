@@ -562,7 +562,21 @@ void               P3DMainFrame::OnExportObjPlugin
 void               P3DMainFrame::OnImportNga
                                           (wxCommandEvent     &event)
  {
-  P3DNGAImport();
+  std::string NGPFileName = P3DNGAImport();
+
+  if (!NGPFileName.empty())
+   {
+    if (wxMessageBox(wxString("Import succeeded. Do you want to open model ",wxConvUTF8) +
+                     wxString(NGPFileName.c_str(),wxConvUTF8) + wxT(" now?"),
+                     wxT("Information"),
+                     wxYES_NO | wxICON_INFORMATION) == wxYES)
+     {
+      if (ApproveDataLoss())
+       {
+        OpenModelFile(NGPFileName.c_str());
+       }
+     }
+   }
  }
 
 void               P3DMainFrame::OnRunScript
