@@ -458,7 +458,11 @@ static bool        FileExists         (const char         *FileName)
 
 static void        MkDir              (const char         *DirName)
  {
+  #if !defined(_WIN32)
   if (mkdir(DirName,0777) != 0)
+  #else
+  if (mkdir(DirName) != 0)
+  #endif
    {
     throw P3DExceptionGeneric("unable to create directory");
    }
