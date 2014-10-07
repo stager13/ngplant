@@ -449,6 +449,13 @@ static void        SaveModel          (ZS::Writer          &ZipWriter,
  {
   wxString NGPFileName(P3DApp::GetApp()->GetDerivedFileName(wxString("ngp",wxConvUTF8)));
 
+  if (!IsValidFileName(NGPFileName.mb_str()))
+   {
+    wxString message = wxString::Format("Model file name %s contains invalid character(s)",NGPFileName.mb_str());
+
+    throw P3DExceptionGeneric(message.mb_str());
+   }
+
   ZipWriter.BeginFile(NGPFileName.mb_str(),time(NULL));
 
   OutputStringStream OutputStream(ZipWriter);
