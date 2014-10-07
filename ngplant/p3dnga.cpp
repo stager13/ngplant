@@ -35,7 +35,61 @@
 #include "p3dapp.h"
 #include "p3dnga.h"
 
+static bool        IsValidFileNameChar(char                c)
+ {
+  return (c >= 'a' && c <= 'z') ||
+         (c >= 'A' && c <= 'Z') ||
+         (c >= '0' && c <= '9') ||
+         c == '_' ||
+         c == '-' ||
+         c == ' ';
+ }
+
+static bool        IsValidFileName    (const char         *FileName)
+ {
+  bool        dot = false;
+  const char *c   = FileName;
+
+  while (*c != '\0')
+   {
+    if (IsValidFileNameChar(*c) || *c == '/')
+     {
+     }
+    else if (*c == '.')
+     {
+      if (dot)
+       {
+        return false; // don't allow two consequent dots
+       }
+     }
+    else
+     {
+      return false;
+     }
+
+    dot = *c == '.';
+
+    c++;
+   }
+
+  return true;
+ }
+
+static bool        ShowConfirmationDialog
+                                      (const char         *Message)
+ {
+  return wxMessageBox(wxString(Message,wxConvUTF8),
+                      wxT("Confirmation"),
+                       wxYES_NO | wxCANCEL) == wxYES;
+ }
+
+static void       DisplayErrorMessage(const char          *Message)
+ {
+  ::wxMessageBox(wxString(Message,wxConvUTF8),wxT("Error"),wxOK | wxICON_ERROR);
+ }
+
 namespace {
+
 class OutFileStream : public ZS::OutStream
  {
   public           :
@@ -198,7 +252,17 @@ void               NGAMaterialSaver::SaveTextures
        Iter != Textures.end();
        ++Iter)
    {
-    SaveTexture(ZipWriter,Iter->first.c_str(),Iter->second.c_str());
+    const char *TexName  = Iter->first.c_str();
+    const char *FileName = Iter->second.c_str();
+
+    if (!IsValidFileName(TexName))
+     {
+      wxString message = wxString::Format("Texture name %s contains invalid character(s)",TexName);
+
+      throw P3DExceptionGeneric(message.mb_str());
+     }
+
+    SaveTexture(ZipWriter,TexName,FileName);
    }
  }
 
@@ -416,11 +480,6 @@ static void       ExportToFile        (const char          *FileName)
   ZipWriter.Close();
  }
 
-static void       DisplayErrorMessage(const char          *Message)
- {
-  ::wxMessageBox(wxString(Message,wxConvUTF8),wxT("Error"),wxOK | wxICON_ERROR);
- }
-
 void              P3DNGAExport       ()
  {
   wxString        FileName;
@@ -474,54 +533,6 @@ static void        MkDirIfNotExists   (const char         *DirName)
    {
     MkDir(DirName);
    }
- }
-
-static bool        IsValidFileNameChar(char                c)
- {
-  return (c >= 'a' && c <= 'z') ||
-         (c >= 'A' && c <= 'Z') ||
-         (c >= '0' && c <= '9') ||
-         c == '_' ||
-         c == '-' ||
-         c == ' ';
- }
-
-static bool        IsValidFileName    (const char         *FileName)
- {
-  bool        dot = false;
-  const char *c   = FileName;
-
-  while (*c != '\0')
-   {
-    if (IsValidFileNameChar(*c) || *c == '/')
-     {
-     }
-    else if (*c == '.')
-     {
-      if (dot)
-       {
-        return false; // don't allow two consequent dots
-       }
-     }
-    else
-     {
-      return false;
-     }
-
-    dot = *c == '.';
-
-    c++;
-   }
-
-  return true;
- }
-
-static bool        ShowConfirmationDialog
-                                      (const char         *Message)
- {
-  return wxMessageBox(wxString(Message,wxConvUTF8),
-                      wxT("Confirmation"),
-                       wxYES_NO | wxCANCEL) == wxYES;
  }
 
 static FILE       *CreateFileInDir    (const char         *FileName,
