@@ -42,6 +42,8 @@ class P3DOptGeneralPanel : public P3DUIParamPanel
   void             OnLicenseURLChanged(wxCommandEvent     &event);
   void             OnPlantInfoURLChanged
                                       (wxCommandEvent     &event);
+  void             OnLicenseWizardClicked
+                                      (wxCommandEvent     &event);
 
   virtual void     UpdateControls     ();
 
