@@ -16,7 +16,7 @@ p3duiappopt.cpp p3duibalgbase.cpp p3duivisrangepanel.cpp
 p3dpobject.cpp p3dshaders.cpp p3dlog.cpp
 p3dpluginfo.cpp p3duimodelstemempty.cpp p3dappprefs.cpp
 p3dcmdqueue.cpp p3dimagewx.cpp
-p3drecentfiles.cpp
+p3drecentfiles.cpp p3duilicensedialog.cpp
 zipstore/zipstore.cpp p3dnga.cpp
 """)
 

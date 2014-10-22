@@ -23,6 +23,7 @@
 #include <p3dapp.h>
 #include <p3dcmdqueue.h>
 #include <p3duioptgeneral.h>
+#include <p3duilicensedialog.h>
 
 enum
  {
@@ -31,6 +32,7 @@ enum
   wxID_RANDOMNESS_STATE_CTRL,
   wxID_AUTHOR_CTRL,
   wxID_LICENSE_NAME_CTRL,
+  wxID_LICENSE_WIZARD_BUTTON,
   wxID_LICENSE_URL_CTRL,
   wxID_PLANT_INFO_URL_CTRL
  };
@@ -41,6 +43,7 @@ BEGIN_EVENT_TABLE(P3DOptGeneralPanel,wxPanel)
  EVT_CHECKBOX(wxID_RANDOMNESS_STATE_CTRL,P3DOptGeneralPanel::OnRandomnessStateChanged)
  EVT_TEXT(wxID_AUTHOR_CTRL,P3DOptGeneralPanel::OnAuthorChanged)
  EVT_TEXT(wxID_LICENSE_NAME_CTRL,P3DOptGeneralPanel::OnLicenseNameChanged)
+ EVT_BUTTON(wxID_LICENSE_WIZARD_BUTTON,P3DOptGeneralPanel::OnLicenseWizardClicked)
  EVT_TEXT(wxID_LICENSE_URL_CTRL,P3DOptGeneralPanel::OnLicenseURLChanged)
  EVT_TEXT(wxID_PLANT_INFO_URL_CTRL,P3DOptGeneralPanel::OnPlantInfoURLChanged)
 END_EVENT_TABLE()
@@ -127,8 +130,24 @@ wxSizer           *P3DOptGeneralPanel::CreateModelInfoBox
 
   BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Author:")),0,wxALL,1);
   BoxSizer->Add(CreateInfoTextCtrl(wxID_AUTHOR_CTRL,MetaInfo->GetAuthor()),0,wxALL | wxEXPAND,1);
+
   BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("License:")),0,wxALL,1);
-  BoxSizer->Add(CreateInfoTextCtrl(wxID_LICENSE_NAME_CTRL,MetaInfo->GetLicenseName()),0,wxALL | wxEXPAND,1);
+
+  wxBoxSizer *LicenseSizer = new wxBoxSizer(wxHORIZONTAL);
+
+  LicenseSizer->Add(CreateInfoTextCtrl(wxID_LICENSE_NAME_CTRL,MetaInfo->GetLicenseName()),1,wxALL | wxEXPAND,1);
+
+  wxButton *LicenseWizardButton = new wxButton(this,wxID_LICENSE_WIZARD_BUTTON,wxT("..."));
+  wxSize    ButtonClientSize    = LicenseWizardButton->GetClientSize();
+
+  ButtonClientSize.SetWidth(ButtonClientSize.GetHeight());
+
+  LicenseWizardButton->SetMaxClientSize(ButtonClientSize);
+
+  LicenseSizer->Add(LicenseWizardButton,0,wxALL,1);
+
+  BoxSizer->Add(LicenseSizer,0,wxEXPAND | wxALL,1);
+
   BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("License URL:")),0,wxALL,1);
   BoxSizer->Add(CreateInfoTextCtrl(wxID_LICENSE_URL_CTRL,MetaInfo->GetLicenseURL()),0,wxALL | wxEXPAND,1);
   BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Plant description URL:")),0,wxALL,1);
@@ -387,5 +406,29 @@ void               P3DOptGeneralPanel::UpdateTextCtrl
   InfoTextCtrl = (wxTextCtrl*)FindWindow(id);
 
   InfoTextCtrl->ChangeValue(InfoValueToText(value));
+ }
+
+void               P3DOptGeneralPanel::OnLicenseWizardClicked
+                                      (wxCommandEvent     &event)
+ {
+  P3DLicenseDialog  LicenseDialog(NULL,wxID_ANY);
+
+  if (LicenseDialog.ShowModal() == wxID_OK)
+   {
+    UpdateTextCtrl(wxID_LICENSE_NAME_CTRL,LicenseDialog.GetLicenseName());
+    UpdateTextCtrl(wxID_LICENSE_URL_CTRL,LicenseDialog.GetLicenseURL());
+
+    P3DApp::GetApp()->ExecEditCmd
+     (new SetModelInfoStrCmd
+           (&P3DModelMetaInfo::SetLicenseName,
+             LicenseDialog.GetLicenseName(),
+             InfoValueToText(P3DApp::GetApp()->GetModel()->GetMetaInfo()->GetLicenseName())));
+
+    P3DApp::GetApp()->ExecEditCmd
+     (new SetModelInfoStrCmd
+           (&P3DModelMetaInfo::SetLicenseURL,
+             LicenseDialog.GetLicenseURL(),
+             InfoValueToText(P3DApp::GetApp()->GetModel()->GetMetaInfo()->GetLicenseURL())));
+   }
  }
 
