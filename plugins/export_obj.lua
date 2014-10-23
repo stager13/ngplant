@@ -96,7 +96,7 @@ local function CreateMaterialsMapping(JoinMaterials)
  return Mapping
 end
 
-local function ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping)
+local function ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping,ApplyScaling,ScalingFactor)
  local OBJFile = io.open(OBJFileName,"w")
 
  OBJFile:write("o plant\n")
@@ -122,8 +122,14 @@ local function ExportOBJFile(OBJFileName,MTLFileName,MaterialsMapping)
 
   local VertexIndexStep = table.getn(Buffer)
 
-  for i,v in ipairs(Buffer) do
-   OBJFile:write(string.format("v %f %f %f\n",v[1],v[2],v[3]))
+  if ApplyScaling then
+   for i,v in ipairs(Buffer) do
+    OBJFile:write(string.format("v %f %f %f\n",v[1] * ScalingFactor,v[2] * ScalingFactor,v[3] * ScalingFactor))
+   end
+  else
+   for i,v in ipairs(Buffer) do
+    OBJFile:write(string.format("v %f %f %f\n",v[1],v[2],v[3]))
+   end
   end
 
   Buffer = Group:GetVAttrBuffer(NGP_ATTR_NORMAL)
@@ -221,7 +227,10 @@ local function ExportMTLFile(MTLFileName,MaterialsMapping,ExportDir)
  MTLFile:close()
 end
 
-Params = ShowParameterDialog(
+MinX,MinY,MinZ,MaxX,MaxY,MaxZ = PlantModel:GetBoundingBox()
+OriginalHeight = MaxY - MinY
+
+DialogDescription =
  {
   {
    label   = "Create self-contained dir",
@@ -250,8 +259,23 @@ Params = ShowParameterDialog(
    type    = "choice",
    choices = { "Yes","No" },
    default = 0
+  },
+  {
+   label   = "Apply scaling",
+   name    = "ApplyScaling",
+   type    = "choice",
+   choices = { "No","Yes" },
+   default = 0
+  },
+  {
+   label   = "Scale to height",
+   name    = "ScaledHeight",
+   type    = "number",
+   default = OriginalHeight
   }
- })
+ }
+
+Params = ShowParameterDialog(DialogDescription)
 
 if Params then
  ExportHiddenGroups      = Params.ExportHiddenGroups == "Yes"
@@ -259,6 +283,9 @@ if Params then
 
  local JoinMaterials           = Params.JoinSimilarMaterials == "Yes"
  local CreateSelfContainedDir  = Params.CreateSelfContainedDir == "Yes"
+
+ local ApplyScaling  = Params.ApplyScaling
+ local ScalingFactor = Params.ScaledHeight / OriginalHeight
 
  if CreateSelfContainedDir then
   local DirName = ShowDirSelectDialog("Choose directory")
@@ -274,7 +301,7 @@ if Params then
 
     local MaterialsMapping = CreateMaterialsMapping(JoinMaterials)
 
-    ExportOBJFile(FullOBJFileName,MTLFileName,MaterialsMapping)
+    ExportOBJFile(FullOBJFileName,MTLFileName,MaterialsMapping,ApplyScaling,ScalingFactor)
     ExportMTLFile(FullMTLFileName,MaterialsMapping,DirName)
    end
   end
