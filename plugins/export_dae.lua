@@ -421,7 +421,15 @@ local function GetVAttrBufferForGroup(Group,Attr)
   end
 end
 
-local function ExportLibraryGeometry(F)
+local function ScalePosBuffer(PosBuffer,ScalingFactor)
+ for i,v in ipairs(PosBuffer) do
+  v[1] = v[1] * ScalingFactor
+  v[2] = v[2] * ScalingFactor
+  v[3] = v[3] * ScalingFactor
+ end
+end
+
+local function ExportLibraryGeometry(F,ApplyScaling,ScalingFactor)
  XmlBeginElement(F,"library_geometries")
 
  for GroupIndex = 1,PlantModel:GetGroupCount() do
@@ -435,6 +443,10 @@ local function ExportLibraryGeometry(F)
      XmlBeginElement(F,"source",{ id = GetSourcePosId(Group) })
 
       local PosBuffer = GetVAttrBufferForGroup(Group,NGP_ATTR_VERTEX)
+
+      if ApplyScaling then
+       ScalePosBuffer(PosBuffer,ScalingFactor)
+      end
 
       WriteFloatArray(F,GetSourcePosArrayId(Group),PosBuffer,3)
 
@@ -603,7 +615,7 @@ local function ExportLibraryNodes(F)
  XmlEndElement(F,"library_nodes")
 end
 
-local function ExportVisualScenes(F)
+local function ExportVisualScenes(F,ApplyScaling,ScalingFactor)
  XmlBeginElement(F,"library_visual_scenes")
   XmlBeginElement(F,"visual_scene",{ id = "DefaultScene" })
 
@@ -630,6 +642,12 @@ local function ExportVisualScenes(F)
              Y,Z       = -Z,Y
            end
 
+           if ApplyScaling then
+            T[1] = T[1] * ScalingFactor
+            T[2] = T[2] * ScalingFactor
+            T[3] = T[3] * ScalingFactor
+           end
+
            XmlElement(F,"translate",nil,string.format("%f %f %f",T[1],T[2],T[3]))
            XmlElement(F,"rotate",nil,string.format("%f %f %f %f",X,Y,Z,A * 180.0 / MATH_PI))
 
@@ -652,7 +670,7 @@ local function ExportVisualScenes(F)
  XmlEndElement(F,"library_visual_scenes")
 end
 
-local function Export(FileName,DirName)
+local function Export(FileName,DirName,ApplyScaling,ScalingFactor)
  local F = io.open(FileName,"w")
 
  F:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
@@ -673,9 +691,9 @@ local function Export(FileName,DirName)
     ExportLibraryImages(F,DirName)
     ExportLibraryEffects(F)
     ExportLibraryMaterials(F)
-    ExportLibraryGeometry(F)
+    ExportLibraryGeometry(F,ApplyScaling,ScalingFactor)
     ExportLibraryNodes(F)
-    ExportVisualScenes(F)
+    ExportVisualScenes(F,ApplyScaling,ScalingFactor)
 
     XmlBeginElement(F,"scene")
      XmlElement(F,"instance_visual_scene",{ url = "#DefaultScene" } )
@@ -687,7 +705,10 @@ local function Export(FileName,DirName)
  F:close()
 end
 
-Params = ShowParameterDialog(
+MinX,MinY,MinZ,MaxX,MaxY,MaxZ = PlantModel:GetBoundingBox()
+OriginalHeight = MaxY - MinY
+
+DialogDescription =
  {
   {
    label   = "Create self-contained dir",
@@ -716,8 +737,23 @@ Params = ShowParameterDialog(
    type    = "choice",
    choices = { "No", "Yes" },
    default = 0
+  },
+  {
+   label   = "Apply scaling",
+   name    = "ApplyScaling",
+   type    = "choice",
+   choices = { "No","Yes" },
+   default = 0
+  },
+  {
+   label   = "Scale to height",
+   name    = "ScaledHeight",
+   type    = "number",
+   default = OriginalHeight
   }
- })
+ }
+
+Params = ShowParameterDialog(DialogDescription)
 
 if Params then
   if Params.InstanceTransformMode == "SketchUp" then
@@ -730,6 +766,9 @@ if Params then
   AllowInstancesScaling    = Params.AllowInstancesScaling == "Yes"
   CreateSelfContainedDir   = Params.CreateSelfContainedDir == "Yes"
 
+  local ApplyScaling  = Params.ApplyScaling
+  local ScalingFactor = Params.ScaledHeight / OriginalHeight
+
   if CreateSelfContainedDir then
     DirName = ShowDirSelectDialog("Choose directory")
 
@@ -739,14 +778,14 @@ if Params then
       if FileName then
         FileName = OSPathJoin(DirName,FileName)
 
-        Export(FileName,DirName)
+        Export(FileName,DirName,ApplyScaling,ScalingFactor)
       end
     end
   else
     FileName = ShowFileSaveDialog("Choose .dae file name",GetDerivedFileName("dae"))
 
     if FileName then
-      Export(FileName)
+      Export(FileName,nil,ApplyScaling,ScalingFactor)
     end
   end
 
