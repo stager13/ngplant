@@ -426,6 +426,7 @@ class P3D_DLL_ENTRY P3DModelMetaInfo
                    P3DModelMetaInfo   ();
 
   const char      *GetAuthor          () const;
+  const char      *GetAuthorURL       () const;
   const char      *GetLicenseName     () const;
   const char      *GetLicenseURL      () const;
   const char      *GetPlantInfoURL    () const;
@@ -433,6 +434,7 @@ class P3D_DLL_ENTRY P3DModelMetaInfo
   void             Clear              ();
 
   void             SetAuthor          (const char         *Author);
+  void             SetAuthorURL       (const char         *AuthorURL);
   void             SetLicenseName     (const char         *LicenseName);
   void             SetLicenseURL      (const char         *LicenseURL);
   void             SetPlantInfoURL    (const char         *PlantInfoURL);
@@ -443,7 +445,9 @@ class P3D_DLL_ENTRY P3DModelMetaInfo
                                                           *TargetStream) const;
 
   void             Load               (P3DInputStringFmtStream
-                                                          *SourceStream);
+                                                          *SourceStream,
+                                       const P3DFileVersion
+                                                          *Version);
 
   private          :
 
@@ -458,6 +462,7 @@ class P3D_DLL_ENTRY P3DModelMetaInfo
                                        const char         *Name);
 
   P3DConstStr      Author;
+  P3DConstStr      AuthorURL;
   P3DConstStr      LicenseName;
   P3DConstStr      LicenseURL;
   P3DConstStr      PlantInfoURL;
