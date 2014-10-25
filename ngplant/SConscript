@@ -10,7 +10,7 @@ p3dwx.cpp p3dwxcurvectrl.cpp p3dwxlistdlg.cpp
 NGPLANT_SRC = Split("""
 main.cpp p3dcanvas3d.cpp p3dcamera.cpp p3dmedit.cpp p3duimodelstemtube.cpp
 p3duibalgstd.cpp p3dmaterialstd.cpp p3duimaterialstd.cpp
-p3duioptgeneral.cpp p3dtexture.cpp p3didevfs.cpp p3dexpobj.cpp
+p3duioptgeneral.cpp p3dtexture.cpp p3didevfs.cpp
 p3duimodelstemquad.cpp p3duimodelstemwings.cpp p3duibalgwings.cpp
 p3duiappopt.cpp p3duibalgbase.cpp p3duivisrangepanel.cpp
 p3dpobject.cpp p3dshaders.cpp p3dlog.cpp
