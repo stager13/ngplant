@@ -1068,6 +1068,11 @@ const char        *P3DModelMetaInfo::GetAuthor       () const
   return Author.c_str();
  }
 
+const char        *P3DModelMetaInfo::GetAuthorURL    () const
+ {
+  return AuthorURL.c_str();
+ }
+
 const char        *P3DModelMetaInfo::GetLicenseName  () const
  {
   return LicenseName.c_str();
@@ -1086,6 +1091,7 @@ const char        *P3DModelMetaInfo::GetPlantInfoURL () const
 void               P3DModelMetaInfo::Clear           ()
  {
   Author       = 0;
+  AuthorURL    = 0;
   LicenseName  = 0;
   LicenseURL   = 0;
   PlantInfoURL = 0;
@@ -1094,6 +1100,11 @@ void               P3DModelMetaInfo::Clear           ()
 void               P3DModelMetaInfo::SetAuthor       (const char    *Author)
  {
   this->Author = Author;
+ }
+
+void               P3DModelMetaInfo::SetAuthorURL    (const char    *AuthorURL)
+ {
+  this->AuthorURL = AuthorURL;
  }
 
 void               P3DModelMetaInfo::SetLicenseName  (const char    *LicenseName)
@@ -1117,15 +1128,28 @@ void               P3DModelMetaInfo::Save            (P3DOutputStringStream
   P3DOutputStringFmtStream             FmtStream(TargetStream);
 
   WriteInfoString(&FmtStream,"Author",Author.c_str());
+  WriteInfoString(&FmtStream,"AuthorURL",AuthorURL.c_str());
   WriteInfoString(&FmtStream,"LicenseName",LicenseName.c_str());
   WriteInfoString(&FmtStream,"LicenseURL",LicenseURL.c_str());
   WriteInfoString(&FmtStream,"PlantInfoURL",PlantInfoURL.c_str());
  }
 
 void               P3DModelMetaInfo::Load            (P3DInputStringFmtStream
-                                                                    *SourceStream)
+                                                                    *SourceStream,
+                                                      const P3DFileVersion
+                                                                    *Version)
  {
   ReadInfoString(&Author,SourceStream,"Author");
+
+  if (Version->Major > 0 || Version->Minor > 13)
+   {
+    ReadInfoString(&AuthorURL,SourceStream,"AuthorURL");
+   }
+  else
+   {
+    AuthorURL = 0;
+   }
+
   ReadInfoString(&LicenseName,SourceStream,"LicenseName");
   ReadInfoString(&LicenseURL,SourceStream,"LicenseURL");
   ReadInfoString(&PlantInfoURL,SourceStream,"PlantInfoURL");
@@ -1222,7 +1246,7 @@ void               P3DPlantModel::SetFlags
   this->Flags = Flags;
  }
 
-#define P3D_VERSION_MINOR (13)
+#define P3D_VERSION_MINOR (14)
 #define P3D_VERSION_MAJOR (0)
 
 void               P3DPlantModel::Save(P3DOutputStringStream
@@ -1293,7 +1317,7 @@ void               P3DPlantModel::Load(P3DInputStringStream
 
   if (Version.Minor >= 13)
    {
-    MetaInfo.Load(&FmtStream);
+    MetaInfo.Load(&FmtStream,&Version);
    }
 
   FmtStream.ReadFmtStringTagged("BaseSeed","u",&BaseSeed);
