@@ -38,6 +38,7 @@ typedef struct
  {
   PyObject_HEAD
   PyObject                            *Author;
+  PyObject                            *AuthorURL;
   PyObject                            *LicenseName;
   PyObject                            *LicenseURL;
   PyObject                            *PlantInfoURL;

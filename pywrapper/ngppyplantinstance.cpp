@@ -156,6 +156,7 @@ static PyObject    *PlantInstanceGetMetaInfo
   if (MetaInfo != NULL)
    {
     MetaInfo->Author       = Py_BuildValue("z",MetaInfoLow->GetAuthor());
+    MetaInfo->AuthorURL    = Py_BuildValue("z",MetaInfoLow->GetAuthorURL());
     MetaInfo->LicenseName  = Py_BuildValue("z",MetaInfoLow->GetLicenseName());
     MetaInfo->LicenseURL   = Py_BuildValue("z",MetaInfoLow->GetLicenseURL());
     MetaInfo->PlantInfoURL = Py_BuildValue("z",MetaInfoLow->GetPlantInfoURL());

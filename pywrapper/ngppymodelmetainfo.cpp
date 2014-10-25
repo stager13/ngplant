@@ -38,6 +38,7 @@
 static void        ModelMetaInfoDealloc    (ModelMetaInfoObject     *self)
  {
   Py_XDECREF(self->Author);
+  Py_XDECREF(self->AuthorURL);
   Py_XDECREF(self->LicenseName);
   Py_XDECREF(self->LicenseURL);
   Py_XDECREF(self->PlantInfoURL);
@@ -56,6 +57,7 @@ static PyObject   *ModelMetaInfoNew   (PyTypeObject       *type,
   if (self != NULL)
    {
     Py_INCREF(Py_None); self->Author       = Py_None;
+    Py_INCREF(Py_None); self->AuthorURL    = Py_None;
     Py_INCREF(Py_None); self->LicenseName  = Py_None;
     Py_INCREF(Py_None); self->LicenseURL   = Py_None;
     Py_INCREF(Py_None); self->PlantInfoURL = Py_None;
@@ -77,14 +79,14 @@ static int         ModelMetaInfoInit  (ModelMetaInfoObject*self,
                                        PyObject           *args,
                                        PyObject           *kwds)
  {
-  if (PyTuple_Size(args) != 4)
+  if (PyTuple_Size(args) != 5)
    {
     PyErr_SetString(PyExc_RuntimeError,"ModelMetaInfo constructor requires exactly 4 arguments");
 
     return -1;
    }
 
-  for (int Index = 0; Index < 4; Index++)
+  for (int Index = 0; Index < 5; Index++)
    {
     PyObject *Arg = PyTuple_GetItem(args,Index);
 
@@ -97,9 +99,10 @@ static int         ModelMetaInfoInit  (ModelMetaInfoObject*self,
    }
 
   AssignPyObject(&self->Author,PyTuple_GetItem(args,0));
-  AssignPyObject(&self->LicenseName,PyTuple_GetItem(args,1));
-  AssignPyObject(&self->LicenseURL,PyTuple_GetItem(args,2));
-  AssignPyObject(&self->PlantInfoURL,PyTuple_GetItem(args,3));
+  AssignPyObject(&self->AuthorURL,PyTuple_GetItem(args,1));
+  AssignPyObject(&self->LicenseName,PyTuple_GetItem(args,2));
+  AssignPyObject(&self->LicenseURL,PyTuple_GetItem(args,3));
+  AssignPyObject(&self->PlantInfoURL,PyTuple_GetItem(args,4));
 
   return(0);
  }
@@ -111,6 +114,15 @@ static PyObject   *ModelMetaInfoGetAuthor
   Py_INCREF(self->Author);
 
   return(self->Author);
+ }
+
+static PyObject   *ModelMetaInfoGetAuthorURL
+                                      (ModelMetaInfoObject*self,
+                                       void               *closure)
+ {
+  Py_INCREF(self->AuthorURL);
+
+  return(self->AuthorURL);
  }
 
 static PyObject   *ModelMetaInfoGetLicenseName
@@ -157,6 +169,13 @@ static PyGetSetDef ModelMetaInfoGetSetters[] =
    (getter)ModelMetaInfoGetAuthor,
    (setter)ModelMetaInfoSetAttrRO,
    "Author",
+   NULL
+  },
+  {
+   "AuthorURL",
+   (getter)ModelMetaInfoGetAuthorURL,
+   (setter)ModelMetaInfoSetAttrRO,
+   "AuthorURL",
    NULL
   },
   {
