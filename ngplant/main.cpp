@@ -46,7 +46,6 @@
 #include <images/p3dclosexpm.h>
 
 #include <p3dmedit.h>
-#include <p3dexpobj.h>
 #include <p3dnga.h>
 #include <p3dmaterialstd.h>
 #include <p3dcanvas3d.h>
@@ -69,7 +68,6 @@
 enum
  {
   wxID_EXPORT      = wxID_HIGHEST + 1200,
-  wxID_EXPORT_OBJ,
   wxID_EXPORT_NGA,
   wxID_IMPORT,
   wxID_IMPORT_NGA,
@@ -92,7 +90,6 @@ BEGIN_EVENT_TABLE(P3DMainFrame,wxFrame)
  EVT_MENU_RANGE(wxID_RECENT_FILES_FIRST,wxID_RECENT_FILES_LAST,P3DMainFrame::OnOpenRecent)
  EVT_MENU(wxID_SAVE,P3DMainFrame::OnSave)
  EVT_MENU(wxID_SAVEAS,P3DMainFrame::OnSaveAs)
- EVT_MENU(wxID_EXPORT_OBJ,P3DMainFrame::OnExportObj)
  EVT_MENU(wxID_EXPORT_NGA,P3DMainFrame::OnExportNga)
  EVT_MENU_RANGE(wxID_EXPORT_PLUGIN_FIRST,wxID_EXPORT_PLUGIN_LAST,P3DMainFrame::OnExportObjPlugin)
  EVT_MENU(wxID_IMPORT_NGA,P3DMainFrame::OnImportNga)
@@ -171,7 +168,6 @@ class P3DUndoRedoMenuStateUpdater
 
   SetIcon(wxICON(ngplant));
 
-  ExportMenu->Append(wxID_EXPORT_OBJ,wxT("Alias Wavefront .OBJ"));
   ExportMenu->Append(wxID_EXPORT_NGA,wxT("ngPlant archive .NGA"));
 
   for (unsigned int Index = 0; Index < ExportPlugins.size(); Index++)
@@ -458,80 +454,6 @@ void               P3DMainFrame::OnEditPreferences
     P3DApp::GetApp()->GetModelPrefs().Save(Cfg);
 
     InvalidatePlant();
-   }
- }
-
-void               P3DMainFrame::OnExportObj
-                                          (wxCommandEvent     &event)
- {
-  wxString                                 FileName;
-
-  FileName = ::wxFileSelector(wxT("File name"),
-                              wxT(""),
-                              P3DApp::GetApp()->GetDerivedFileName(wxT("obj")),
-                              wxT(".obj"),
-                              wxT("*.obj"),
-                              wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-
-  if (!FileName.empty())
-   {
-    wxFileName                              MTLFileName(FileName);
-
-    MTLFileName.SetExt(wxT("mtl"));
-
-    bool ExportHiddenGroups;
-    bool ExportOutVisRangeGroups;
-
-    if      (P3DApp::GetApp()->GetExport3DPrefs()->HiddenGroupsExportMode == P3D_ALWAYS)
-     {
-      ExportHiddenGroups = true;
-     }
-    else if (P3DApp::GetApp()->GetExport3DPrefs()->HiddenGroupsExportMode == P3D_NEVER)
-     {
-      ExportHiddenGroups = false;
-     }
-    else
-     {
-      if (wxMessageBox(wxT("Export hidden branch groups?"),wxT("Export mode"),wxYES_NO) == wxYES)
-       {
-        ExportHiddenGroups = true;
-       }
-      else
-       {
-        ExportHiddenGroups = false;
-       }
-     }
-
-    if      (P3DApp::GetApp()->GetExport3DPrefs()->OutVisRangeExportMode == P3D_ALWAYS)
-     {
-      ExportOutVisRangeGroups = true;
-     }
-    else if (P3DApp::GetApp()->GetExport3DPrefs()->OutVisRangeExportMode == P3D_NEVER)
-     {
-      ExportOutVisRangeGroups = false;
-     }
-    else
-     {
-      if (wxMessageBox(wxT("Export branch groups which are outside visibility range?"),wxT("Export mode"),wxYES_NO) == wxYES)
-       {
-        ExportOutVisRangeGroups = true;
-       }
-      else
-       {
-        ExportOutVisRangeGroups = false;
-       }
-     }
-
-
-    if (!P3DModelExportOBJ(FileName.mb_str(),
-                           MTLFileName.GetFullPath().mb_str(),
-                           P3DApp::GetApp()->GetModel(),
-                           ExportHiddenGroups,
-                           ExportOutVisRangeGroups,
-                           P3DApp::GetApp()->GetLODLevel()))
-     {
-      ::wxMessageBox(wxT("Error while exporting model"),wxT("Error"),wxOK | wxICON_ERROR);
-     }
    }
  }
 
