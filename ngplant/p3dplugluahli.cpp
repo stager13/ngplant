@@ -248,6 +248,7 @@ static int         PlantInstanceGetMetaInfo
 
   Control.PushNewTable();
   SetModelMetaInfoValue(&Control,"Author",MetaInfo->GetAuthor());
+  SetModelMetaInfoValue(&Control,"AuthorURL",MetaInfo->GetAuthorURL());
   SetModelMetaInfoValue(&Control,"LicenseName",MetaInfo->GetLicenseName());
   SetModelMetaInfoValue(&Control,"LicenseURL",MetaInfo->GetLicenseURL());
   SetModelMetaInfoValue(&Control,"PlantInfoURL",MetaInfo->GetPlantInfoURL());
