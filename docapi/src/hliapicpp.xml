@@ -1110,7 +1110,20 @@ so on. Note: only constant methods are described below.
 </prototype>
      <desc>
 <para>
-Return name and (possibly) e-mail of model author or 0 if value is not set.
+Return name of model author or 0 if value is not set.
+</para>
+     </desc>
+    </methodinfo>
+
+    <methodinfo>
+     <name>GetAuthorURL</name>
+     <shortdesc>Return author URL</shortdesc>
+<prototype>
+  const char      *GetAuthorURL       () const;
+</prototype>
+     <desc>
+<para>
+Return model author URL or 0 if value is not set.
 </para>
      </desc>
     </methodinfo>
