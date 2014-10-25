@@ -37,6 +37,7 @@ class P3DOptGeneralPanel : public P3DUIParamPanel
   void             OnRandomnessStateChanged
                                       (wxCommandEvent     &event);
   void             OnAuthorChanged    (wxCommandEvent     &event);
+  void             OnAuthorURLChanged (wxCommandEvent     &event);
   void             OnLicenseNameChanged
                                       (wxCommandEvent     &event);
   void             OnLicenseURLChanged(wxCommandEvent     &event);

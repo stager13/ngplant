@@ -31,6 +31,7 @@ enum
   wxID_LOD_CTRL,
   wxID_RANDOMNESS_STATE_CTRL,
   wxID_AUTHOR_CTRL,
+  wxID_AUTHOR_URL_CTRL,
   wxID_LICENSE_NAME_CTRL,
   wxID_LICENSE_WIZARD_BUTTON,
   wxID_LICENSE_URL_CTRL,
@@ -42,6 +43,7 @@ BEGIN_EVENT_TABLE(P3DOptGeneralPanel,wxPanel)
  EVT_SPINSLIDER_VALUE_CHANGED(wxID_LOD_CTRL,P3DOptGeneralPanel::OnLODChanged)
  EVT_CHECKBOX(wxID_RANDOMNESS_STATE_CTRL,P3DOptGeneralPanel::OnRandomnessStateChanged)
  EVT_TEXT(wxID_AUTHOR_CTRL,P3DOptGeneralPanel::OnAuthorChanged)
+ EVT_TEXT(wxID_AUTHOR_URL_CTRL,P3DOptGeneralPanel::OnAuthorURLChanged)
  EVT_TEXT(wxID_LICENSE_NAME_CTRL,P3DOptGeneralPanel::OnLicenseNameChanged)
  EVT_BUTTON(wxID_LICENSE_WIZARD_BUTTON,P3DOptGeneralPanel::OnLicenseWizardClicked)
  EVT_TEXT(wxID_LICENSE_URL_CTRL,P3DOptGeneralPanel::OnLicenseURLChanged)
@@ -130,6 +132,9 @@ wxSizer           *P3DOptGeneralPanel::CreateModelInfoBox
 
   BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Author:")),0,wxALL,1);
   BoxSizer->Add(CreateInfoTextCtrl(wxID_AUTHOR_CTRL,MetaInfo->GetAuthor()),0,wxALL | wxEXPAND,1);
+
+  BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Author URL:")),0,wxALL,1);
+  BoxSizer->Add(CreateInfoTextCtrl(wxID_AUTHOR_URL_CTRL,MetaInfo->GetAuthorURL()),0,wxALL | wxEXPAND,1);
 
   BoxSizer->Add(new wxStaticText(this,wxID_ANY,wxT("License:")),0,wxALL,1);
 
@@ -314,6 +319,23 @@ void               P3DOptGeneralPanel::OnAuthorChanged
    }
  }
 
+void               P3DOptGeneralPanel::OnAuthorURLChanged
+                                      (wxCommandEvent     &event)
+ {
+  /* It seems that wxWidgets (at least gtk version) sends EVT_TEXT */
+  /* events even during creation of wxTextCtrl. To workaround this */
+  /* issue we ignore events if text wasn't changed.                */
+  wxString NewValue = event.GetString();
+  wxString OldValue = InfoValueToText(P3DApp::GetApp()->GetModel()->GetMetaInfo()->GetAuthorURL());
+
+  if (NewValue.Cmp(OldValue) != 0)
+   {
+    P3DApp::GetApp()->ExecEditCmd
+     (new SetModelInfoStrCmd
+           (&P3DModelMetaInfo::SetAuthorURL,NewValue,OldValue));
+   }
+ }
+
 void               P3DOptGeneralPanel::OnLicenseNameChanged
                                       (wxCommandEvent     &event)
  {
@@ -392,6 +414,7 @@ void               P3DOptGeneralPanel::UpdateControls
   const P3DModelMetaInfo *MetaInfo = Model->GetMetaInfo();
 
   UpdateTextCtrl(wxID_AUTHOR_CTRL,MetaInfo->GetAuthor());
+  UpdateTextCtrl(wxID_AUTHOR_URL_CTRL,MetaInfo->GetAuthorURL());
   UpdateTextCtrl(wxID_LICENSE_NAME_CTRL,MetaInfo->GetLicenseName());
   UpdateTextCtrl(wxID_LICENSE_URL_CTRL,MetaInfo->GetLicenseURL());
   UpdateTextCtrl(wxID_PLANT_INFO_URL_CTRL,MetaInfo->GetPlantInfoURL());
