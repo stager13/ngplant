@@ -557,6 +557,11 @@ so on. Note: only constant methods are described below.
     </attributeinfo>
 
     <attributeinfo>
+     <name>AuthorURL</name>
+     <shortdesc>Author URL</shortdesc>
+    </attributeinfo>
+
+    <attributeinfo>
      <name>LicenseName</name>
      <shortdesc>License name</shortdesc>
     </attributeinfo>
