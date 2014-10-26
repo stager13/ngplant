@@ -52,6 +52,7 @@ class P3DIDEVFS
   std::vector<std::string>             Entries;
 
   static const char                   *DIR_CHAR;
+  static const char                   *SYS_DIR_CHAR;
  };
 
 #endif
