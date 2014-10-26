@@ -1,6 +1,6 @@
-                    ngPlant 0.9.12 Release Notes
+                    ngPlant 0.9.13 Release Notes
 
-  This is fifteenth public release of ngPlant. It is a development release, so
+  This is sixteenth public release of ngPlant. It is a development release, so
 many things may be changed in subsequent versions, including but not limited
 to model storage format and internal API changes.
 
@@ -13,9 +13,12 @@ Changes since 0.9.12:
 - now ngplant,ngpshot and ngpview tools search model textures in "textures"
   directory (relative to model file) before searching in registered texture
   paths
-- added "Author", "License", "License URL" and "Plant description URL"
-  metadata support to .ngp file format.
+- added support for scaling model during export to OBJ and COLLADA files
+- added "Author", "Author URL, "License", "License URL" and
+  "Plant description URL" metadata support to .ngp file format.
 - fixed "unresolved symbol(s)" error in pywrapper
+- removed build-in ".OBJ" export module, ".OBJ" export plug-in should
+  be used instead
 
 Changes since 0.9.11:
 - now it is possible to have multiple first-level branches distributed
