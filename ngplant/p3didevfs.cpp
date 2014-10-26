@@ -31,6 +31,12 @@
 
 const char        *P3DIDEVFS::DIR_CHAR = "/";
 
+#ifdef _WIN32
+const char        *P3DIDEVFS::SYS_DIR_CHAR = "\\";
+#else
+const char        *P3DIDEVFS::SYS_DIR_CHAR = "/";
+#endif
+
 std::string        P3DIDEVFS::System2Generic
                                       (const char         *FileName)
  {
@@ -164,7 +170,7 @@ void               P3DIDEVFS::SetModelPath
  {
   if (DirName != 0)
    {
-    ModelPath = JoinPathComponents(DirName,P3D_LOCAL_TEXTURES_PATH);
+    ModelPath = std::string(DirName) + SYS_DIR_CHAR + P3D_LOCAL_TEXTURES_PATH;
    }
   else
    {
