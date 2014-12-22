@@ -495,7 +495,7 @@ void               P3DMainFrame::OnImportNga
      {
       if (ApproveDataLoss())
        {
-        OpenModelFile(NGPFileName.c_str());
+        OpenModelFile(wxString(NGPFileName.c_str(),wxConvUTF8));
        }
      }
    }
