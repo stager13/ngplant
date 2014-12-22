@@ -257,7 +257,7 @@ void               NGAMaterialSaver::SaveTextures
 
     if (!IsValidFileName(TexName))
      {
-      wxString message = wxString::Format("Texture name %s contains invalid character(s)",TexName);
+      wxString message = wxString::Format(wxT("Texture name %s contains invalid character(s)"),TexName);
 
       throw P3DExceptionGeneric(message.mb_str());
      }
@@ -451,7 +451,7 @@ static void        SaveModel          (ZS::Writer          &ZipWriter,
 
   if (!IsValidFileName(NGPFileName.mb_str()))
    {
-    wxString message = wxString::Format("Model file name %s contains invalid character(s)",NGPFileName.mb_str());
+    wxString message = wxString::Format(wxT("Model file name %s contains invalid character(s)"),NGPFileName.mb_str().data());
 
     throw P3DExceptionGeneric(message.mb_str());
    }

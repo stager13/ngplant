@@ -143,11 +143,12 @@ wxSizer           *P3DOptGeneralPanel::CreateModelInfoBox
   LicenseSizer->Add(CreateInfoTextCtrl(wxID_LICENSE_NAME_CTRL,MetaInfo->GetLicenseName()),1,wxALL | wxEXPAND,1);
 
   wxButton *LicenseWizardButton = new wxButton(this,wxID_LICENSE_WIZARD_BUTTON,wxT("..."));
-  wxSize    ButtonClientSize    = LicenseWizardButton->GetClientSize();
 
-  ButtonClientSize.SetWidth(ButtonClientSize.GetHeight());
+  wxSize    ButtonSize = LicenseWizardButton->GetSize();
 
-  LicenseWizardButton->SetMaxClientSize(ButtonClientSize);
+  ButtonSize.SetWidth(ButtonSize.GetHeight());
+
+  LicenseWizardButton->SetMaxSize(ButtonSize);
 
   LicenseSizer->Add(LicenseWizardButton,0,wxALL,1);
 
@@ -438,8 +439,8 @@ void               P3DOptGeneralPanel::OnLicenseWizardClicked
 
   if (LicenseDialog.ShowModal() == wxID_OK)
    {
-    UpdateTextCtrl(wxID_LICENSE_NAME_CTRL,LicenseDialog.GetLicenseName());
-    UpdateTextCtrl(wxID_LICENSE_URL_CTRL,LicenseDialog.GetLicenseURL());
+    UpdateTextCtrl(wxID_LICENSE_NAME_CTRL,LicenseDialog.GetLicenseName().mb_str());
+    UpdateTextCtrl(wxID_LICENSE_URL_CTRL,LicenseDialog.GetLicenseURL().mb_str());
 
     P3DApp::GetApp()->ExecEditCmd
      (new SetModelInfoStrCmd
