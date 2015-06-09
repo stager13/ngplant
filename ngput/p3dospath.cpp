@@ -107,20 +107,41 @@ std::string   P3DPathInfo::GetUserDir ()
 #endif
 
 #ifdef _WIN32
+
+#if defined(_MSC_VER) && defined (UNICODE)
+// NOTE: This implementation uses fixed-size buffers and returns empty string if conversion fails,
+// so use it only if you understand what you're doing
+static std::string P3DPathInfoWideStrToStdStr(const WCHAR *ws)
+ {
+  char Buffer[FILENAME_MAX];
+
+  if (WideCharToMultiByte(CP_ACP,0,ws,-1,Buffer,sizeof(Buffer),NULL,NULL) > 0)
+   {
+    return std::string(Buffer);
+   }
+  else
+   {
+    return std::string("");
+   }
+ }
+#else
+ #define P3DPathInfoWideStrToStdStr(ws) std::string(ws)
+#endif
+
 std::string P3DPathInfo::GetCurrentDir()
  {
   DWORD                                Result;
-  char                                 CurrentDirBuf[FILENAME_MAX];
+  TCHAR                                CurrentDirBuf[FILENAME_MAX];
 
   Result = GetCurrentDirectory(sizeof(CurrentDirBuf),CurrentDirBuf);
 
-  if ((Result == 0) || (Result > sizeof(CurrentDirBuf)))
+  if ((Result == 0) || (Result > sizeof(CurrentDirBuf) /sizeof(CurrentDirBuf[0])))
    {
     return(std::string(""));
    }
   else
    {
-    return(std::string(CurrentDirBuf));
+    return(P3DPathInfoWideStrToStdStr(CurrentDirBuf));
    }
  }
 #else
