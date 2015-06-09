@@ -33,6 +33,11 @@
 #include <p3dapp.h>
 #include <p3didevfs.h>
 
+#if defined(_MSC_VER)
+ // suppress deprecation warning/error for wxGLCanvasBase::SetCurrent
+ #pragma warning(disable: 4996)
+#endif
+
                    P3DTexManagerGL::P3DTexManagerGL
                                       ()
  {
