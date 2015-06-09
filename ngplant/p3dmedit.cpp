@@ -1338,7 +1338,7 @@ void               P3DPlantModelTreeCtrl::OnItemRightClick
   BranchModel = ((P3DPlantModelTreeCtrlItemData*)(GetItemData(GetSelection())))->GetBranchModel();
 
   wxMenu                               PopupMenu;
-  wxMenu                              *StemModelMenu;
+  wxMenu                              *StemModelMenu = 0;
   wxMenu                              *AppendBranchMenu;
 
   P3DStemModel *StemModel = BranchModel->GetStemModel();
