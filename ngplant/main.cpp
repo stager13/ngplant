@@ -262,7 +262,7 @@ void               P3DMainFrame::OnFrameClose   (wxCloseEvent     &event)
 
 void               P3DMainFrame::OnAbout  (wxCommandEvent     &event)
  {
-  ::wxMessageBox(wxT("ngPlant " NGPLANT_VERSION_STRING "\n\nCopyright (c) 2006-2014 Sergey Prokhorchuk\nProject page: ngplant.sourceforge.net\n\nReleased under the GNU General Public License"),
+  ::wxMessageBox(wxT("ngPlant ") wxT(NGPLANT_VERSION_STRING) wxT("\n\nCopyright (c) 2006-2014 Sergey Prokhorchuk\nProject page: ngplant.sourceforge.net\n\nReleased under the GNU General Public License"),
                  wxT("About - ngPlant"),
                  wxOK,
                  this);
