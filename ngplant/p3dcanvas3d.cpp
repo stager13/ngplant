@@ -34,6 +34,11 @@
 
 #include <p3dcanvas3d.h>
 
+#if defined(_MSC_VER)
+ // suppress deprecation warning/error for wxGLCanvas::wxGLCanvas
+ #pragma warning(disable: 4996)
+#endif
+
 BEGIN_EVENT_TABLE(P3DCanvas3D,wxGLCanvas)
  EVT_PAINT(P3DCanvas3D::OnPaint)
  EVT_ERASE_BACKGROUND(P3DCanvas3D::OnEraseBackground)
