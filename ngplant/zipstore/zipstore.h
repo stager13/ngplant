@@ -119,7 +119,7 @@ class Reader
                    Reader                  (InStream      &_in);
                   ~Reader                  ();
 
-  class DirEntry;
+  struct DirEntry;
 
   class File
    {
