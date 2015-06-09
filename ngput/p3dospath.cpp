@@ -31,10 +31,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <cstring>
 
 #include <string>
+
+#if !defined(_MSC_VER)
+ #include <unistd.h>
+#endif
 
 #ifdef _WIN32
  #include <windows.h>
