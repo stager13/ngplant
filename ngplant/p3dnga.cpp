@@ -20,9 +20,12 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <time.h>
+
+#if !defined(_MSC_VER)
+ #include <unistd.h>
+#endif
 
 #include <string>
 #include <map>
