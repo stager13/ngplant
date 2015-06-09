@@ -44,7 +44,7 @@ static LRESULT CALLBACK
   return(DefWindowProc(hwnd,uMsg,wParam,lParam));
  }
 
-static char        GLWindowClassName[] = "NGPGLWindowClass";
+static TCHAR       GLWindowClassName[] = TEXT("NGPGLWindowClass");
 
 static bool        GLWindowClassRegister
                                       ()
@@ -85,7 +85,7 @@ static bool        GLWindowCreate     (HWND               *WindowHandle,
                                        unsigned int        Height)
  {
   *WindowHandle = CreateWindow(GLWindowClassName,
-                               "NGPGLWindow",
+                               TEXT("NGPGLWindow"),
                                WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
                                0,
                                0,
