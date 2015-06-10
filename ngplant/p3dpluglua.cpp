@@ -29,6 +29,8 @@ extern "C"
 
 #include <wx/wx.h>
 
+#include <ngpcore/p3dcompat.h> /* for strdup definition in MSVC environment */
+
 #include <p3dapp.h>
 
 #include <p3dplugluactl.h>

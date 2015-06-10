@@ -34,6 +34,8 @@
 
 #if defined(_WIN32) && defined(_MSC_VER)
  #define snprintf _snprintf
+ #define mkdir    _mkdir
+ #define strdup   _strdup
 #endif
 
 #endif

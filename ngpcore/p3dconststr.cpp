@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <ngpcore/p3dcompat.h> /* for strdup definition in MSVC environment */
 #include <ngpcore/p3dexcept.h>
 
 #include <ngpcore/p3dconststr.h>
