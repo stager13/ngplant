@@ -82,6 +82,10 @@ namespace ZS {
 #define ZS_DOS_BASE_YEAR               (1980)
 #define ZS_TIMET_BASE_YEAR             (1900)
 
+#if defined(_MSC_VER)
+ #define strdup _strdup
+#endif
+
 static unsigned int
 MakeDosDate                           (unsigned int        year,
                                        unsigned int        month,
