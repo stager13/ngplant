@@ -32,6 +32,7 @@
 
 #include "zipstore/zipstore.h"
 
+#include <ngpcore/p3dcompat.h>
 #include <ngpcore/p3diostream.h>
 #include <ngput/p3dospath.h>
 

@@ -39,6 +39,7 @@
 #include <ngpcore/p3dbalgbase.h>
 #include <ngpcore/p3dbalgstd.h>
 #include <ngpcore/p3diostream.h>
+#include <ngpcore/p3dcompat.h>
 
 #include <ngput/p3dospath.h>
 

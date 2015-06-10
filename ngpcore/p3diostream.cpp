@@ -35,7 +35,7 @@
 #include <string.h>
 #include <locale.h>
 
-#include <ngpcore/p3dcompat.h> /* for snprintf definition in MSVC environment */
+#include <ngpcore/p3dcompat.h> /* for snprintf,strdup definitions in MSVC environment */
 #include <ngpcore/p3dexcept.h>
 #include <ngpcore/p3diostream.h>
 
