@@ -66,7 +66,18 @@ opts.Add(BoolVariable('enable_profiling','Set to pass profiling options to compi
 
 opts.Add('EXTRA_VERSION','ngplant version suffix',None)
 
-BaseEnv = Environment(ENV = os.environ,options=opts)
+# Scons sets TARGET_ARCH depending on which version of Windows you're running,
+# in order to force x86 (not x64) arch we create dummy environment and check
+# if we're using msvc, in this case we create BaseEnv with TARGET_ARCH='x86'
+# option. Unfortunately we cannot change TARGET_ARCH after constructor has
+# been called, so have to use two different constructor calls...
+
+DummyEnv = Environment(ENV = os.environ,options=opts)
+
+if 'msvc' in DummyEnv['TOOLS']:
+    BaseEnv = Environment(ENV = os.environ,options=opts,TARGET_ARCH='x86')
+else:
+    BaseEnv = Environment(ENV = os.environ,options=opts)
 
 Help(opts.GenerateHelpText(BaseEnv))
 
@@ -74,9 +85,6 @@ if BaseEnv["cross"]:
     CrossCompileMode = 1
 else:
     CrossCompileMode = 0
-
-if 'msvc' in BaseEnv['TOOLS']:
-    BaseEnv['TARGET_ARCH'] = 'x86'
 
 if BaseEnv["enable_timings"]:
     TimingsEnabled = True
