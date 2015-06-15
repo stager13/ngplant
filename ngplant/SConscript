@@ -89,6 +89,9 @@ elif (NGPlantEnv['PLATFORM'] == 'win32') or\
     if 'msvc' in NGPlantEnv['TOOLS']:
         NGPlantEnv.Append(LINKFLAGS='/SUBSYSTEM:WINDOWS')
         NGPlantEnv.Append(LIBS=WIN32_BASELIBS)
+
+        NGPlantEnv.Append(CPPDEFINES=[('WXUSINGDLL','1'),('wxMSVC_VERSION_AUTO','1')])
+        NGPlantEnv.Append(CPPDEFINES=[('UNICODE','1'),('_UNICODE','1')])
     else:
         NGPlantEnv.Append(LIBS=WIN32_CROSS_BASELIBS)
 else:
@@ -138,8 +141,10 @@ NGPlantEnv.Command('shaders/default_fs.h',
                    '#/shaders/ngplant_default_fs.glsl',
                    'python devtools/text2cdata.py P3DDefaultFragmentShaderSrc < $SOURCES > $TARGET')
 
-if CrossCompileMode or NGPlantEnv['PLATFORM'] == 'win32' or NGPlantEnv['PLATFORM'] == 'cygwin':
+if    CrossCompileMode or NGPlantEnv['PLATFORM'] == 'cygwin':
     NGPlantEnv.Command('ngplant_res.o','ngplant.rc',NGPlantEnv['WINDRES'] + ' -I ngplant/images' + ' $SOURCES $TARGET')
+elif 'msvc' in NGPlantEnv['TOOLS']:
+    NGPlantEnv.Command('ngplant_res.o','ngplant.rc',NGPlantEnv['WINDRES'] + ' /I ngplant/images' + ' /fo $TARGET' ' $SOURCES')
 
 if NGPlantEnv['PLATFORM'] == 'darwin':
     NGPlantEnv.Append(FRAMEWORKS=['OpenGL'])
