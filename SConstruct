@@ -75,6 +75,9 @@ if BaseEnv["cross"]:
 else:
     CrossCompileMode = 0
 
+if 'msvc' in BaseEnv['TOOLS']:
+    BaseEnv['TARGET_ARCH'] = 'x86'
+
 if BaseEnv["enable_timings"]:
     TimingsEnabled = True
 else:
