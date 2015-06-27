@@ -23,7 +23,9 @@
 #include <stdio.h>
 #include <time.h>
 
-#if !defined(_MSC_VER)
+#if defined(_MSC_VER)
+ #include <direct.h>
+#else
  #include <unistd.h>
 #endif
 
