@@ -139,7 +139,7 @@ static bool        CompileShaderObject(GLhandleARB        *ShaderHandle,
                               &CompileStatus);
     #endif
 
-    Result = CompileStatus;
+    Result = CompileStatus != 0;
 
     DumpInfoLog(*ShaderHandle);
 
