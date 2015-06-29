@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0F4BB1D1-E088-4CF6-AFF2-A1C47D3DEEA4}</ProjectGuid>
+    <RootNamespace>ngplant</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;..;.;../extern/glew/include;;../extern/lua/src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(wxwin)\lib\vc120_dll</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);Opengl32.lib;Glu32.lib</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>call $(SolutionDir)/devtools/genshadersrc.bat $(SolutionDir) $(ProjectDir)</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generate header files from GLSL sources</Message>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>
+      </Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>
+      </Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;..;.;../extern/glew/include;;../extern/lua/src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(wxwin)\lib\vc120_dll</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);Opengl32.lib;Glu32.lib</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>call $(SolutionDir)/devtools/genshadersrc.bat $(SolutionDir) $(ProjectDir)</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generate header files from GLSL sources</Message>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>
+      </Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>
+      </Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="p3dappprefs.cpp" />
+    <ClCompile Include="p3dcamera.cpp" />
+    <ClCompile Include="p3dcanvas3d.cpp" />
+    <ClCompile Include="p3dcmdqueue.cpp" />
+    <ClCompile Include="p3didevfs.cpp" />
+    <ClCompile Include="p3dimagewx.cpp" />
+    <ClCompile Include="p3dlog.cpp" />
+    <ClCompile Include="p3dmaterialstd.cpp" />
+    <ClCompile Include="p3dmedit.cpp" />
+    <ClCompile Include="p3dnga.cpp" />
+    <ClCompile Include="p3dpluginfo.cpp" />
+    <ClCompile Include="p3dpluglua.cpp" />
+    <ClCompile Include="p3dplugluactl.cpp" />
+    <ClCompile Include="p3dplugluafs.cpp" />
+    <ClCompile Include="p3dplugluahli.cpp" />
+    <ClCompile Include="p3dplugluaprefs.cpp" />
+    <ClCompile Include="p3dplugluaui.cpp" />
+    <ClCompile Include="p3dpobject.cpp" />
+    <ClCompile Include="p3drecentfiles.cpp" />
+    <ClCompile Include="p3dshaders.cpp" />
+    <ClCompile Include="p3dtexture.cpp" />
+    <ClCompile Include="p3duiappopt.cpp" />
+    <ClCompile Include="p3duibalgbase.cpp" />
+    <ClCompile Include="p3duibalgstd.cpp" />
+    <ClCompile Include="p3duibalgwings.cpp" />
+    <ClCompile Include="p3duilicensedialog.cpp" />
+    <ClCompile Include="p3duimaterialstd.cpp" />
+    <ClCompile Include="p3duimodelstemempty.cpp" />
+    <ClCompile Include="p3duimodelstemquad.cpp" />
+    <ClCompile Include="p3duimodelstemtube.cpp" />
+    <ClCompile Include="p3duimodelstemwings.cpp" />
+    <ClCompile Include="p3duioptgeneral.cpp" />
+    <ClCompile Include="p3duivisrangepanel.cpp" />
+    <ClCompile Include="p3dwx.cpp" />
+    <ClCompile Include="p3dwxcurvectrl.cpp" />
+    <ClCompile Include="p3dwxlistdlg.cpp" />
+    <ClCompile Include="zipstore\zipstore.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\extern\glew\glew.vcxproj">
+      <Project>{010d093a-eeab-409e-b61b-6fe20bfb3a8a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\extern\lua\lua.vcxproj">
+      <Project>{5d8f9554-a384-451b-9096-8015371ea527}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ngpcore\ngpcore.vcxproj">
+      <Project>{2a89d3eb-9a10-46a9-9517-1e443cc508a8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ngput\ngput.vcxproj">
+      <Project>{deb5bc6d-f1dc-4183-b0a6-8c393eb68bdf}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ngpcore", "ngpcore\ngpcore.vcxproj", "{2A89D3EB-9A10-46A9-9517-1E443CC508A8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ngput", "ngput\ngput.vcxproj", "{DEB5BC6D-F1DC-4183-B0A6-8C393EB68BDF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glew", "extern\glew\glew.vcxproj", "{010D093A-EEAB-409E-B61B-6FE20BFB3A8A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "extern\lua\lua.vcxproj", "{5D8F9554-A384-451B-9096-8015371EA527}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ngplant", "ngplant\ngplant.vcxproj", "{0F4BB1D1-E088-4CF6-AFF2-A1C47D3DEEA4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{010D093A-EEAB-409E-B61B-6FE20BFB3A8A} = {010D093A-EEAB-409E-B61B-6FE20BFB3A8A}
+		{5D8F9554-A384-451B-9096-8015371EA527} = {5D8F9554-A384-451B-9096-8015371EA527}
+		{DEB5BC6D-F1DC-4183-B0A6-8C393EB68BDF} = {DEB5BC6D-F1DC-4183-B0A6-8C393EB68BDF}
+		{2A89D3EB-9A10-46A9-9517-1E443CC508A8} = {2A89D3EB-9A10-46A9-9517-1E443CC508A8}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A89D3EB-9A10-46A9-9517-1E443CC508A8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2A89D3EB-9A10-46A9-9517-1E443CC508A8}.Debug|Win32.Build.0 = Debug|Win32
+		{2A89D3EB-9A10-46A9-9517-1E443CC508A8}.Release|Win32.ActiveCfg = Release|Win32
+		{2A89D3EB-9A10-46A9-9517-1E443CC508A8}.Release|Win32.Build.0 = Release|Win32
+		{DEB5BC6D-F1DC-4183-B0A6-8C393EB68BDF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DEB5BC6D-F1DC-4183-B0A6-8C393EB68BDF}.Debug|Win32.Build.0 = Debug|Win32
+		{DEB5BC6D-F1DC-4183-B0A6-8C393EB68BDF}.Release|Win32.ActiveCfg = Release|Win32
+		{DEB5BC6D-F1DC-4183-B0A6-8C393EB68BDF}.Release|Win32.Build.0 = Release|Win32
+		{010D093A-EEAB-409E-B61B-6FE20BFB3A8A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{010D093A-EEAB-409E-B61B-6FE20BFB3A8A}.Debug|Win32.Build.0 = Debug|Win32
+		{010D093A-EEAB-409E-B61B-6FE20BFB3A8A}.Release|Win32.ActiveCfg = Release|Win32
+		{010D093A-EEAB-409E-B61B-6FE20BFB3A8A}.Release|Win32.Build.0 = Release|Win32
+		{5D8F9554-A384-451B-9096-8015371EA527}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5D8F9554-A384-451B-9096-8015371EA527}.Debug|Win32.Build.0 = Debug|Win32
+		{5D8F9554-A384-451B-9096-8015371EA527}.Release|Win32.ActiveCfg = Release|Win32
+		{5D8F9554-A384-451B-9096-8015371EA527}.Release|Win32.Build.0 = Release|Win32
+		{0F4BB1D1-E088-4CF6-AFF2-A1C47D3DEEA4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0F4BB1D1-E088-4CF6-AFF2-A1C47D3DEEA4}.Debug|Win32.Build.0 = Debug|Win32
+		{0F4BB1D1-E088-4CF6-AFF2-A1C47D3DEEA4}.Release|Win32.ActiveCfg = Release|Win32
+		{0F4BB1D1-E088-4CF6-AFF2-A1C47D3DEEA4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
