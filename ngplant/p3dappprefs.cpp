@@ -107,8 +107,8 @@ void               P3DCameraControlPrefs::Init
                                       ()
  {
   MouseRotYCS   = false;
-  MouseRotXSens = 0.02;
-  MouseRotYSens = 0.02;
+  MouseRotXSens = 0.02f;
+  MouseRotYSens = 0.02f;
   EmulateNumpad = false;
  }
 
