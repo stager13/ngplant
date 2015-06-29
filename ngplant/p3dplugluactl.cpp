@@ -178,7 +178,7 @@ bool               P3DPlugLUAControl::GetArgBoolOpt
 
   if (lua_isboolean(State,ArgIndex))
    {
-    return(lua_toboolean(State,ArgIndex));
+    return((bool)lua_toboolean(State,ArgIndex));
    }
   else
    {

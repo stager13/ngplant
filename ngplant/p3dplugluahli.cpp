@@ -176,7 +176,7 @@ int                P3DPlugLuaRegisterModel
     (*UserData)->Instance = (*UserData)->Template->CreateInstance(Model->GetBaseSeed());
     (*UserData)->Model    = Model;
    }
-  catch (const P3DException &Exception)
+  catch (const P3DException &)
    {
     if ((*UserData) != 0)
      {

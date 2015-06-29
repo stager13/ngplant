@@ -582,7 +582,6 @@ static int         ShowGetStringDialog(lua_State          *State)
 static int         ShowParameterDialog(lua_State          *State)
  {
   P3DPlugLUAControl                    Control(State);
-  unsigned int                         ParamCount;
 
   Control.CheckArgTable(1);
   Control.Commit();
