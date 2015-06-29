@@ -413,7 +413,7 @@ bool               P3DGLMemoryContextBitmap::MakeCurrent
 bool               P3DGLMemoryContextPBuffer::IsSupported
                                       ()
  {
-  return(WGLEW_ARB_pbuffer);
+  return(WGLEW_ARB_pbuffer != NULL);
  }
 
 static int         PBufferPixelFormatIntAttrsNoAlpha[] =
