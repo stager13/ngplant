@@ -207,11 +207,11 @@ static wxColour GetUsedTexTextColour  ()
     TexCoordGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("U-Scale")),0,wxALIGN_CENTER_VERTICAL,0);
 
     spin_slider = new wxSpinSliderCtrl(this,wxID_USCALE_CTRL,wxSPINSLIDER_MODE_FLOAT,StemModelTube->GetTexCoordUScale(),0.0,100.0);
-    spin_slider->SetStdStep(1.0);
-    spin_slider->SetSmallStep(0.1);
-    spin_slider->SetLargeMove(1.0);
-    spin_slider->SetStdMove(0.1);
-    spin_slider->SetSmallMove(0.01);
+    spin_slider->SetStdStep(1.0f);
+    spin_slider->SetSmallStep(0.1f);
+    spin_slider->SetLargeMove(1.0f);
+    spin_slider->SetStdMove(0.1f);
+    spin_slider->SetSmallMove(0.01f);
 
     TexCoordGridSizer->Add(spin_slider,1,wxALIGN_RIGHT,0);
 
@@ -235,11 +235,11 @@ static wxColour GetUsedTexTextColour  ()
     TexCoordGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("V-Scale")),0,wxALIGN_CENTER_VERTICAL,0);
 
     spin_slider = new wxSpinSliderCtrl(this,wxID_VSCALE_CTRL,wxSPINSLIDER_MODE_FLOAT,StemModelTube->GetTexCoordVScale(),0.0,100.0);
-    spin_slider->SetStdStep(1.0);
-    spin_slider->SetSmallStep(0.1);
-    spin_slider->SetLargeMove(1.0);
-    spin_slider->SetStdMove(0.1);
-    spin_slider->SetSmallMove(0.01);
+    spin_slider->SetStdStep(1.0f);
+    spin_slider->SetSmallStep(0.1f);
+    spin_slider->SetLargeMove(1.0f);
+    spin_slider->SetStdMove(0.1f);
+    spin_slider->SetSmallMove(0.01f);
 
     TexCoordGridSizer->Add(spin_slider,1,wxALIGN_RIGHT,0);
 
@@ -308,21 +308,21 @@ static wxColour GetUsedTexTextColour  ()
   AlphaCtrlGridSizer->Add(AlphaCtrlEnabledCheckBox,1,wxALIGN_RIGHT,0);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_ALPHA_FADEIN_CTRL,wxSPINSLIDER_MODE_FLOAT,Material->GetAlphaFadeIn(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   AlphaCtrlGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Fade-in")),0,wxALIGN_CENTER_VERTICAL,0);
   AlphaCtrlGridSizer->Add(spin_slider,1,wxALIGN_RIGHT,0);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_ALPHA_FADEOUT_CTRL,wxSPINSLIDER_MODE_FLOAT,Material->GetAlphaFadeOut(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   AlphaCtrlGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Fade-out")),0,wxALIGN_CENTER_VERTICAL,0);
   AlphaCtrlGridSizer->Add(spin_slider,1,wxALIGN_RIGHT,0);

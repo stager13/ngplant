@@ -109,11 +109,11 @@ wxSizer           *P3DOptGeneralPanel::CreateLODBox
 
   wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_LOD_CTRL,wxSPINSLIDER_MODE_FLOAT,P3DApp::GetApp()->GetLODLevel(),0.0f,1.0f);
 
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.05);
-  spin_slider->SetStdMove(0.02);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.05f);
+  spin_slider->SetStdMove(0.02f);
+  spin_slider->SetSmallMove(0.01f);
 
   LODGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 

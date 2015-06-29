@@ -72,11 +72,11 @@ END_EVENT_TABLE()
   QuadParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Length")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_STEM_LENGTH_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetLength(),0.00,100.0);
-  spin_slider->SetStdStep(1.0);
-  spin_slider->SetSmallStep(0.1);
-  spin_slider->SetLargeMove(10.0);
-  spin_slider->SetStdMove(1.0);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(1.0f);
+  spin_slider->SetSmallStep(0.1f);
+  spin_slider->SetLargeMove(10.0f);
+  spin_slider->SetStdMove(1.0f);
+  spin_slider->SetSmallMove(0.01f);
 
   QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -85,11 +85,11 @@ END_EVENT_TABLE()
   QuadParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Width")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_STEM_WIDTH_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetWidth(),0.00,100.0);
-  spin_slider->SetStdStep(1.0);
-  spin_slider->SetSmallStep(0.1);
-  spin_slider->SetLargeMove(10.0);
-  spin_slider->SetStdMove(1.0);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(1.0f);
+  spin_slider->SetSmallStep(0.1f);
+  spin_slider->SetLargeMove(10.0f);
+  spin_slider->SetStdMove(1.0f);
+  spin_slider->SetSmallMove(0.01f);
 
   QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -98,11 +98,11 @@ END_EVENT_TABLE()
   QuadParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Origin offset X")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_ORIGIN_OFFSET_X_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetOriginOffsetX(),-0.5,0.5);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -111,11 +111,11 @@ END_EVENT_TABLE()
   QuadParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Origin offset Y")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_ORIGIN_OFFSET_Y_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetOriginOffsetY(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -159,11 +159,11 @@ END_EVENT_TABLE()
   QuadParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Thickness")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_THICKNESS_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetThickness(),0.0f,100.0f);
-  spin_slider->SetStdStep(1.0);
-  spin_slider->SetSmallStep(0.1);
-  spin_slider->SetLargeMove(10.0);
-  spin_slider->SetStdMove(1.0);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(1.0f);
+  spin_slider->SetSmallStep(0.1f);
+  spin_slider->SetLargeMove(10.0f);
+  spin_slider->SetStdMove(1.0f);
+  spin_slider->SetSmallMove(0.01f);
 
   QuadParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
