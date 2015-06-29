@@ -733,12 +733,12 @@ unsigned int       P3DBranchGroupObject::GetTriangleCount
      }
     catch (...)
      {
-      delete Buffers;
+      delete[] Buffers;
 
       throw;
      }
 
-    delete Buffers;
+    delete[] Buffers;
    }
   catch (...)
    {
