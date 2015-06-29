@@ -547,8 +547,7 @@ void               P3DCurveCtrl::OnPaint
  {
   wxPaintDC                            dc(this);
   int                                  reg_width,reg_height;
-  float                                xr;
-  float                                x0,y0,x1,y1;
+  float                                x0,y0,y1;
 
   wxSize client_size = dc.GetSize();
 
@@ -582,7 +581,7 @@ void               P3DCurveCtrl::OnPaint
   y0 = curve.GetValue(0.0f);
   y0 = CurveToRegionY(y0);
 
-  for (unsigned int x = 1; x <= reg_width; x++)
+  for (int x = 1; x <= reg_width; x++)
    {
     y1 = curve.GetValue((float)x / reg_width);
 
