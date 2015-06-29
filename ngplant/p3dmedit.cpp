@@ -610,7 +610,6 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchCopyClick
                                       (wxCommandEvent     &event)
  {
   P3DListDialog                        SourceSelectionDialog(NULL,wxID_ANY,wxT("Select group to copy"));
-  bool                                 Done;
   P3DPlantModel                       *PlantModel;
   P3DBranchModel                      *BranchModel;
   unsigned int                         BranchIndex;
@@ -641,7 +640,6 @@ void               P3DPlantModelTreeCtrl::OnAppendBranchCopyClick
       P3DBranchModel                  *ParentBranchModel;
       P3DBranchModel                  *ChildBranchModel;
       P3DStemModelWings               *WingsStemModel;
-      const P3DBranchingAlg           *SourceBranchingAlg;
       P3DStemModel                    *NewStemModel;
       P3DBranchingAlg                 *NewBranchingAlg;
       P3DVisRangeState                *NewVisRange;
@@ -837,7 +835,6 @@ bool               P3DPlantModelTreeCtrl::FindItemByModel
 void               P3DPlantModelTreeCtrl::OnRemoveStemClick
                                       (wxCommandEvent     &event)
  {
-  P3DBranchModel  *BranchModel;
   P3DBranchModel  *ParentBranchModel;
   wxTreeItemId     ParentId;
   wxTreeItemId     ItemId;
@@ -1216,7 +1213,6 @@ void               P3DPlantModelTreeCtrl::OnSetStemModelGMeshClick
   wxTreeItemId                         ItemId;
   wxTreeItemId                         ParentItemId;
   P3DBranchModel                      *BranchModel;
-  P3DBranchModel                      *NewBranchModel;
   P3DStemModelGMesh                   *StemModel;
   int                                  PluginIndex;
   const P3DPluginInfoVector           &GMeshPlugins = P3DApp::GetApp()->GetGMeshPlugins();
