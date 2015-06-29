@@ -217,7 +217,7 @@ float              P3DBranchingAlgBase::GetRotationAngle
 void               P3DBranchingAlgBase::SetRotationAngle
                                       (float               Rotation)
  {
-  this->Rotation = P3DMath::Clampf(0.0f,P3DMATH_2PI,Rotation);
+  this->Rotation = P3DMath::Clampf(0.0f,(float)P3DMATH_2PI,Rotation);
  }
 
 unsigned int       P3DBranchingAlgBase::CalcBranchCount
