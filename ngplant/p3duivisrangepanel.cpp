@@ -70,11 +70,11 @@ END_EVENT_TABLE()
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Min. LOD")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_VISRANGE_MIN_CTRL,wxSPINSLIDER_MODE_FLOAT,MinRange,0.0f,1.0f);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.05);
-  spin_slider->SetStdMove(0.02);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.05f);
+  spin_slider->SetStdMove(0.02f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -83,11 +83,11 @@ END_EVENT_TABLE()
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Max. LOD")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_VISRANGE_MAX_CTRL,wxSPINSLIDER_MODE_FLOAT,MaxRange,0.0f,1.0f);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.05);
-  spin_slider->SetStdMove(0.02);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.05f);
+  spin_slider->SetStdMove(0.02f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 

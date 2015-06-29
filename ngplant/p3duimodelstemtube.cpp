@@ -72,22 +72,22 @@ END_EVENT_TABLE()
   AxisParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Length")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_STEM_LENGTH_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetLength(),0.01,100.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(1.0);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(1.0f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   AxisParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
   AxisParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Variation")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_STEM_LENGTHV_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetLengthV(),0.0,1.0);
-  spin_slider->SetStdStep(0.2);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.01);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.2f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.01f);
+  spin_slider->SetSmallMove(0.01f);
 
   AxisParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -114,11 +114,11 @@ END_EVENT_TABLE()
   AxisParamsGridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Axis variation")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_AXIS_VARIATION_CTRL,wxSPINSLIDER_MODE_FLOAT,model->GetAxisVariation(),0.0f,1.0f);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.01);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.01f);
+  spin_slider->SetSmallMove(0.01f);
 
   AxisParamsGridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -137,11 +137,11 @@ END_EVENT_TABLE()
 
   wxSpinSliderCtrl *radius_ctrl = new wxSpinSliderCtrl(this,wxID_TRUNK_RADIUS_CTRL,wxSPINSLIDER_MODE_FLOAT,trunk_radius,0.01,100.0);
 
-  radius_ctrl->SetStdStep(1.0);
-  radius_ctrl->SetSmallStep(0.1);
-  radius_ctrl->SetLargeMove(1.0);
-  radius_ctrl->SetStdMove(0.1);
-  radius_ctrl->SetSmallMove(0.01);
+  radius_ctrl->SetStdStep(1.0f);
+  radius_ctrl->SetSmallStep(0.1f);
+  radius_ctrl->SetLargeMove(1.0f);
+  radius_ctrl->SetStdMove(0.1f);
+  radius_ctrl->SetSmallMove(0.01f);
 
   CrossSectionParamsGridSizer->Add(radius_ctrl,1,wxALL | wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT,1);
 

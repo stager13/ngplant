@@ -141,7 +141,7 @@ class P3DBAlgBaseMinMaxNumberEditCmd : public P3DEditCommand
 
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Density")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
-  SpinSlider = new wxSpinSliderCtrl(this,wxID_DENSITY_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDensity(),0.01,100.0);
+  SpinSlider = new wxSpinSliderCtrl(this,wxID_DENSITY_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDensity(),0.01f,100.0f);
   SpinSlider->SetSensitivity(0.1f,0.01f,1.0f,0.1f,0.01f);
 
   GridSizer->Add(SpinSlider,1,wxALL | wxALIGN_RIGHT,1);
@@ -150,7 +150,7 @@ class P3DBAlgBaseMinMaxNumberEditCmd : public P3DEditCommand
 
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Variation")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
-  SpinSlider = new wxSpinSliderCtrl(this,wxID_DENSITYV_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDensityV(),0.0,1.0);
+  SpinSlider = new wxSpinSliderCtrl(this,wxID_DENSITYV_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDensityV(),0.0f,1.0f);
   SpinSlider->SetSensitivity(0.1f,0.01f,0.2f,0.1f,0.01f);
 
   GridSizer->Add(SpinSlider,1,wxALL | wxALIGN_RIGHT,1);

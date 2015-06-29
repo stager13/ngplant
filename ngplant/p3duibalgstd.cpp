@@ -169,11 +169,11 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Density")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   wxSpinSliderCtrl *spin_slider = new wxSpinSliderCtrl(this,wxID_DENSITY_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDensity(),0.01,100.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(1.0);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(1.0f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -182,11 +182,11 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Variation")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_DENSITYV_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDensityV(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -243,11 +243,11 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Min. offset")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_MIN_OFFSET_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetMinOffset(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -256,11 +256,11 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Max. offset")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_MAX_OFFSET_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetMaxOffset(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -295,11 +295,11 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Variation")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_REVANGLEV_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetRevAngleV(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
@@ -334,11 +334,11 @@ class P3DBAlgStdMinMaxOffsetEditCmd : public P3DEditCommand
   GridSizer->Add(new wxStaticText(this,wxID_ANY,wxT("Variation")),0,wxALL | wxALIGN_CENTER_VERTICAL,1);
 
   spin_slider = new wxSpinSliderCtrl(this,wxID_DECLINATIONV_CTRL,wxSPINSLIDER_MODE_FLOAT,Alg->GetDeclinationV(),0.0,1.0);
-  spin_slider->SetStdStep(0.1);
-  spin_slider->SetSmallStep(0.01);
-  spin_slider->SetLargeMove(0.2);
-  spin_slider->SetStdMove(0.1);
-  spin_slider->SetSmallMove(0.01);
+  spin_slider->SetStdStep(0.1f);
+  spin_slider->SetSmallStep(0.01f);
+  spin_slider->SetLargeMove(0.2f);
+  spin_slider->SetStdMove(0.1f);
+  spin_slider->SetSmallMove(0.01f);
 
   GridSizer->Add(spin_slider,1,wxALL | wxALIGN_RIGHT,1);
 
