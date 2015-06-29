@@ -1700,7 +1700,7 @@ void               P3DHLIPlantInstance::FillVAttrBuffersIMulti
 
     Helper.GenerateBranch(0,0);
 
-    delete TempVAttrBufferSet;
+    delete[] TempVAttrBufferSet;
    }
  }
 
