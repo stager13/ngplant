@@ -59,7 +59,7 @@ float              P3DBranchingAlgWings::GetRotationAngle
 void               P3DBranchingAlgWings::SetRotationAngle
                                       (float                         RotAngle)
  {
-  this->Rotation = P3DMath::Clampf(0.0f,P3DMATH_2PI,RotAngle);
+  this->Rotation = P3DMath::Clampf(0.0f,(float)P3DMATH_2PI,RotAngle);
  }
 
 void               P3DBranchingAlgWings::CreateBranches

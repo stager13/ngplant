@@ -453,8 +453,8 @@ void               P3DStemModelQuadInstance::GetAxisOrientationAt
                    P3DStemModelQuad::P3DStemModelQuad
                                       ()
  {
-  Length = 0.05;
-  Width  = 0.05;
+  Length = 0.05f;
+  Width  = 0.05f;
 
   OriginOffsetX = 0.0f;
   OriginOffsetY = 0.0f;
