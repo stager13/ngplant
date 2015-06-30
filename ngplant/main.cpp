@@ -715,6 +715,15 @@ IMPLEMENT_APP(P3DApp)
   delete RecentFiles;
   delete CommandQueue;
   delete PlantModel;
+
+  //FIXME: PlantObject deletion crashes app on wxgtk
+  // Correct way to delete PlantObject is before P3DCanvas
+  // destruction, but it still causes crashes, so we delete PlantObject
+  // on MSVC builds only. Note, that not deleting PlantObject is not a
+  // big problem since application is closing anyway.
+  #if defined(_MSC_VER)
+  delete PlantObject;
+  #endif
  }
 
 P3DPlantModel     *P3DApp::GetModel   ()
