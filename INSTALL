@@ -4,7 +4,7 @@
 2. Microsoft Windows (compiled using mingw cross-compiler)
 
 Prerequisities:
-wxWidgets (2.4.x, 2.6.x or 2.8.x): http://www.wxwidgets.org
+wxWidgets (2.8.x, 3.0.x): http://www.wxwidgets.org
 python : http://www.python.org (only if you want to build it yourself)
 scons:  http://www.scons.org   (only if you want to build it yourself)
 
@@ -17,12 +17,16 @@ To generate ngpcore API documentation xsltproc application
 (http://xmlsoft.org/XSLT/xsltproc2.html) is required. Note, that generated
 documentation in html format is included in source package.
 
+
 Building under GNU Linux (for Linux):
+
 1. Untar source archive (ngplant-X.X.X.tar.gz)
 2. $ cd ngplant-X.X.X
 3. $ scons
 
+
 Building under GNU Linux (for Windows):
+
 1. Untar source archive (ngplant-X.X.X.tar.gz)
 2. $ cd ngplant-X.X.X
 3. Edit file cross-sample.py located at config directory (or create new one)
@@ -32,13 +36,59 @@ Building under GNU Linux (for Windows):
    For example, if your configuration file is named "cross-sample.py", use
    $ scons config=cross-sample
 
+
 Building under MacOS X (experimental):
+
 1. Untar source archive (ngplant-X.X.X.tar.gz)
 2. $ cd ngplant-X.X.X
 3. $ scons ngplant
 4. Create application bundle structure:
    $ mkdir -p ngplant.app/Contents/MacOS/
    $ cp ngplant/ngplant ngplant.app/Contents/MacOS
+
+
+Building under Windows with Microsoft Visual C++ using SCons (experimental):
+
+1. Make sure you have the following prerequisities installed:
+   1.1 Visual C++ compiler (Visual Studio 2013 Community Edition was tested)
+   1.2 Python 2.7 (https://www.python.org/)
+   1.3 SCons software construction tool (http://www.scons.org/)
+   1.4 wxWidgets development files (headers and libraries)
+       (http://wxwidgets.org/). For detailed information on choosing correct
+       version and files for download read instruction from wxwidgets project:
+       http://wxwidgets.blogspot.com/2012/08/how-to-use-294-wxmsw-binaries.html.
+2. Create configuration file msvc.py inside config directory with the following
+   content:
+
+   WINDRES = "rc"
+   WX_DIR = "<MY_WX_LOCATION>"
+   WX_INC     = WX_DIR + "\\include\\ " + WX_DIR + "\\include\\msvc"
+   WX_LIB     = ""
+   WX_LIBPATH = WX_DIR + "\\lib\\vc120_dll"
+
+   Replace <MY_WX_LOCATION> with the path to your wxwidgets files. You may need
+to change vc120_dll string depending on what version of Visual Studio you're
+using.
+3. Build ngplant application with the following command:
+   scons config=msvc ngplant/ngplant.exe
+
+Building under Windows with Microsoft Visual C++ using Visual Studio IDE
+(experimental):
+
+1. Make sure you have the following prerequisities installed:
+   1.1 Visual Studio IDE (Visual Studio 2013 Community Edition was tested)
+   1.2 Python 2.7 (https://www.python.org/)
+   1.3 wxWidgets development files (headers and libraries)
+       (http://wxwidgets.org/). For detailed information on choosing correct
+       version and files for download read instruction from wxwidgets project:
+       http://wxwidgets.blogspot.com/2012/08/how-to-use-294-wxmsw-binaries.html.
+2. Set environment variable wxwin to point to the directory where you placed
+your wxwidgets files.
+3. Make sure that PATH environment variable contains the path to python.exe.
+4. Open ngplant.sln file and build all projects.
+5. You may need add path to your wxwidgets dll's to the PATH environment
+variable in order to run ngplant.exe.
+
 
 Texture path(s) setup:
 - Use "Preferences" dialog ("File->Preferences...") to setup texture locations.
