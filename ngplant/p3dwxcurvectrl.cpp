@@ -339,7 +339,7 @@ void               P3DCurveCtrl::SetDefaultCurve
 
 void               P3DCurveCtrl::Init ()
  {
-  ActiveControlPoint = -1;
+  ActiveControlPoint = INVALID_CONTROL_POINT;
   HaveDefaultCurve = false;
   DialogEnabled    = true;
  }
@@ -396,13 +396,13 @@ void               P3DCurveCtrl::OnRightDown
 
   ActiveControlPoint = GetCPByMousePos(MousePosX,MousePosY);
 
-  if ((ActiveControlPoint != -1) &&
+  if ((ActiveControlPoint != INVALID_CONTROL_POINT) &&
       (ActiveControlPoint != 0) &&
       (ActiveControlPoint != (curve.GetCPCount() - 1)))
    {
     curve.DelCP(ActiveControlPoint);
 
-    ActiveControlPoint = -1;
+    ActiveControlPoint = INVALID_CONTROL_POINT;
 
     Refresh();
 
@@ -424,13 +424,13 @@ void               P3DCurveCtrl::OnRightDown
 void               P3DCurveCtrl::OnLeftUp
                                       (wxMouseEvent       &event)
  {
-  ActiveControlPoint = -1;
+  ActiveControlPoint = INVALID_CONTROL_POINT;
  }
 
 void               P3DCurveCtrl::OnLeaveWindow
                                       (wxMouseEvent       &event)
  {
-  ActiveControlPoint = -1;
+  ActiveControlPoint = INVALID_CONTROL_POINT;
  }
 
 void               P3DCurveCtrl::OnMouseMove
@@ -442,7 +442,7 @@ void               P3DCurveCtrl::OnMouseMove
 
   CalcTransform(GetClientSize());
 
-  if (ActiveControlPoint != -1)
+  if (ActiveControlPoint != INVALID_CONTROL_POINT)
    {
     dx = event.GetX() - MousePosX;
     dy = event.GetY() - MousePosY;
@@ -540,7 +540,7 @@ int                P3DCurveCtrl::GetCPByMousePos
      }
    }
 
-  return(-1);
+  return(INVALID_CONTROL_POINT);
  }
 
 void               P3DCurveCtrl::OnPaint
