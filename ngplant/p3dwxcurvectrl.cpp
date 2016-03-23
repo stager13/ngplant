@@ -496,7 +496,7 @@ void               P3DCurveCtrl::OnMouseMove
 
       dy = cy - MousePosY;
 
-      if ((dy > -3) && (dy < 3))
+      if ((dy > -SELECTION_TOLERANCE_IN_PX) && (dy < SELECTION_TOLERANCE_IN_PX))
        {
         curve.AddCP(cp_x,cp_y);
 
@@ -533,7 +533,8 @@ int                P3DCurveCtrl::GetCPByMousePos
     dx = x - CurveToRegionX(cp_x);
     dy = y - CurveToRegionY(cp_y);
 
-    if ((dx > -3) && (dx < 3) && (dy > -3) && (dy < 3))
+    if ((dx > -SELECTION_TOLERANCE_IN_PX) && (dx < SELECTION_TOLERANCE_IN_PX) &&
+        (dy > -SELECTION_TOLERANCE_IN_PX) && (dy < SELECTION_TOLERANCE_IN_PX))
      {
       return(i);
      }
@@ -541,8 +542,6 @@ int                P3DCurveCtrl::GetCPByMousePos
 
   return(-1);
  }
-
-#define P3DCURVECTRL_BORDER_SIZE (5)
 
 void               P3DCurveCtrl::OnPaint
                                       (wxPaintEvent       &event)
@@ -555,23 +554,23 @@ void               P3DCurveCtrl::OnPaint
 
   CalcTransform(client_size);
 
-  reg_width  = client_size.GetX() - P3DCURVECTRL_BORDER_SIZE * 2;
-  reg_height = client_size.GetY() - P3DCURVECTRL_BORDER_SIZE * 2;
+  reg_width  = client_size.GetX() - BORDER_SIZE * 2;
+  reg_height = client_size.GetY() - BORDER_SIZE * 2;
 
   dc.SetPen(*(wxThePenList->FindOrCreatePen(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE),1,wxSOLID)));
   dc.SetBrush(*(wxTheBrushList->FindOrCreateBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE),wxSOLID)));
 
-  dc.DrawRectangle(0,0,client_size.GetX(),P3DCURVECTRL_BORDER_SIZE);
-  dc.DrawRectangle(0,client_size.GetY() - P3DCURVECTRL_BORDER_SIZE,client_size.GetX(),P3DCURVECTRL_BORDER_SIZE);
-  dc.DrawRectangle(0,P3DCURVECTRL_BORDER_SIZE,P3DCURVECTRL_BORDER_SIZE,reg_height);
-  dc.DrawRectangle(client_size.GetX() - P3DCURVECTRL_BORDER_SIZE,P3DCURVECTRL_BORDER_SIZE,P3DCURVECTRL_BORDER_SIZE,reg_height);
+  dc.DrawRectangle(0,0,client_size.GetX(),BORDER_SIZE);
+  dc.DrawRectangle(0,client_size.GetY() - BORDER_SIZE,client_size.GetX(),BORDER_SIZE);
+  dc.DrawRectangle(0,BORDER_SIZE,BORDER_SIZE,reg_height);
+  dc.DrawRectangle(client_size.GetX() - BORDER_SIZE,BORDER_SIZE,BORDER_SIZE,reg_height);
 
   /* clear region */
 
   dc.SetPen(*wxBLACK_PEN);
   dc.SetBrush(*wxBLACK_BRUSH);
-  dc.DrawRectangle(P3DCURVECTRL_BORDER_SIZE,
-                   P3DCURVECTRL_BORDER_SIZE,
+  dc.DrawRectangle(BORDER_SIZE,
+                   BORDER_SIZE,
                    reg_width,
                    reg_height);
 
@@ -589,7 +588,7 @@ void               P3DCurveCtrl::OnPaint
 
     y1 = CurveToRegionY(y1);
 
-    dc.DrawLine(x - 1 + P3DCURVECTRL_BORDER_SIZE,(int)y0,x + P3DCURVECTRL_BORDER_SIZE,(int)y1);
+    dc.DrawLine(x - 1 + BORDER_SIZE,(int)y0,x + BORDER_SIZE,(int)y1);
 
     y0 = y1;
    }
@@ -604,7 +603,7 @@ void               P3DCurveCtrl::OnPaint
    {
     x0 = curve.GetCPX(i);
     y0 = curve.GetCPY(i);
-    dc.DrawCircle(CurveToRegionX(x0),CurveToRegionY(y0),3);
+    dc.DrawCircle(CurveToRegionX(x0),CurveToRegionY(y0),CONTROL_POINT_RADIUS);
    }
  }
 
@@ -632,13 +631,13 @@ void               P3DCurveCtrl::CalcTransform
  {
   int                                  reg_width,reg_height;
 
-  reg_width  = client_size.GetX() - P3DCURVECTRL_BORDER_SIZE * 2;
-  reg_height = client_size.GetY() - P3DCURVECTRL_BORDER_SIZE * 2;
+  reg_width  = client_size.GetX() - BORDER_SIZE * 2;
+  reg_height = client_size.GetY() - BORDER_SIZE * 2;
 
   ta_x = (float)reg_width;
-  tb_x = P3DCURVECTRL_BORDER_SIZE;
+  tb_x = BORDER_SIZE;
   ta_y = -((float)reg_height);
-  tb_y = (float)(reg_height + P3DCURVECTRL_BORDER_SIZE - 1);
+  tb_y = (float)(reg_height + BORDER_SIZE - 1);
  }
 
 float              P3DCurveCtrl::RegionToCurveX

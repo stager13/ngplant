@@ -89,6 +89,13 @@ class P3DCurveCtrl : public wxControl
 
   private          :
 
+  enum
+   {
+    BORDER_SIZE = 5,
+    CONTROL_POINT_RADIUS = 3,
+    SELECTION_TOLERANCE_IN_PX = CONTROL_POINT_RADIUS
+   };
+
   /* from curve to window */
   void             CalcTransform      (const wxSize       &client_size);
 
