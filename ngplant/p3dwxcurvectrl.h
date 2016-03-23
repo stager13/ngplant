@@ -109,9 +109,9 @@ class P3DCurveCtrl : public wxControl
 
   float                                ta_x,tb_x;
   float                                ta_y,tb_y;
-  int                                  cp_to_move;
-  long                                 mx;
-  long                                 my;
+  int                                  ActiveControlPoint;
+  long                                 MousePosX;
+  long                                 MousePosY;
 
   bool                                 DialogEnabled;
 
