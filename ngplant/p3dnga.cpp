@@ -219,6 +219,7 @@ class NGAMaterialSaver : public P3DMaterialSaver
                                                           *Material,
                                        P3DMaterialDef     *MaterialDef) const;
   void             ProcessTexture     (P3DMaterialDef     *MaterialDef,
+                                       unsigned int        TexLayer,
                                        const char         *TexName,
                                        const char         *FileName) const;
 
@@ -416,7 +417,7 @@ void               NGAMaterialSaver::ProcessTextures
 
       if (FileName != 0)
        {
-        ProcessTexture(MaterialDef,TexName,FileName);
+        ProcessTexture(MaterialDef,LayerIndex,TexName,FileName);
        }
      }
    }
@@ -424,6 +425,7 @@ void               NGAMaterialSaver::ProcessTextures
 
 void               NGAMaterialSaver::ProcessTexture
                                       (P3DMaterialDef     *MaterialDef,
+                                       unsigned int        TexLayer,
                                        const char         *TexName,
                                        const char         *FileName) const
  {
@@ -431,14 +433,20 @@ void               NGAMaterialSaver::ProcessTexture
   TextureBindings::const_iterator Entry      = Textures.find(NGATexName);
   std::string                     FileNameStr(FileName);
 
-  if (Entry == Textures.end() || Entry->second == FileNameStr)
+  if      (Entry == Textures.end())
    {
     Textures[NGATexName] = FileNameStr;
+   }
+  else if (Entry->second == FileNameStr)
+   {
+    // Textures array already contains this texture
    }
   else
    {
     throw P3DExceptionGeneric(".NGA doesn't support several textures with the same base name");
    }
+
+  MaterialDef->SetTexName(TexLayer,P3DPathName::BaseName(TexName).c_str());
  }
 
 std::string        NGAMaterialSaver::TexName2NGATexName
