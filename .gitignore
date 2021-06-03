@@ -46,6 +46,7 @@ package-lock.json
 *.dylib
 *.o
 *.a
+*.pyc
 
 *.sconf_temp
 config.log
