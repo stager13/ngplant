@@ -235,7 +235,7 @@ if LuaEnabled:
             del LuaConfEnv
 
             if not BaseConf.CheckLuaFunc('luaL_newmetatable'):
-                print ('Lua installation seems to be broken. Using internal Lua sources...'
+                print ('Lua installation seems to be broken. Using internal Lua sources...')
                 LuaInternal = True
         else:
             # Fall to internal Lua
@@ -273,7 +273,10 @@ else:
     CC_WARN_FLAGS=''
 
 if 'gcc' in BaseEnv['TOOLS']:
-    CC_OPT_FLAGS='-O3 --fast-math'
+    if BaseEnv['PLATFORM'] == 'darwin':
+        CC_OPT_FLAGS='-O3 -ffast-math -stdlib=libc++'
+    else:
+        CC_OPT_FLAGS='-O3 --fast-math'
 else:
     CC_OPT_FLAGS=''
 
@@ -285,9 +288,9 @@ if ProfilingEnabled:
 
 if BaseEnv['PLATFORM'] == 'darwin':
     BaseEnv.Append(CPPPATH=['/usr/X11/include'])
-    BaseEnv.Append(CFLAGS=['-mmacosx-version-min=10.5'])
-    BaseEnv.Append(CXXFLAGS=['-mmacosx-version-min=10.5'])
-    BaseEnv.Append(LINKFLAGS=['-mmacosx-version-min=10.5'])
+    BaseEnv.Append(CFLAGS=['-mmacosx-version-min=10.7'])
+    BaseEnv.Append(CXXFLAGS=['-mmacosx-version-min=10.7'])
+    BaseEnv.Append(LINKFLAGS=['-mmacosx-version-min=10.7'])
 
 Export('BaseEnv',
        'CC_WARN_FLAGS',
