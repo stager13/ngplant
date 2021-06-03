@@ -5,13 +5,13 @@ def PyDistUtilSetupCreate(target,source,env):
     if env.get('PYEXT_NAME',None) is not None:
         DistUtilSetupFile.write('ExtName = "%s"\n' % (env['PYEXT_NAME']))
     else:
-        print 'warning: PYEXT_NAME is not set - using default (pyext)'
+        print ('warning: PYEXT_NAME is not set - using default (pyext)')
         DistUtilSetupFile.write('ExtName = pyext\n')
 
     if env.get('PYEXT_VERSION',None) is not None:
         DistUtilSetupFile.write('ExtVersion = "%s"\n' % (env['PYEXT_VERSION']))
     else:
-        print 'warning: PYEXT_VERSION is not set - using default ("1.0")'
+        print ('warning: PYEXT_VERSION is not set - using default ("1.0")')
         DistUtilSetupFile.write('ExtVersion = "1.0"\n')
 
     DistUtilSetupFile.write('ExtSrc = []\n')
