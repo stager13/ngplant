@@ -14,7 +14,7 @@ create simple plant model viewers using pygame and pyopengl libraries.
   </para>
 
   <para>
-This document describes versions 0.9.5-0.9.13 of _ngp module.
+This document describes versions 0.9.5-0.9.14 of _ngp module.
  </para>
  </section>
 
@@ -35,6 +35,20 @@ you must use the same compiler which was used to compile your Python interpreter
   <para>
   Then compilation process will be done, you will have _ngp.so or _ngp.dll
 library in pywrapper directory.
+  </para>
+ </section>
+
+<section>
+  <name>Changes made in 0.9.14</name>
+  <para>
+   <ul>
+    <li>
+     Cleaning up code to work with newer versions of Python.
+    </li>
+   </ul>
+  </para>
+  <para>
+  Note: no new functionality was added.
   </para>
  </section>
 
