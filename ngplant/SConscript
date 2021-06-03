@@ -100,7 +100,7 @@ else:
 
     try:
         NGPlantEnv.ParseConfig(NGPlantEnv['WX_CONFIG'] + ' --cxxflags --libs --gl-libs')
-    except OSError,e:
+    except OSError as e:
         sys.stderr.write('error: wxWidgets configuration tool can not be run' +
                          '(%s),\nplease make sure that you have wxWidgets development package(s) installed\n' % (e))
         sys.exit(1)
