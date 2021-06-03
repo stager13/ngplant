@@ -8,15 +8,15 @@ import _ngp
 ScriptVersion = '0.9.2'
 
 def ShowUsage():
-    print 'Usage: ngp2obj.py [options] source dest'
-    print
-    print 'Convert .ngp-file \'source\' to .obj-file \'dest\''
-    print
-    print 'Options:'
-    print ' -h               - display this help and exit'
-    print ' -v               - display version information and exit'
-    print ' -t TEXPATH       - prepend TEXPATH to all texture names'
-    print
+    print ('Usage: ngp2obj.py [options] source dest')
+    print ()
+    print ('Convert .ngp-file \'source\' to .obj-file \'dest\'')
+    print ()
+    print ('Options:')
+    print (' -h               - display this help and exit')
+    print (' -v               - display version information and exit')
+    print (' -t TEXPATH       - prepend TEXPATH to all texture names')
+    print ()
 
 def OnInvCmdLine():
     sys.stderr.write('error: invalid command line - use \'-h\' option to get help\n')
