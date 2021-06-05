@@ -37,12 +37,21 @@ Building under GNU Linux (for Windows):
    $ scons config=cross-sample
 
 
-Building under MacOS X (experimental):
+Building under macOS:
 
-1. Untar source archive (ngplant-X.X.X.tar.gz)
-2. $ cd ngplant-X.X.X
-3. $ scons ngplant
-4. Create application bundle structure:
+There is now a new configuration file for macOS (config/macos.py) to allow SCons
+to find everything it needs.
+
+1. Prerequisites
+   1.1 Homebrew: install it from https://brew.sh e.g.:
+       $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   1.2 Install the following formulae:
+       $ brew install scons wxmac freeglut pyenv pyenv-virtualenv pyenv-virtualenvwrapper \
+         pyenv-which-ext glew lua luarocks
+2. Untar source archive (ngplant-X.X.X.tar.gz)
+3. $ cd ngplant-X.X.X
+4. $ scons ngplant config=macos
+5. Create application bundle structure:
    $ mkdir -p ngplant.app/Contents/MacOS/
    $ cp ngplant/ngplant ngplant.app/Contents/MacOS
 
