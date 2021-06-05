@@ -15,34 +15,34 @@ AR     = "ar"
 # wxWidgets headers paths (space-separated)
 WX_INC     = "/usr/local/include/wx-3.0/wx /usr/local/lib/wx/include/osx_cocoa-unicode-3.0/wx/"
 # wxWidgets libraries (space-separated)
-#WX_LIB     = "wx_msw-2.6-i586-mingw32 wx_msw_gl-2.6-i586-mingw32 wxtiff-2.6-i586-mingw32 wxjpeg-2.6-i586-mingw32 wxpng-2.6-i586-mingw32 wxzlib-2.6-i586-mingw32"
+WX_LIB		= "wx wx_osx_cocoau_core wx_osx_cocoau_gl"
 # wxWidgets libaries paths (space-separated)
 WX_LIBPATH = "/usr/local/lib/"
 
 # Build Lua libraries from sources in extern/lua/src
-#LUA_INTERNAL= "yes"
+LUA_INTERNAL= "no"
 # Lua headers path(s) (space-separated)
-#LUA_INC = ""
+LUA_INC = "/usr/local/include/lua/"
 # Lua libraries (space-separated)
-#LUA_LIBS = ""
+LUA_LIBS = "lua"
 # Lua libraries path(s) (space-separated)
-#LUA_LIBPATH = ""
+LUA_LIBPATH = "/usr/local/lib/"
 
 # GLU headers path(s) (space-separated)
-#GLU_INC     = ""
+GLU_INC     = "/usr/local/include/GL/"
 # GLU libraries (space-separated)
-#GLU_LIBS    = ""
+GLU_LIBS    = "glut"
 # GLU libraries path(s) (space-separated)
-#GLU_LIBPATH = ""
+GLU_LIBPATH = "/usr/local/lib/"
 
 # Build GLEW library from sources in extern/glew
-#GLEW_INTERNAL= "yes"
+GLEW_INTERNAL= "no"
 # GLEW headers path(s) (space-separated)
-#GLEW_INC     = ""
+GLEW_INC     = "/usr/local/include/GL/"
 # GLEW libraries (space-separated)
-#GLEW_LIBS    = ""
+GLEW_LIBS    = "GLEW"
 # GLEW libraries path(s) (space-separated)
-#GLEW_LIBPATH = ""
+GLEW_LIBPATH = "/usr/local/lib/"
 
 # Enable PNG support
 WITH_LIBPNG = "yes"

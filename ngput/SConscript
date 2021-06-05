@@ -1,3 +1,5 @@
+#Attempt to get this to read whatever it needs... the other scripts have this, too (gwyneth 20210605)
+from sctool.SConcheck import *
 from sctool.SConcompat import *
 
 NGPUT_SRC = Split("""
@@ -19,8 +21,10 @@ Import('*')
 NGPUtEnv = EnvClone(BaseEnv)
 NGPUtEnv.Append(CPPPATH=NGPUT_INCLUDES)
 
-print('With LIBPNG:', NGPUtEnv['WITH_LIBPNG'])
+print('Doing ngput checks...')
+print('With LIBPNG:',  NGPUtEnv['WITH_LIBPNG'])
 print('With LIBJPEG:', NGPUtEnv['WITH_LIBJPEG'])
+print('GLEXT_INC:',    NGPUtEnv['GLEXT_INC'])
 
 if CC_WARN_FLAGS != '':
     NGPUtEnv.Append(CXXFLAGS=CC_WARN_FLAGS)
