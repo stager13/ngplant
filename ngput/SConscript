@@ -21,7 +21,7 @@ Import('*')
 NGPUtEnv = EnvClone(BaseEnv)
 NGPUtEnv.Append(CPPPATH=NGPUT_INCLUDES)
 
-print('Doing ngput checks...')
+#print('Doing ngput checks...')
 #print('With LIBPNG:',  NGPUtEnv['WITH_LIBPNG'])
 #print('With LIBJPEG:', NGPUtEnv['WITH_LIBJPEG'])
 #print('GLEXT_INC:',    NGPUtEnv['GLEXT_INC'])
@@ -40,8 +40,8 @@ if NGPUtEnv['WITH_LIBPNG']:
     NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBPNG_CPPPATH'])
     NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBPNG_CPPDEFINES'])
 
-    print('LIBPNG_CPPPATH is: ', NGPUtEnv['LIBPNG_CPPPATH'])
-    print('LIBPNG_CPPDEFINES is: ', NGPUtEnv['LIBPNG_CPPDEFINES'])
+    # print('LIBPNG_CPPPATH is: ', NGPUtEnv['LIBPNG_CPPPATH'])
+    # print('LIBPNG_CPPDEFINES is: ', NGPUtEnv['LIBPNG_CPPDEFINES'])
 
     NGPUTIMG_SRC.append('p3dimagepng.cpp')
 
@@ -49,8 +49,8 @@ if NGPUtEnv['WITH_LIBJPEG']:
     NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBJPEG_CPPPATH'])
     NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBJPEG_CPPDEFINES'])
 
-    print('LIBJPEG_CPPPATH is: ', NGPUtEnv['LIBJPEG_CPPPATH'])
-    print('LIBJPEG_CPPDEFINES is: ', NGPUtEnv['LIBJPEG_CPPDEFINES'])
+    # print('LIBJPEG_CPPPATH is: ', NGPUtEnv['LIBJPEG_CPPPATH'])
+    # print('LIBJPEG_CPPDEFINES is: ', NGPUtEnv['LIBJPEG_CPPDEFINES'])
 
     NGPUTIMG_SRC.append('p3dimagejpg.cpp')
 

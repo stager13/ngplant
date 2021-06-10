@@ -220,7 +220,7 @@ if not GLEWInternal:
         BaseEnv.Append(GLEXT_LIBS=BaseEnv['GLEW_LIBS'])
         # it works up to this point but then GLEXT_* gets 'forgotten' by BaseEnv and so
         # everything will fail...
-        print('GLEW_INC:',BaseEnv['GLEW_INC'],'GLEXT_INC:',BaseEnv['GLEXT_INC'])
+        # print('GLEW_INC:',BaseEnv['GLEW_INC'],'GLEXT_INC:',BaseEnv['GLEXT_INC'])
     else:
         GLEWInternal = True
         print ('No installed glew library found - using internal GLEW sources...')
@@ -287,6 +287,9 @@ if LuaEnabled:
     else:
         BaseEnv.Append(LUA_VERSION='50')
 
+LuaVersion = BaseEnv['LUA_VERSION']
+print('Lua version:',LuaVersion)
+
 #if BaseEnv['WITH_LIBPNG']:
 if PNGEnabled:
     BaseConf.ConfigureLibPng()
@@ -331,6 +334,7 @@ Export('BaseEnv',
        'CC_OPT_FLAGS',
        'CrossCompileMode',
        'LuaEnabled',
+       'LuaVersion',
        'TimingsEnabled',
        'ProfilingEnabled')
 

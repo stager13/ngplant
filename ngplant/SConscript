@@ -37,7 +37,9 @@ oleaut32 uuid rpcrt4 advapi32
 opengl32 glu32
 """)
 
-Import('BaseEnv','CrossCompileMode','CC_OPT_FLAGS','LuaEnabled','TimingsEnabled','ProfilingEnabled')
+Import('BaseEnv','CrossCompileMode','CC_OPT_FLAGS','LuaEnabled','LuaVersion','TimingsEnabled','ProfilingEnabled')
+
+#print('Dumping whatever we\'ve inherited:\n',BaseEnv.Dump())
 
 NGPlantEnv = EnvClone(BaseEnv)
 
@@ -48,6 +50,7 @@ if LuaEnabled:
     NGPLANT_SRC.append("p3dplugluafs.cpp")
     NGPLANT_SRC.append("p3dplugluaprefs.cpp")
     NGPLANT_SRC.append("p3dpluglua.cpp")
+#    print('ngplant says: Lua enabled!')
 
 # GLEW libraries have to be added before opengl32? for Windows build
 # if GLEW libraries go after opengl32 it causes _wglGetProcAddress and
@@ -58,6 +61,11 @@ if LuaEnabled:
 NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEW_INC'])
 NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEW_LIBPATH'])
 NGPlantEnv.Append(LIBS=NGPlantEnv['GLEW_LIBS'])
+# Lua Version seems to have been lost when cloning the environment?
+print('Got Lua version via exported global:',LuaVersion)
+NGPlantEnv.Append(LUA_VERSION=LuaVersion)
+print('Double-checking: Lua version is',NGPlantEnv['LUA_VERSION'])
+
 
 if TimingsEnabled:
     NGPlantEnv.Append(CPPDEFINES=[('P3D_TIMINGS_ENABLED','1')])
