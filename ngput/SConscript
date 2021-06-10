@@ -22,16 +22,19 @@ NGPUtEnv = EnvClone(BaseEnv)
 NGPUtEnv.Append(CPPPATH=NGPUT_INCLUDES)
 
 print('Doing ngput checks...')
-print('With LIBPNG:',  NGPUtEnv['WITH_LIBPNG'])
-print('With LIBJPEG:', NGPUtEnv['WITH_LIBJPEG'])
-print('GLEXT_INC:',    NGPUtEnv['GLEXT_INC'])
+#print('With LIBPNG:',  NGPUtEnv['WITH_LIBPNG'])
+#print('With LIBJPEG:', NGPUtEnv['WITH_LIBJPEG'])
+#print('GLEXT_INC:',    NGPUtEnv['GLEXT_INC'])
+#print('GLEW_INC:',BaseEnv['GLEW_INC'])
+#print('GLEXT_INC:',BaseEnv['GLEXT_INC'])
 
 if CC_WARN_FLAGS != '':
     NGPUtEnv.Append(CXXFLAGS=CC_WARN_FLAGS)
 if CC_OPT_FLAGS != '':
     NGPUtEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
 
-NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEXT_INC'])
+#NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEXT_INC'])
+NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEW_INC'])
 
 if NGPUtEnv['WITH_LIBPNG']:
     NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBPNG_CPPPATH'])

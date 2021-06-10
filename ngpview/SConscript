@@ -45,9 +45,12 @@ else:
     if not ProfilingEnabled:
         NGPViewEnv.Append(LINKFLAGS='-s')
 
-NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEXT_INC'])
-NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEXT_LIBPATH'])
-NGPViewEnv.Append(LIBS=NGPViewEnv['GLEXT_LIBS'])
+#NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEXT_INC'])
+#NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEXT_LIBPATH'])
+#NGPViewEnv.Append(LIBS=NGPViewEnv['GLEXT_LIBS'])
+NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEW_INC'])
+NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEW_LIBPATH'])
+NGPViewEnv.Append(LIBS=NGPViewEnv['GLEW_LIBS'])
 
 AppendLibPngConf(NGPViewEnv)
 AppendLibJpegConf(NGPViewEnv)

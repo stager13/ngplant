@@ -52,9 +52,12 @@ if LuaEnabled:
 # GLEW libraries have to be added before opengl32? for Windows build
 # if GLEW libraries go after opengl32 it causes _wglGetProcAddress and
 # _glGetString functions to become unresolved
-NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEXT_INC'])
-NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEXT_LIBPATH'])
-NGPlantEnv.Append(LIBS=NGPlantEnv['GLEXT_LIBS'])
+#NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEXT_INC'])
+#NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEXT_LIBPATH'])
+#NGPlantEnv.Append(LIBS=NGPlantEnv['GLEXT_LIBS'])
+NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEW_INC'])
+NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEW_LIBPATH'])
+NGPlantEnv.Append(LIBS=NGPlantEnv['GLEW_LIBS'])
 
 if TimingsEnabled:
     NGPlantEnv.Append(CPPDEFINES=[('P3D_TIMINGS_ENABLED','1')])

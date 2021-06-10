@@ -304,32 +304,54 @@ int main (int argc,char *argv[])
 """
 
 def EnvGetValAsList(Env,Key):
+    v = []  # scope issues!
     try:
         v = Env[Key]
+#        print ('Inner try for key:', Key, '=', v, type(v))
 
-        if type(v) is StringType:
+#        if type(v) is StringType:  # deprecated, I think
+        if isinstance(v, basestring):
             v = Split(v)
+#            print ('Split key:', v)
     except:
-        v = []
+        #v = []
+        pass
 
+ #   print ('Preparing to return key:', Key, '=', v, type(v))
     return v
 
 def ConfigureLibPng(Context):
     Context.Message('Checking libpng presence and usability ... ')
 
+#     print('\nInside ConfigureLibPng(), context environment has:')
+#     print('LIBPNG_INC:', Context.env['LIBPNG_INC'])
+#     print('LIBPNG_DEFINES:', Context.env['LIBPNG_DEFINES'], '(will become LIBPNG_CPPDEFS later on)')
+#     print('LIBPNG_LIBPATH:', Context.env['LIBPNG_LIBPATH'])
+#     print('LIBPNG_LIBS:', Context.env['LIBPNG_LIBS'])
+#
     lastLIBS       = GetEnvKeyList(Context.env,'LIBS')
     lastLIBPATH    = GetEnvKeyList(Context.env,'LIBPATH')
     lastCPPPATH    = GetEnvKeyList(Context.env,'CPPPATH')
     lastCPPDEFINES = GetEnvKeyList(Context.env,'CPPDEFINES')
+
+    # print('Last Libs:')
+    # print('lastLIBS:', lastLIBS)
+    # print('lastLIBPATH:', lastLIBPATH)
+    # print('lastCPPPATH:', lastCPPPATH)
+    # print('lastCPPDEFINES:', lastCPPDEFINES)
 
     if EnvKeyHasValue(Context.env,'LIBPNG_INC')     or\
        EnvKeyHasValue(Context.env,'LIBPNG_DEFINES') or\
        EnvKeyHasValue(Context.env,'LIBPNG_LIBPATH') or\
        EnvKeyHasValue(Context.env,'LIBPNG_LIBS'):
         LIBPNG_INC     = EnvGetValAsList(Context.env,'LIBPNG_INC')
+#        print('(env) LIBPNG_INC =', LIBPNG_INC, type(LIBPNG_INC))
         LIBPNG_CPPDEFS = EnvGetValAsList(Context.env,'LIBPNG_DEFINES')
+#        print('(env) LIBPNG_CPPDEFS =', LIBPNG_CPPDEFS, type(LIBPNG_CPPDEFS))
         LIBPNG_LIBPATH = EnvGetValAsList(Context.env,'LIBPNG_LIBPATH')
+#        print('(env) LIBPNG_LIBPATH =', LIBPNG_LIBPATH, type(LIBPNG_LIBPATH))
         LIBPNG_LIBS    = EnvGetValAsList(Context.env,'LIBPNG_LIBS')
+#        print('(env) LIBPNG_LIBS =', LIBPNG_LIBPATH, type(LIBPNG_LIBPATH))
 
         Context.env.Append(CPPPATH=LIBPNG_INC)
         Context.env.Append(CPPDEFINES=LIBPNG_CPPDEFS)
@@ -339,13 +361,20 @@ def ConfigureLibPng(Context):
         try:
             if EnvKeyHasValue(Context.env,'LIBPNG_CONFIG'):
                 Context.env.ParseConfig(Context.env['LIBPNG_CONFIG'])
+                print('LIBPNG_CONFIG=',LIBPNG_CONFIG)
             else:
                 Context.env.ParseConfig('pkg-config libpng --cflags --libs')
+                print('Empty LIBPNG_CONFIG')
+            # print('Starting subtracting lists...')
 
             LIBPNG_INC = SubtractLists(GetEnvKeyList(Context.env,'CPPPATH'),lastCPPPATH)
+            print('LIBPNG_INC =', LIBPNG_INC)
             LIBPNG_CPPDEFS = SubtractLists(GetEnvKeyList(Context.env,'CPPDEFINES'),lastCPPDEFINES)
+            print('LIBPNG_CPPDEFS =', LIBPNG_CPPDEFS)
             LIBPNG_LIBS = SubtractLists(GetEnvKeyList(Context.env,'LIBS'),lastLIBS)
+            print('LIBPNG_LIBS =', LIBPNG_LIBS)
             LIBPNG_LIBPATH = SubtractLists(GetEnvKeyList(Context.env,'LIBPATH'),lastLIBPATH)
+            print('LIBPNG_LIBPATH =', LIBPNG_LIBPATH)
         except:
             LIBPNG_INC     = []
             LIBPNG_CPPDEFS = []

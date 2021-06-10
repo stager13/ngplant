@@ -1,5 +1,5 @@
 # Enable cross-compilation
-cross="no"
+#cross="yes"
 
 # C compiler
 CC     = "gcc"
@@ -75,3 +75,4 @@ LIBJPEG_CONFIG = ""
 # The search path for ngplant plugins ('plugins' if set to None)
 PLUGINS_DIR = None
 
+#print('macOS config file called successfully')

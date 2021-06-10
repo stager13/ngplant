@@ -16,55 +16,58 @@ CustomConfFileName = ARGUMENTS.get('config',None)
 if CustomConfFileName is not None:
     CustomConfFileName = os.path.join('config',CustomConfFileName + ".py")
 
+# print('Reading variables from custom configuration file:',CustomConfFileName)
+
 opts = Variables(CustomConfFileName,ARGUMENTS)
-opts.Add(BoolVariable('cross','Set to build in cross-compile mode','no'))
-opts.Add('CC','The C compiler')
-opts.Add('CXX','The C++ compiler')
-opts.Add('RANLIB','The archive indexer')
-opts.Add('AR','The static library archiver')
-opts.Add('WINDRES','The resource compiler')
 
-opts.Add('WX_INC','wxWidgets headers path(s)')
-opts.Add('WX_LIB','wxWidgets libraries')
-opts.Add('WX_LIBPATH','wxWidgets libraries path(s)')
-opts.Add('WX_CONFIG','wx-config command','wx-config')
-opts.Add('WX_LIB_STATIC','wxWidgets static libraries','')
+opts.Add(BoolVariable('cross',help='Set to build in cross-compile mode',default='no'))
+opts.Add('CC',help='The C compiler')
+opts.Add('CXX',help='The C++ compiler')
+opts.Add('RANLIB',help='The archive indexer')
+opts.Add('AR',help='The static library archiver')
+opts.Add('WINDRES',help='The resource compiler')
 
-opts.Add(BoolVariable('WITH_LUA','Enable Lua plug-ins support','yes'))
-opts.Add(BoolVariable('LUA_INTERNAL','Compile Lua libraries from sources in extern/lua','no'))
-opts.Add('LUA_INC','Lua headers path(s)','')
-opts.Add('LUA_LIBS','Lua libraries','')
-opts.Add('LUA_LIBPATH','Lua libraries path(s)','')
+opts.Add('WX_INC',help='wxWidgets headers path(s)')
+opts.Add('WX_LIB',help='wxWidgets libraries')
+opts.Add('WX_LIBPATH',help='wxWidgets libraries path(s)')
+opts.Add('WX_CONFIG',help='wx-config command',default='wx-config')
+opts.Add('WX_LIB_STATIC',help='wxWidgets static libraries',default='')
 
-opts.Add('GLU_INC','GLU headers path(s)','')
-opts.Add('GLU_LIBS','GLU libraries','')
-opts.Add('GLU_LIBPATH','GLU libraries path(s)','')
+opts.Add(BoolVariable('WITH_LUA',help='Enable Lua plug-ins support',default='yes'))
+opts.Add(BoolVariable('LUA_INTERNAL',help='Compile Lua libraries from sources in extern/lua',default='no'))
+opts.Add('LUA_INC',help='Lua headers path(s)',default='')
+opts.Add('LUA_LIBS',help='Lua libraries',default='')
+opts.Add('LUA_LIBPATH',help='Lua libraries path(s)',default='')
 
-opts.Add(BoolVariable('GLEW_INTERNAL','Compile GLEW library from sources in extern/glew','no'))
-opts.Add('GLEW_INC','GLEW headers path(s)','')
-opts.Add('GLEW_LIBS','GLEW libraries','')
-opts.Add('GLEW_LIBPATH','GLEW libraries path(s)','')
+opts.Add('GLU_INC',help='GLU headers path(s)',default='')
+opts.Add('GLU_LIBS',help='GLU libraries',default='')
+opts.Add('GLU_LIBPATH',help='GLU libraries path(s)',default='')
 
-opts.Add(BoolVariable('WITH_LIBPNG','Enable PNG support','yes'))
-opts.Add('LIBPNG_INC','libpng headers path(s)','')
-opts.Add('LIBPNG_LIBS','libpng library','')
-opts.Add('LIBPNG_LIBPATH','libpng library path','')
-opts.Add('LIBPNG_DEFINES','libpng additional preprocessor definitions','')
-opts.Add('LIBPNG_CONFIG','libpng pkg-config custom command line','')
+opts.Add(BoolVariable('GLEW_INTERNAL',help='Compile GLEW library from sources in extern/glew',default='no'))
+opts.Add('GLEW_INC',help='GLEW headers path(s)',default='')
+opts.Add('GLEW_LIBS',help='GLEW libraries',default='')
+opts.Add('GLEW_LIBPATH',help='GLEW libraries path(s)',default='')
 
-opts.Add(BoolVariable('WITH_LIBJPEG','Enable JPEG support','yes'))
-opts.Add('LIBJPEG_INC','libjpeg headers path(s)','')
-opts.Add('LIBJPEG_LIBS','libjpeg library','')
-opts.Add('LIBJPEG_LIBPATH','libjpeg library path','')
-opts.Add('LIBJPEG_DEFINES','libjpeg additional preprocessor definitions','')
-opts.Add('LIBJPEG_CONFIG','libjpeg pkg-config custom command line','')
+opts.Add(BoolVariable('WITH_LIBPNG',help='Enable PNG support',default='yes'))
+opts.Add('LIBPNG_INC',help='libpng headers path(s)',default='')
+opts.Add('LIBPNG_LIBS',help='libpng library',default='')
+opts.Add('LIBPNG_LIBPATH',help='libpng library path',default='')
+opts.Add('LIBPNG_DEFINES',help='libpng additional preprocessor definitions',default='')
+opts.Add('LIBPNG_CONFIG',help='libpng pkg-config custom command line',default='')
 
-opts.Add('PLUGINS_DIR','The search path for ngplant plugins',None)
+opts.Add(BoolVariable('WITH_LIBJPEG',help='Enable JPEG support',default='yes'))
+opts.Add('LIBJPEG_INC',help='libjpeg headers path(s)',default='')
+opts.Add('LIBJPEG_LIBS',help='libjpeg library',default='')
+opts.Add('LIBJPEG_LIBPATH',help='libjpeg library path',default='')
+opts.Add('LIBJPEG_DEFINES',help='libjpeg additional preprocessor definitions',default='')
+opts.Add('LIBJPEG_CONFIG',help='libjpeg pkg-config custom command line',default='')
 
-opts.Add(BoolVariable('enable_timings','Set to enable debug timings dump on ngplant','no'))
-opts.Add(BoolVariable('enable_profiling','Set to pass profiling options to compiler and linker ','no'))
+opts.Add('PLUGINS_DIR',help='The search path for ngplant plugins',default=None)
 
-opts.Add('EXTRA_VERSION','ngplant version suffix',None)
+opts.Add(BoolVariable('enable_timings',help='Set to enable debug timings dump on ngplant',default='no'))
+opts.Add(BoolVariable('enable_profiling',help='Set to pass profiling options to compiler and linker ',default='no'))
+
+opts.Add('EXTRA_VERSION',help='ngplant version suffix',default=None)
 
 # Scons sets TARGET_ARCH depending on which version of Windows you're running,
 # in order to force x86 (not x64) arch we create dummy environment and check
@@ -80,6 +83,18 @@ else:
     BaseEnv = Environment(ENV = os.environ,options=opts)
 
 Help(opts.GenerateHelpText(BaseEnv))
+
+# Testing to make sure that all variables we got so far are known
+# (gwyneth 20210610)
+#unknown = opts.UnknownVariables()
+#if unknown:
+#    print("Unknown variables: %s" % " ".join(unknown.keys()))
+
+# Temporarily check environment
+#if not BaseEnv:
+#    print('WTF?! BaseEnv MUST not be empty!')
+#else:
+#    print(BaseEnv.Dump())
 
 if BaseEnv["cross"]:
     CrossCompileMode = 1
@@ -99,6 +114,19 @@ else:
 HavePythonDev = False
 HaveGLUTDev   = False
 HaveXSLTProc  = False
+
+# Before configuring everything, test if we still have our settings for PNG and JPEG
+# (gwyneth 20210610)
+PNGEnabled = BaseEnv['WITH_LIBPNG']
+JPEGEnabled = BaseEnv['WITH_LIBJPEG']
+#if PNGEnabled:
+#    print('PNG enabled before Configure')
+#else:
+#    print('PNG not enabled before Configure')
+#if JPEGEnabled:
+#    print('JPEG enabled before Configure')
+#else:
+#    print('JPEG not enabled before Configure')
 
 BaseConf = Configure(BaseEnv,
  custom_tests={ 'CheckCXXPresence' : CheckCXXPresence,
@@ -183,12 +211,16 @@ else:
     print ('glut library not found - ngpview application will not be built')
 
 GLEWInternal = BaseEnv['GLEW_INTERNAL']
+#print('GLEW_INTERNAL:',GLEWInternal)
 
 if not GLEWInternal:
     if BaseConf.ConfigureGLEW():
         BaseEnv.Append(GLEXT_INC=BaseEnv['GLEW_INC'])
         BaseEnv.Append(GLEXT_LIBPATH=BaseEnv['GLEW_LIBPATH'])
         BaseEnv.Append(GLEXT_LIBS=BaseEnv['GLEW_LIBS'])
+        # it works up to this point but then GLEXT_* gets 'forgotten' by BaseEnv and so
+        # everything will fail...
+        print('GLEW_INC:',BaseEnv['GLEW_INC'],'GLEXT_INC:',BaseEnv['GLEXT_INC'])
     else:
         GLEWInternal = True
         print ('No installed glew library found - using internal GLEW sources...')
@@ -248,17 +280,19 @@ if LuaEnabled:
         BaseEnv.Replace(LUA_LIBS=['ext_lua','ext_lualib'])
 
 if LuaEnabled:
-    if   LuaInternal:
+    if LuaInternal:
         BaseEnv.Append(LUA_VERSION='51')
     elif BaseConf.CheckLuaFunc('lua_newstate'):
         BaseEnv.Append(LUA_VERSION='51')
     else:
         BaseEnv.Append(LUA_VERSION='50')
 
-if BaseEnv['WITH_LIBPNG']:
+#if BaseEnv['WITH_LIBPNG']:
+if PNGEnabled:
     BaseConf.ConfigureLibPng()
 
-if BaseEnv['WITH_LIBJPEG']:
+#if BaseEnv['WITH_LIBJPEG']:
+if JPEGEnabled:
     BaseConf.ConfigureLibJpeg()
 
 BaseEnv = BaseConf.Finish()
