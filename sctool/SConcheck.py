@@ -362,10 +362,10 @@ def ConfigureLibPng(Context):
         try:
             if EnvKeyHasValue(Context.env,'LIBPNG_CONFIG'):
                 Context.env.ParseConfig(Context.env['LIBPNG_CONFIG'])
-                print('LIBPNG_CONFIG=',LIBPNG_CONFIG)
+                print('sctool/SConcheck.py: LIBPNG_CONFIG=',LIBPNG_CONFIG)
             else:
                 Context.env.ParseConfig('pkg-config libpng --cflags --libs')
-                print('Empty LIBPNG_CONFIG')
+                print('sctool/SConcheck.py: Empty LIBPNG_CONFIG')
             # print('Starting subtracting lists...')
 
             LIBPNG_INC = SubtractLists(GetEnvKeyList(Context.env,'CPPPATH'),lastCPPPATH)
@@ -406,8 +406,14 @@ def ConfigureLibPng(Context):
 
 def AppendLibPngConf(Env):
     if Env['WITH_LIBPNG']:
-        Env.Append(CPPPATH=Env['LIBPNG_CPPPATH'])
-        Env.Append(CPPDEFINES=Env['LIBPNG_CPPDEFINES'])
+        try:
+          # Another one of our now famous hacks/cheats
+          Env.Append(CPPPATH=Env['LIBPNG_CPPPATH'])
+          Env.Append(CPPDEFINES=Env['LIBPNG_CPPDEFINES'])
+        except:
+          Env.Append(CPPPATH=Env['LIBPNG_INC'])
+          Env.Append(CPPDEFINES=Env['LIBPNG_DEFINES'])
+
         Env.Append(LIBS=Env['LIBPNG_LIBS'])
         Env.Append(LIBPATH=Env['LIBPNG_LIBPATH'])
         Env.Append(CPPDEFINES=[('WITH_LIBPNG',1)])
@@ -503,9 +509,14 @@ def ConfigureLibJpeg(Context):
 
 def AppendLibJpegConf(Env):
     if Env['WITH_LIBJPEG']:
-        Env.Append(CPPPATH=Env['LIBJPEG_CPPPATH'])
-        Env.Append(CPPDEFINES=Env['LIBJPEG_CPPDEFINES'])
+        try:
+          # See AppendLibPngConf() for same hack here (gwyneth 20210611)
+          Env.Append(CPPPATH=Env['LIBJPEG_CPPPATH'])
+          Env.Append(CPPDEFINES=Env['LIBJPEG_CPPDEFINES'])
+        except:
+          Env.Append(CPPPATH=Env['LIBJPEG_INC'])
+          Env.Append(CPPDEFINES=Env['LIBJPEG_DEFINES'])
+
         Env.Append(LIBS=Env['LIBJPEG_LIBS'])
         Env.Append(LIBPATH=Env['LIBJPEG_LIBPATH'])
         Env.Append(CPPDEFINES=[('WITH_LIBJPEG',1)])
-

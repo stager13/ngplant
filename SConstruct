@@ -243,8 +243,8 @@ if LuaEnabled:
 else:
     LuaInternal = False
 
-print('Lua Enabled?', LuaEnabled)
-print('Lua Internal?', LuaInternal)
+print('Checking if Lua is enabled ...', LuaEnabled)
+print('Checking if we\'re using internal Lua ...', LuaInternal)
 
 if LuaEnabled:
     if not LuaInternal:
@@ -291,7 +291,7 @@ if LuaEnabled:
         BaseEnv.Append(LUA_VERSION='50')
 
 LuaVersion = BaseEnv['LUA_VERSION']
-print('Lua version:',LuaVersion)
+print('Checking for Lua version:',LuaVersion)
 
 #if BaseEnv['WITH_LIBPNG']:
 if PNGEnabled:
@@ -301,17 +301,19 @@ if PNGEnabled:
 if JPEGEnabled:
     BaseConf.ConfigureLibJpeg()
 
-print('More Lua debugging, before BaseConf.Finish():')
-print('LUA_INC:',BaseEnv['LUA_INC'])
-print('LUA_LIBPATH:',BaseEnv['LUA_LIBPATH'])
-print('LUA_LIBS:',BaseEnv['LUA_LIBS'])
+# print('More Lua debugging, before BaseConf.Finish():')
+# print('LUA_INC:',BaseEnv['LUA_INC'])
+# print('LUA_LIBPATH:',BaseEnv['LUA_LIBPATH'])
+# print('LUA_LIBS:',BaseEnv['LUA_LIBS'])
 
-BaseEnv = BaseConf.Finish()
+# Whatever Finish() is supposed to do, it completely breaks all the needed env variables and zeroes them out
+# Commented out for now (gwyneth 20210611)
+#BaseEnv = BaseConf.Finish()
 
-print('After BaseConf.Finish():')
-print('LUA_INC:',BaseEnv['LUA_INC'])
-print('LUA_LIBPATH:',BaseEnv['LUA_LIBPATH'])
-print('LUA_LIBS:',BaseEnv['LUA_LIBS'])
+# print('After BaseConf.Finish():')
+# print('LUA_INC:',BaseEnv['LUA_INC'])
+# print('LUA_LIBPATH:',BaseEnv['LUA_LIBPATH'])
+# print('LUA_LIBS:',BaseEnv['LUA_LIBS'])
 
 
 if 'msvc' in BaseEnv['TOOLS']:
@@ -348,7 +350,7 @@ Export('BaseEnv',
        'CC_OPT_FLAGS',
        'CrossCompileMode',
        'LuaEnabled',
-       'LuaVersion',
+#       'LuaVersion',    # probably not needed any more (gwyneth 20210611)
        'TimingsEnabled',
        'ProfilingEnabled')
 
