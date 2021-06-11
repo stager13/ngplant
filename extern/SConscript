@@ -1,24 +1,44 @@
 from sctool.SConcompat import *
 
+# Not sure if the code below works, and, worse, I cannot see any results of applying the lambda (gwyneth 20210611)
+
+#EXTLUACORE_SRC = Split("""
+#lapi.c lcode.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c lmem.c
+#lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c ltm.c
+#lundump.c lvm.c lzio.c
+#""")
+
+#EXTLUALIB_SRC = Split("""
+#lauxlib.c lbaselib.c ldblib.c liolib.c lmathlib.c loslib.c ltablib.c
+#lstrlib.c loadlib.c linit.c
+#""")
+
+#EXTLUACORE_SRC = map(lambda a : 'lua/src/' + a,EXTLUACORE_SRC)
+#EXTLUALIB_SRC = map(lambda a : 'lua/src/' + a,EXTLUALIB_SRC)
+
 EXTLUACORE_SRC = Split("""
-lapi.c lcode.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c lmem.c
-lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c ltm.c
-lundump.c lvm.c lzio.c
+lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c lua/src/ldo.c lua/src/ldump.c llua/src/func.c lua/src/lgc.c lua/src/llex.c lua/src/lmem.c
+lua/src/lobject.c lua/src/lopcodes.c lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c lua/src/ltable.c lua/src/ltm.c
+lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c
 """)
 
 EXTLUALIB_SRC = Split("""
-lauxlib.c lbaselib.c ldblib.c liolib.c lmathlib.c loslib.c ltablib.c
-lstrlib.c loadlib.c linit.c
+lua/src/lauxlib.c lua/src/lbaselib.c lua/src/ldblib.c lua/src/liolib.c lua/src/lmathlib.c lua/src/loslib.c lua/src/ltablib.c
+lua/src/lstrlib.c lua/src/loadlib.c lua/src/linit.c
 """)
-
-EXTLUACORE_SRC = map(lambda a : 'lua/src/' + a,EXTLUACORE_SRC)
-EXTLUALIB_SRC = map(lambda a : 'lua/src/' + a,EXTLUALIB_SRC)
 
 Import('*')
 
 ExtLUAEnv = EnvClone(BaseEnv)
 if CC_OPT_FLAGS != '':
    ExtLUAEnv.Append(CCFLAGS=CC_OPT_FLAGS)
-ExtLUAEnv.StaticLibrary(target='libs/ext_lua',source=EXTLUACORE_SRC)
-ExtLUAEnv.StaticLibrary(target='libs/ext_lualib',source=EXTLUALIB_SRC)
-
+try:
+   ExtLUAEnv.StaticLibrary(target='libs/ext_lua',source=EXTLUACORE_SRC)
+   print('extern/SConscript: Setting static library libs/ext_lua seemed to have worked')
+except:
+   print('extern/SConscript: cannot build ext_lua, we have no valid EXTLUACORE_SRC')
+try:
+   ExtLUAEnv.StaticLibrary(target='libs/ext_lualib',source=EXTLUALIB_SRC)
+   print('extern/SConscript: Setting static library libs/ext_lualib seemed to have worked')
+except:
+   print('extern/SConscript: cannot build ext_lualib, we have no valid EXTLUALIB_SRC')

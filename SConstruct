@@ -281,6 +281,7 @@ if LuaEnabled:
         BaseEnv.Replace(LUA_INC=['#/extern/lua/src'])
         BaseEnv.Replace(LUA_LIBPATH=['#/extern/libs'])
         BaseEnv.Replace(LUA_LIBS=['ext_lua','ext_lualib'])
+        print('Checking if LUA_LIBS makes sense:',BaseEnv['LUA_LIBS'])
 
 if LuaEnabled:
     if LuaInternal:
