@@ -328,7 +328,7 @@ else:
 
 if 'gcc' in BaseEnv['TOOLS']:
     if BaseEnv['PLATFORM'] == 'darwin':
-        CC_OPT_FLAGS='-O3 -ffast-math -stdlib=libc++'
+        CC_OPT_FLAGS='-O3 -ffast-math'
     else:
         CC_OPT_FLAGS='-O3 --fast-math'
 else:
@@ -342,9 +342,9 @@ if ProfilingEnabled:
 
 if BaseEnv['PLATFORM'] == 'darwin':
     BaseEnv.Append(CPPPATH=['/usr/X11/include'])
-    BaseEnv.Append(CFLAGS=['-mmacosx-version-min=10.7'])
-    BaseEnv.Append(CXXFLAGS=['-mmacosx-version-min=10.7'])
-    BaseEnv.Append(LINKFLAGS=['-mmacosx-version-min=10.7'])
+    BaseEnv.Append(CFLAGS=['-mmacosx-version-min=10.9'])
+    BaseEnv.Append(CXXFLAGS=['-mmacosx-version-min=10.9'])
+    BaseEnv.Append(LINKFLAGS=['-mmacosx-version-min=10.9'])
 
 Export('BaseEnv',
        'CC_WARN_FLAGS',

@@ -89,7 +89,8 @@ if CrossCompileMode:
         NGPlantEnv.Append(LIBPATH=libpath)
 
     NGPlantEnv.Append(LIBS=WIN32_CROSS_BASELIBS)
-    NGPlantEnv.Append(LINKFLAGS='-s')
+    if NGPlantEnv['PLATFORM'] != 'darwin':
+       NGPlantEnv.Append(LINKFLAGS='-s')
     NGPlantEnv.Append(LINKFLAGS='-mwindows')
 elif (NGPlantEnv['PLATFORM'] == 'win32') or\
    (NGPlantEnv['PLATFORM'] == 'cygwin'):
@@ -111,7 +112,8 @@ elif (NGPlantEnv['PLATFORM'] == 'win32') or\
         NGPlantEnv.Append(LIBS=WIN32_CROSS_BASELIBS)
 else:
     if not ProfilingEnabled:
-        NGPlantEnv.Append(LINKFLAGS='-s')
+       if NGPlantEnv['PLATFORM'] != 'darwin':
+          NGPlantEnv.Append(LINKFLAGS='-s')
 
     try:
         NGPlantEnv.ParseConfig(NGPlantEnv['WX_CONFIG'] + ' --cxxflags --libs --gl-libs')

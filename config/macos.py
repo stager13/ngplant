@@ -42,7 +42,7 @@ GLEW_INC     = "/usr/local/include/GL/"
 # GLEW libraries (space-separated)
 GLEW_LIBS    = "GLEW"
 # GLEW libraries path(s) (space-separated)
-GLEW_LIBPATH = "/usr/local/lib/"
+GLEW_LIBPATH = ["/usr/local/lib/","/opt/X11/lib/"]
 
 # Enable PNG support
 WITH_LIBPNG = "yes"
