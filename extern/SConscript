@@ -17,7 +17,7 @@ from sctool.SConcompat import *
 #EXTLUALIB_SRC = map(lambda a : 'lua/src/' + a,EXTLUALIB_SRC)
 
 EXTLUACORE_SRC = Split("""
-lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c lua/src/ldo.c lua/src/ldump.c llua/src/func.c lua/src/lgc.c lua/src/llex.c lua/src/lmem.c
+lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c lua/src/ldo.c lua/src/ldump.c lua/src/lfunc.c lua/src/lgc.c lua/src/llex.c lua/src/lmem.c
 lua/src/lobject.c lua/src/lopcodes.c lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c lua/src/ltable.c lua/src/ltm.c
 lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c
 """)
