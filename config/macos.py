@@ -20,13 +20,13 @@ WX_LIB		= "wx wx_osx_cocoau_core wx_osx_cocoau_gl"
 WX_LIBPATH = "/usr/local/lib/"
 
 # Build Lua libraries from sources in extern/lua/src
-LUA_INTERNAL= "no"
+#LUA_INTERNAL= "yes"
 # Lua headers path(s) (space-separated)
-LUA_INC = "/usr/local/include/lua/"
+#LUA_INC = "" #"/usr/local/include/lua/"
 # Lua libraries (space-separated)
-LUA_LIBS = "lua"
+#LUA_LIBS = "" #"lua"
 # Lua libraries path(s) (space-separated)
-LUA_LIBPATH = "/usr/local/lib/"
+#LUA_LIBPATH = "" #"/usr/local/lib/"
 
 # GLU headers path(s) (space-separated)
 GLU_INC     = "/usr/local/include/GL/"

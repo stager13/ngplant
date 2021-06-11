@@ -21,12 +21,15 @@ Import('*')
 NGPUtEnv = EnvClone(BaseEnv)
 NGPUtEnv.Append(CPPPATH=NGPUT_INCLUDES)
 
-#print('Doing ngput checks...')
+print('Doing ngput checks...')
 #print('With LIBPNG:',  NGPUtEnv['WITH_LIBPNG'])
 #print('With LIBJPEG:', NGPUtEnv['WITH_LIBJPEG'])
 #print('GLEXT_INC:',    NGPUtEnv['GLEXT_INC'])
 #print('GLEW_INC:',BaseEnv['GLEW_INC'])
 #print('GLEXT_INC:',BaseEnv['GLEXT_INC'])
+print('LUA_INC:',NGPUtEnv['LUA_INC'])
+print('LUA_LIBPATH:',NGPUtEnv['LUA_LIBPATH'])
+print('LUA_LIBS:',NGPUtEnv['LUA_LIBS'])
 
 if CC_WARN_FLAGS != '':
     NGPUtEnv.Append(CXXFLAGS=CC_WARN_FLAGS)

@@ -39,7 +39,7 @@ opengl32 glu32
 
 Import('BaseEnv','CrossCompileMode','CC_OPT_FLAGS','LuaEnabled','LuaVersion','TimingsEnabled','ProfilingEnabled')
 
-#print('Dumping whatever we\'ve inherited:\n',BaseEnv.Dump())
+#print('ngplant: dumping whatever we\'ve inherited:\n',BaseEnv.Dump())
 
 NGPlantEnv = EnvClone(BaseEnv)
 
@@ -62,10 +62,10 @@ NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEW_INC'])
 NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEW_LIBPATH'])
 NGPlantEnv.Append(LIBS=NGPlantEnv['GLEW_LIBS'])
 # Lua Version seems to have been lost when cloning the environment?
-print('Got Lua version via exported global:',LuaVersion)
+#print('Got Lua version via exported global:',LuaVersion)
 NGPlantEnv.Append(LUA_VERSION=LuaVersion)
-print('Double-checking: Lua version is',NGPlantEnv['LUA_VERSION'])
-
+#print('Double-checking: Lua version is',NGPlantEnv['LUA_VERSION'])
+print('We got some LUA things — LUA_INC:', NGPlantEnv['LUA_INC'], 'or perhaps:', BaseEnv['LUA_INC'])
 
 if TimingsEnabled:
     NGPlantEnv.Append(CPPDEFINES=[('P3D_TIMINGS_ENABLED','1')])
@@ -134,6 +134,7 @@ if LuaEnabled:
     NGPlantEnv.Append(LIBPATH=NGPlantEnv['LUA_LIBPATH'])
     NGPlantEnv.Append(LIBS=NGPlantEnv['LUA_LIBS'])
     NGPlantEnv.Append(CPPDEFINES=[('NGP_LUA_VER',NGPlantEnv['LUA_VERSION'])])
+    print('ngplant Lua config: LUA_INC:', NGPlantEnv['LUA_INC'], 'CPPPATH:', NGPlantEnv['CPPPATH'])
 
 if CC_OPT_FLAGS != '':
    NGPlantEnv.Append(CXXFLAGS=CC_OPT_FLAGS)

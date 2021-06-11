@@ -34,7 +34,7 @@ opts.Add('WX_CONFIG',help='wx-config command',default='wx-config')
 opts.Add('WX_LIB_STATIC',help='wxWidgets static libraries',default='')
 
 opts.Add(BoolVariable('WITH_LUA',help='Enable Lua plug-ins support',default='yes'))
-opts.Add(BoolVariable('LUA_INTERNAL',help='Compile Lua libraries from sources in extern/lua',default='no'))
+opts.Add(BoolVariable('LUA_INTERNAL',help='Compile Lua libraries from sources in extern/lua',default='yes'))
 opts.Add('LUA_INC',help='Lua headers path(s)',default='')
 opts.Add('LUA_LIBS',help='Lua libraries',default='')
 opts.Add('LUA_LIBPATH',help='Lua libraries path(s)',default='')
@@ -243,6 +243,9 @@ if LuaEnabled:
 else:
     LuaInternal = False
 
+print('Lua Enabled?', LuaEnabled)
+print('Lua Internal?', LuaInternal)
+
 if LuaEnabled:
     if not LuaInternal:
         # Check if Lua configuration have been done in LUA_... vars
@@ -298,7 +301,18 @@ if PNGEnabled:
 if JPEGEnabled:
     BaseConf.ConfigureLibJpeg()
 
+print('More Lua debugging, before BaseConf.Finish():')
+print('LUA_INC:',BaseEnv['LUA_INC'])
+print('LUA_LIBPATH:',BaseEnv['LUA_LIBPATH'])
+print('LUA_LIBS:',BaseEnv['LUA_LIBS'])
+
 BaseEnv = BaseConf.Finish()
+
+print('After BaseConf.Finish():')
+print('LUA_INC:',BaseEnv['LUA_INC'])
+print('LUA_LIBPATH:',BaseEnv['LUA_LIBPATH'])
+print('LUA_LIBS:',BaseEnv['LUA_LIBS'])
+
 
 if 'msvc' in BaseEnv['TOOLS']:
     BaseEnv.Append(CXXFLAGS=['/MD','/GR','/O2','/EHsc'])

@@ -173,6 +173,7 @@ def EnvKeyHasValue(Env,Key):
     return False
 
 def CheckLuaFunc(Context,FuncName):
+    print('Checking Lua func...')
     Context.Message('Checking for %s function presence in Lua libraries ...' % (FuncName))
 
     lastLIBS    = GetEnvKeyOpt(Context.env,'LIBS')

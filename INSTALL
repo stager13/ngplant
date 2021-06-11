@@ -47,7 +47,7 @@ to find everything it needs.
        $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    1.2 Install the following formulae:
        $ brew install scons wxmac freeglut pyenv pyenv-virtualenv pyenv-virtualenvwrapper \
-         pyenv-which-ext glew lua luarocks
+         pyenv-which-ext glew
 2. Untar source archive (ngplant-X.X.X.tar.gz)
 3. $ cd ngplant-X.X.X
 4. $ scons ngplant config=macos
