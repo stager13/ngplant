@@ -1,7 +1,7 @@
 ![ngPlant Logo](ngplant/images/ngplant-128x128.png)
 # ngPlant version 0.9.14
 
-INSTALL file contains instructions on how to build and install ngPlant libraries and applications.
+`INSTALL` file contains instructions on how to build and install **ngPlant** libraries and applications.
 
 ********************
 
@@ -27,9 +27,9 @@ INSTALL file contains instructions on how to build and install ngPlant libraries
 
 ## License
 
-`ngpcore`, `ngput` and `pywrapper` libraries are distributed under the terms of the **BSD License** - see COPYING.BSD file.
+`ngpcore`, `ngput` and `pywrapper` libraries are distributed under the terms of the **BSD License** - see `COPYING.BSD` file.
 
-`ngplant`, `ngpshot` and `ngpview` applications are distributed under the terms of the **GNU General Public License** - see COPYING file.
+`ngplant`, `ngpshot` and `ngpview` applications are distributed under the terms of the **GNU General Public License** - see `COPYING` file.
 
 For information about Lua source code license please read `README.extern` and `extern/lua/COPYRIGHT`.
 
