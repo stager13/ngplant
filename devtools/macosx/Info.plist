@@ -16,5 +16,7 @@
 	<string>0.9.14.1</string>
 	<key>CFBundleIconFile</key>
 	<string>icon.icns</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
 </dict>
 </plist>

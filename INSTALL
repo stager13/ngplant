@@ -47,13 +47,16 @@ to find everything it needs.
        $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    1.2 Install the following formulae:
        $ brew install scons wxmac freeglut pyenv pyenv-virtualenv pyenv-virtualenvwrapper \
-         pyenv-which-ext glew
-2. Untar source archive (ngplant-X.X.X.tar.gz)
-3. $ cd ngplant-X.X.X
+         pyenv-which-ext glew libpng libjpeg
+2. Clone the sources from GitHub:
+   2.2 $ cd ~/Developer
+   2.3 $ git clone https://github.com/stager13/ngplant.git
+3. $ cd ngplant
 4. $ scons ngplant config=macos
 5. Create application bundle structure:
-   $ mkdir -p ngplant.app/Contents/MacOS/
-   $ cp ngplant/ngplant ngplant.app/Contents/MacOS
+   $ cd ~/Downloads
+   $ ~/Developer/ngplant/devtools/macosx/mkdmg.sh ~/Developer/ngplant/
+6. Now go to the Finder, and under the Downloads folder you should have a DMG image with an application inside that you can install as usual.
 
 
 Building under Windows with Microsoft Visual C++ using SCons (experimental):
