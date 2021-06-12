@@ -3,7 +3,7 @@
 
 `INSTALL` file contains instructions on how to build and install **ngPlant** libraries and applications.
 
-The user manual is, for now, being kept up-to-date on [this project's GitHub wiki](/wiki/). It also includes more detailed installation notes.
+The user manual is, for now, being kept up-to-date on [this project's GitHub wiki](../../wiki/). It also includes more detailed installation notes.
 
 ********************
 
