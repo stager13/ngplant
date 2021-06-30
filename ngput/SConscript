@@ -1,3 +1,5 @@
+#Attempt to get this to read whatever it needs... the other scripts have this, too (gwyneth 20210605)
+from sctool.SConcheck import *
 from sctool.SConcompat import *
 
 NGPUT_SRC = Split("""
@@ -19,22 +21,46 @@ Import('*')
 NGPUtEnv = EnvClone(BaseEnv)
 NGPUtEnv.Append(CPPPATH=NGPUT_INCLUDES)
 
+print('ngput/SConscript: Doing ngput checks...')
+print('ngput/SConscript: With LIBPNG:',  NGPUtEnv['WITH_LIBPNG'])
+print('ngput/SConscript: With LIBJPEG:', NGPUtEnv['WITH_LIBJPEG'])
+#print('ngput/SConscript: GLEXT_INC:',    NGPUtEnv['GLEXT_INC'])
+#print('ngput/SConscript: GLEW_INC:',     BaseEnv['GLEW_INC'])
+#print('ngput/SConscript: GLEXT_INC:',    BaseEnv['GLEXT_INC'])
+print('ngput/SConscript: LUA_INC:',      NGPUtEnv['LUA_INC'])
+print('ngput/SConscript: LUA_LIBPATH:',  NGPUtEnv['LUA_LIBPATH'])
+print('ngput/SConscript: LUA_LIBS:',     NGPUtEnv['LUA_LIBS'])
+
 if CC_WARN_FLAGS != '':
     NGPUtEnv.Append(CXXFLAGS=CC_WARN_FLAGS)
 if CC_OPT_FLAGS != '':
     NGPUtEnv.Append(CXXFLAGS=CC_OPT_FLAGS)
 
-NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEXT_INC'])
+#NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEXT_INC'])
+NGPUtEnv.Append(CPPPATH=NGPUtEnv['GLEW_INC'])
 
 if NGPUtEnv['WITH_LIBPNG']:
-    NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBPNG_CPPPATH'])
-    NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBPNG_CPPDEFINES'])
+    try:
+        # Allegedly this isn't being passed properly, so cheat!
+        # (gwyneth 20210611)
+        NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBPNG_CPPPATH'])
+        NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBPNG_CPPDEFINES'])
+    except:
+        print('ngput/SConscript: LIBPNG_CPPPATH/LIBPNG_CPPDEFINES not available, using LIBPNG_LIBPATH/LIBPNG_DEFINES instead...')
+        NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBPNG_LIBPATH'])
+        NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBPNG_DEFINES'])
 
     NGPUTIMG_SRC.append('p3dimagepng.cpp')
 
 if NGPUtEnv['WITH_LIBJPEG']:
-    NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBJPEG_CPPPATH'])
-    NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBJPEG_CPPDEFINES'])
+    try:
+        # See comment above for PNG
+        NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBJPEG_CPPPATH'])
+        NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBJPEG_CPPDEFINES'])
+    except:
+        print('ngput/SConscript: LIBJPEG_CPPPATH/LIBJPEG_CPPDEFINES not available, using LIBJPEG_LIBPATH/LIBJPEG_DEFINES instead...')
+        NGPUtEnv.Append(CPPPATH=NGPUtEnv['LIBJPEG_LIBPATH'])
+        NGPUtEnv.Append(CPPDEFINES=NGPUtEnv['LIBJPEG_DEFINES'])
 
     NGPUTIMG_SRC.append('p3dimagejpg.cpp')
 

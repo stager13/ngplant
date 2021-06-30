@@ -37,17 +37,22 @@ if (NGPViewEnv['PLATFORM'] == 'win32') or\
     NGPViewEnv.Append(LIBS=WIN32_BASELIBS)
 elif CrossCompileMode:
     NGPViewEnv.Append(LIBS=WIN32_BASELIBS)
-    NGPViewEnv.Append(LINKFLAGS='-s')
+    if NGPViewEnv['PLATFORM'] != 'darwin':
+       NGPViewEnv.Append(LINKFLAGS='-s')
 else:
     NGPViewEnv.Append(LIBS=['GL'])
     NGPViewEnv.Append(LIBS=['GLU'])
     NGPViewEnv.Append(LIBS=['glut'])
     if not ProfilingEnabled:
-        NGPViewEnv.Append(LINKFLAGS='-s')
+        if NGPViewEnv['PLATFORM'] != 'darwin':
+           NGPViewEnv.Append(LINKFLAGS='-s')
 
-NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEXT_INC'])
-NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEXT_LIBPATH'])
-NGPViewEnv.Append(LIBS=NGPViewEnv['GLEXT_LIBS'])
+#NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEXT_INC'])
+#NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEXT_LIBPATH'])
+#NGPViewEnv.Append(LIBS=NGPViewEnv['GLEXT_LIBS'])
+NGPViewEnv.Append(CPPPATH=NGPViewEnv['GLEW_INC'])
+NGPViewEnv.Append(LIBPATH=NGPViewEnv['GLEW_LIBPATH'])
+NGPViewEnv.Append(LIBS=NGPViewEnv['GLEW_LIBS'])
 
 AppendLibPngConf(NGPViewEnv)
 AppendLibJpegConf(NGPViewEnv)

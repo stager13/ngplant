@@ -38,6 +38,9 @@ opengl32 glu32
 """)
 
 Import('BaseEnv','CrossCompileMode','CC_OPT_FLAGS','LuaEnabled','TimingsEnabled','ProfilingEnabled')
+# probably we don't need 'LuaVersion' any more (gwyneth 20210611)
+
+#print('ngplant/SConscript: dumping whatever we\'ve inherited:\n',BaseEnv.Dump())
 
 NGPlantEnv = EnvClone(BaseEnv)
 
@@ -48,13 +51,25 @@ if LuaEnabled:
     NGPLANT_SRC.append("p3dplugluafs.cpp")
     NGPLANT_SRC.append("p3dplugluaprefs.cpp")
     NGPLANT_SRC.append("p3dpluglua.cpp")
+#    print('ngplant says: Lua enabled!')
 
 # GLEW libraries have to be added before opengl32? for Windows build
 # if GLEW libraries go after opengl32 it causes _wglGetProcAddress and
 # _glGetString functions to become unresolved
-NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEXT_INC'])
-NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEXT_LIBPATH'])
-NGPlantEnv.Append(LIBS=NGPlantEnv['GLEXT_LIBS'])
+#NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEXT_INC'])
+#NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEXT_LIBPATH'])
+#NGPlantEnv.Append(LIBS=NGPlantEnv['GLEXT_LIBS'])
+NGPlantEnv.Append(CPPPATH=NGPlantEnv['GLEW_INC'])
+NGPlantEnv.Append(LIBPATH=NGPlantEnv['GLEW_LIBPATH'])
+NGPlantEnv.Append(LIBS=NGPlantEnv['GLEW_LIBS'])
+# Lua Version sometimes seems to have been lost when cloning the environment, so we'll check first (gwyneth 20210611)
+try:
+   print('ngplant/SConscript: Lua version via cloned env is',NGPlantEnv['LUA_VERSION'])
+except:
+   print('ngplant/SConscript: Lua version unknown or not passed via cloned env, so we\'ll stick with 51')
+   NGPlantEnv.Append(LUA_VERSION=51)   # hack!
+print('ngplant/SConscript: Double-checking: Lua version is',NGPlantEnv['LUA_VERSION'])
+print('ngplant/SConscript: we got some Lua things, namely LUA_INC:', NGPlantEnv['LUA_INC'], 'or perhaps:', BaseEnv['LUA_INC'])
 
 if TimingsEnabled:
     NGPlantEnv.Append(CPPDEFINES=[('P3D_TIMINGS_ENABLED','1')])
@@ -74,7 +89,8 @@ if CrossCompileMode:
         NGPlantEnv.Append(LIBPATH=libpath)
 
     NGPlantEnv.Append(LIBS=WIN32_CROSS_BASELIBS)
-    NGPlantEnv.Append(LINKFLAGS='-s')
+    if NGPlantEnv['PLATFORM'] != 'darwin':
+       NGPlantEnv.Append(LINKFLAGS='-s')
     NGPlantEnv.Append(LINKFLAGS='-mwindows')
 elif (NGPlantEnv['PLATFORM'] == 'win32') or\
    (NGPlantEnv['PLATFORM'] == 'cygwin'):
@@ -96,11 +112,12 @@ elif (NGPlantEnv['PLATFORM'] == 'win32') or\
         NGPlantEnv.Append(LIBS=WIN32_CROSS_BASELIBS)
 else:
     if not ProfilingEnabled:
-        NGPlantEnv.Append(LINKFLAGS='-s')
+       if NGPlantEnv['PLATFORM'] != 'darwin':
+          NGPlantEnv.Append(LINKFLAGS='-s')
 
     try:
         NGPlantEnv.ParseConfig(NGPlantEnv['WX_CONFIG'] + ' --cxxflags --libs --gl-libs')
-    except OSError,e:
+    except OSError as e:
         sys.stderr.write('error: wxWidgets configuration tool can not be run' +
                          '(%s),\nplease make sure that you have wxWidgets development package(s) installed\n' % (e))
         sys.exit(1)
@@ -122,7 +139,9 @@ if LuaEnabled:
     NGPlantEnv.Append(CPPPATH=NGPlantEnv['LUA_INC'])
     NGPlantEnv.Append(LIBPATH=NGPlantEnv['LUA_LIBPATH'])
     NGPlantEnv.Append(LIBS=NGPlantEnv['LUA_LIBS'])
+    print('ngplant/SConscript: Lua config: LUA_INC:', NGPlantEnv['LUA_INC'], 'CPPPATH:', NGPlantEnv['CPPPATH'], 'Lua version: >', NGPlantEnv['LUA_VERSION'], '<')
     NGPlantEnv.Append(CPPDEFINES=[('NGP_LUA_VER',NGPlantEnv['LUA_VERSION'])])
+    print('ngplant/SConscript: CPPDEFINES after Lua config:', NGPlantEnv['CPPDEFINES'])
 
 if CC_OPT_FLAGS != '':
    NGPlantEnv.Append(CXXFLAGS=CC_OPT_FLAGS)

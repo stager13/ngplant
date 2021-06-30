@@ -29,9 +29,12 @@ NGPShotEnv.Append(LIBS=['ngput'])
 if NGPShotEnv['WITH_LIBPNG'] or NGPShotEnv['WITH_LIBJPEG']:
     NGPShotEnv.Append(LIBS=['ngputimg'])
 
-NGPShotEnv.Append(CPPPATH=NGPShotEnv['GLEXT_INC'])
-NGPShotEnv.Append(LIBPATH=NGPShotEnv['GLEXT_LIBPATH'])
-NGPShotEnv.Append(LIBS=NGPShotEnv['GLEXT_LIBS'])
+#NGPShotEnv.Append(CPPPATH=NGPShotEnv['GLEXT_INC'])
+#NGPShotEnv.Append(LIBPATH=NGPShotEnv['GLEXT_LIBPATH'])
+#NGPShotEnv.Append(LIBS=NGPShotEnv['GLEXT_LIBS'])
+NGPShotEnv.Append(CPPPATH=NGPShotEnv['GLEW_INC'])
+NGPShotEnv.Append(LIBPATH=NGPShotEnv['GLEW_LIBPATH'])
+NGPShotEnv.Append(LIBS=NGPShotEnv['GLEW_LIBS'])
 
 AppendLibPngConf(NGPShotEnv)
 AppendLibJpegConf(NGPShotEnv)
@@ -43,13 +46,15 @@ if (NGPShotEnv['PLATFORM'] == 'win32') or\
     NGPShotEnv.Append(LIBS=WIN32_BASELIBS)
 elif CrossCompileMode:
     NGPShotEnv.Append(LIBS=WIN32_BASELIBS)
-    NGPShotEnv.Append(LINKFLAGS='-s')
+    if NGPShotEnv['PLATFORM'] != 'darwin':
+       NGPShotEnv.Append(LINKFLAGS='-s')
 else:
     NGPShotEnv.Append(LIBS=['X11'])
     NGPShotEnv.Append(LIBS=['GL'])
     NGPShotEnv.Append(LIBS=['GLU'])
     if not ProfilingEnabled:
-        NGPShotEnv.Append(LINKFLAGS='-s')
+        if NGPShotEnv['PLATFORM'] != 'darwin':
+           NGPShotEnv.Append(LINKFLAGS='-s')
 
 if CC_WARN_FLAGS != '':
    NGPShotEnv.Append(CXXFLAGS=CC_WARN_FLAGS)

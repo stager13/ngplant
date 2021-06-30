@@ -1,0 +1,73 @@
+*~
+# Stupid macOS temporary files
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+Icon?
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Stuff from the Nova editor
+.nova
+node_modules
+package.json
+package-lock.json
+.eslintrc.yml
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.o
+*.a
+*.pyc
+
+*.sconf_temp
+config.log
+*.sconsign.dblite
+
+ngpcore/libngpcore.a
+ngput/libngput.a
+ngput/libngputimg.a
+
+extern/libs
+
+ngplant/shaders/default_fs.h
+ngplant/shaders/default_vs.h
+
+docapi/hliapicpp.html
+docapi/hliapipython.html
+
+ngplant/ngplant
+ngpshot/ngpshot
+ngpview/ngpview
+devtools/ngpbench
+
+pywrapper/setup.py
+pywrapper/_ngp.so

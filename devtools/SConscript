@@ -19,7 +19,7 @@ opengl32 glu32
 NGPBenchEnv = EnvClone(BaseEnv)
 
 NGPBenchEnv.Append(CPPPATH=NGPBENCH_INCLUDES)
-NGPBenchEnv.Append(LIBPATH=['#/ngpcore'])
+NGPBenchEnv.Append(LIBPATH=['#/ngpcore','/opt/X11/lib/'])
 NGPBenchEnv.Append(LIBS=['ngpcore'])
 
 if (NGPBenchEnv['PLATFORM'] == 'win32') or\
@@ -29,12 +29,14 @@ if (NGPBenchEnv['PLATFORM'] == 'win32') or\
     NGPBenchEnv.Append(LIBS=WIN32_BASELIBS)
 elif CrossCompileMode:
     NGPBenchEnv.Append(LIBS=WIN32_BASELIBS)
-    NGPBenchEnv.Append(LINKFLAGS='-s')
+    if NGPBenchEnv['PLATFORM'] != 'darwin':
+       NGPBenchEnv.Append(LINKFLAGS='-s')
 else:
     NGPBenchEnv.Append(LIBS=['GL'])
     NGPBenchEnv.Append(LIBS=['GLU'])
     if not ProfilingEnabled:
-        NGPBenchEnv.Append(LINKFLAGS='-s')
+        if NGPBenchEnv['PLATFORM'] != 'darwin':
+           NGPBenchEnv.Append(LINKFLAGS='-s')
 
 if CC_WARN_FLAGS != '':
    NGPBenchEnv.Append(CXXFLAGS=CC_WARN_FLAGS)

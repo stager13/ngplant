@@ -24,4 +24,4 @@ syntax: regexp
 ^pywrapper/setup.py
 ^pywrapper/_ngp.so
 
-
+^.git
