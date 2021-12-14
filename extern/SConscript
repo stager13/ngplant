@@ -11,8 +11,8 @@ lauxlib.c lbaselib.c ldblib.c liolib.c lmathlib.c loslib.c ltablib.c
 lstrlib.c loadlib.c linit.c
 """)
 
-EXTLUACORE_SRC = map(lambda a : 'lua/src/' + a,EXTLUACORE_SRC)
-EXTLUALIB_SRC = map(lambda a : 'lua/src/' + a,EXTLUALIB_SRC)
+EXTLUACORE_SRC = ['lua/src/' + a for a in EXTLUACORE_SRC]
+EXTLUALIB_SRC = ['lua/src/' + a for a in EXTLUALIB_SRC]
 
 Import('*')
 

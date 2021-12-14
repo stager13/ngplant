@@ -147,7 +147,7 @@ def CheckCommand(context,cmd):
     return result
 
 def GetEnvKeyOpt(Env,Key,Def = None):
-    if Env.has_key(Key):
+    if Key in Env:
         return Env[Key]
     else:
         return Def
@@ -196,14 +196,14 @@ def CheckLuaFunc(Context,FuncName):
 def ConfigureGLU(Context):
     Context.Message('Checking GLU presence and usability ... ')
 
-    if   not Context.env.has_key('GLU_INC'):
+    if   'GLU_INC' not in Context.env:
         Context.env.Append(GLU_INC=[])
     elif Context.env['GLU_INC'] != '':
         Context.env.Replace(GLU_INC=Split(Context.env['GLU_INC']))
     else:
         Context.env.Replace(GLU_INC=[])
 
-    if   not Context.env.has_key('GLU_LIBPATH'):
+    if   'GLU_LIBPATH' not in Context.env:
         Context.env.Append(GLU_LIBPATH=[])
     elif Context.env['GLU_LIBPATH'] != '':
         Context.env.Replace(GLU_LIBPATH=Split(Context.env['GLU_LIBPATH']))
@@ -215,7 +215,7 @@ def ConfigureGLU(Context):
     else:
         DefaultGLULibs=[]
 
-    if  not Context.env.has_key('GLU_LIBS'):
+    if  'GLU_LIBS' not in Context.env:
         Context.env.Append(GLU_LIBS=DefaultGLULibs)
     elif Context.env['GLU_LIBS'] != '':
         Context.env.Replace(GLU_LIBS=Split(Context.env['GLU_LIBS']))
@@ -244,21 +244,21 @@ def ConfigureGLU(Context):
 def ConfigureGLEW(Context):
     Context.Message('Checking GLEW presence and usability ... ')
 
-    if   not Context.env.has_key('GLEW_INC'):
+    if   'GLEW_INC' not in Context.env:
         Context.env.Append(GLEW_INC=[])
     elif Context.env['GLEW_INC'] != '':
         Context.env.Replace(GLEW_INC=Split(Context.env['GLEW_INC']))
     else:
         Context.env.Replace(GLEW_INC=[])
 
-    if   not Context.env.has_key('GLEW_LIBPATH'):
+    if   'GLEW_LIBPATH' not in Context.env:
         Context.env.Append(GLEW_LIBPATH=[])
     elif Context.env['GLEW_LIBPATH'] != '':
         Context.env.Replace(GLEW_LIBPATH=Split(Context.env['GLEW_LIBPATH']))
     else:
         Context.env.Replace(GLEW_LIBPATH=[])
 
-    if  not Context.env.has_key('GLEW_LIBS'):
+    if  'GLEW_LIBS' not in Context.env:
         Context.env.Append(GLEW_LIBS=['GLEW'])
     elif Context.env['GLEW_LIBS'] != '':
         Context.env.Replace(GLEW_LIBS=Split(Context.env['GLEW_LIBS']))
@@ -290,7 +290,7 @@ def ConfigureGLEW(Context):
     return Ret
 
 def SubtractLists(a,b):
-    return filter(lambda i : i not in b,a)
+    return [i for i in a if i not in b]
 
 P3DCheckLibPngUsabilitySrc = """
 #include <png.h>
