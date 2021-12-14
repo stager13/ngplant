@@ -8,15 +8,15 @@ import _ngp
 ScriptVersion = '0.9.2'
 
 def ShowUsage():
-    print 'Usage: ngp2obj.py [options] source dest'
-    print
-    print 'Convert .ngp-file \'source\' to .obj-file \'dest\''
-    print
-    print 'Options:'
-    print ' -h               - display this help and exit'
-    print ' -v               - display version information and exit'
-    print ' -t TEXPATH       - prepend TEXPATH to all texture names'
-    print
+    print('Usage: ngp2obj.py [options] source dest')
+    print()
+    print('Convert .ngp-file \'source\' to .obj-file \'dest\'')
+    print()
+    print('Options:')
+    print(' -h               - display this help and exit')
+    print(' -v               - display version information and exit')
+    print(' -t TEXPATH       - prepend TEXPATH to all texture names')
+    print()
 
 def OnInvCmdLine():
     sys.stderr.write('error: invalid command line - use \'-h\' option to get help\n')
@@ -34,7 +34,7 @@ TexturePathPrefix = ''
 
 for Option,Value in Options:
     if   Option == '-v':
-        print ScriptVersion
+        print(ScriptVersion)
         sys.exit(0)
     elif Option == '-h':
         ShowUsage();
@@ -61,7 +61,7 @@ VertexIndexOffset   = 1
 NormalIndexOffset   = 1
 TexCoordIndexOffset = 1
 
-for GroupIndex in xrange(Instance.GetGroupCount()):
+for GroupIndex in range(Instance.GetGroupCount()):
     Group    = Instance.GetGroup(GroupIndex)
     Material = Group.GetMaterial()
 
@@ -99,7 +99,7 @@ for GroupIndex in xrange(Instance.GetGroupCount()):
     NormalIndexBuffer   = Group.GetVAttrIndexBuffer(_ngp.ATTR_NORMAL,1,NormalIndexOffset)
     TexCoordIndexBuffer = Group.GetVAttrIndexBuffer(_ngp.ATTR_TEXCOORD0,1,TexCoordIndexOffset)
 
-    for PrimitiveIndex in xrange(len(VertexIndexBuffer)):
+    for PrimitiveIndex in range(len(VertexIndexBuffer)):
         vi = VertexIndexBuffer[PrimitiveIndex]
         ni = NormalIndexBuffer[PrimitiveIndex]
         ti = TexCoordIndexBuffer[PrimitiveIndex]
@@ -116,7 +116,7 @@ for GroupIndex in xrange(Instance.GetGroupCount()):
                            vi[1],ti[1],ni[1],
                            vi[2],ti[2],ni[2]))
         else:
-            raise RuntimeError,'unknown primitive type'
+            raise RuntimeError('unknown primitive type')
 
     VertexIndexOffset   += VertexIndexStep
     NormalIndexOffset   += NormalIndexStep
@@ -126,7 +126,7 @@ OBJFile.close()
 
 MTLFile = open(TargetMTLFileName,'wt')
 
-for GroupIndex in xrange(Instance.GetGroupCount()):
+for GroupIndex in range(Instance.GetGroupCount()):
     Group    = Instance.GetGroup(GroupIndex)
     Material = Group.GetMaterial()
 

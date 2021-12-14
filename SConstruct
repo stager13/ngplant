@@ -113,7 +113,7 @@ BaseConf = Configure(BaseEnv,
                 'ConfigureLibJpeg' : ConfigureLibJpeg})
 
 if BaseConf.CheckCXXPresence() is None:
-    print 'error: c++ compiler not found.'
+    print('error: c++ compiler not found.')
     sys.exit(1)
 
 if BaseConf.CheckGXXSupportArgAttrUnused():
@@ -130,7 +130,7 @@ else:
     PythonIncPath = GetPythonIncPath()
 
     if PythonIncPath is not None:
-        if BaseConf.env.has_key('CPPPATH'):
+        if 'CPPPATH' in BaseConf.env:
             lastCPPPATH = BaseConf.env['CPPPATH']
         else:
             lastCPPPATH = None
@@ -146,7 +146,7 @@ else:
             del BaseConf.env['CPPPATH']
 
     if not HavePythonDev:
-        print 'Python.h not found... _ngp (Python bindings) will not be built'
+        print('Python.h not found... _ngp (Python bindings) will not be built')
 
     Endianess = BaseConf.CheckEndianess()
 
@@ -180,7 +180,7 @@ BaseConf.ConfigureGLU()
 if BaseConf.CheckCXXHeader('GL/glut.h'):
     HaveGLUTDev = True
 else:
-    print 'glut library not found - ngpview application will not be built'
+    print('glut library not found - ngpview application will not be built')
 
 GLEWInternal = BaseEnv['GLEW_INTERNAL']
 
@@ -191,7 +191,7 @@ if not GLEWInternal:
         BaseEnv.Append(GLEXT_LIBS=BaseEnv['GLEW_LIBS'])
     else:
         GLEWInternal = True
-        print 'No installed glew library found - using internal GLEW sources...'
+        print('No installed glew library found - using internal GLEW sources...')
 
 if GLEWInternal:
     BaseEnv.Append(GLEXT_INC=['#/extern/glew/include'])
@@ -235,11 +235,11 @@ if LuaEnabled:
             del LuaConfEnv
 
             if not BaseConf.CheckLuaFunc('luaL_newmetatable'):
-                print 'Lua installation seems to be broken. Using internal Lua sources...'
+                print('Lua installation seems to be broken. Using internal Lua sources...')
                 LuaInternal = True
         else:
             # Fall to internal Lua
-            print 'No installed Lua libraries found. Using internal Lua sources...'
+            print('No installed Lua libraries found. Using internal Lua sources...')
             LuaInternal = True
 
     if LuaInternal:
